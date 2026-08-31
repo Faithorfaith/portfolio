@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { uploadFileWithProgress } from '@/lib/upload-utils'
 
@@ -20,13 +19,15 @@ export default function FileUpload({
 }: FileUploadProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [progress, setProgress] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  const uploadFile = async (file?: File) => {
     if (!file) return
 
     setIsLoading(true)
+    setProgress(0)
     setError(null)
 
     try {
@@ -40,6 +41,7 @@ export default function FileUpload({
           'portfolio-uploads',
           filePath,
           file,
+          (value) => setProgress(value),
         )
         if (!result.success || !result.publicUrl) throw new Error(result.error || 'Video upload failed')
         onUpload(result.publicUrl)
@@ -56,6 +58,7 @@ export default function FileUpload({
         method: 'POST',
         body: formData,
       })
+      setProgress(75)
 
       if (!response.ok) {
         let errorMsg = 'Upload failed'
@@ -72,6 +75,7 @@ export default function FileUpload({
       const data = await response.json()
       if (data.url) {
         onUpload(data.url)
+        setProgress(100)
       } else {
         throw new Error('No URL returned from upload')
       }
@@ -86,7 +90,12 @@ export default function FileUpload({
       setError(errorMsg)
     } finally {
       setIsLoading(false)
+      window.setTimeout(() => setProgress(0), 500)
     }
+  }
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await uploadFile(e.target.files?.[0])
   }
 
   return (
@@ -101,17 +110,26 @@ export default function FileUpload({
         aria-label="Upload file"
       />
 
-      <Button
+      <button
         type="button"
-        variant="outline"
         disabled={isLoading}
         onClick={() => fileInputRef.current?.click()}
-        className="w-full"
+        onDragEnter={(event) => { event.preventDefault(); setIsDragging(true) }}
+        onDragOver={(event) => event.preventDefault()}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={(event) => {
+          event.preventDefault()
+          setIsDragging(false)
+          void uploadFile(event.dataTransfer.files?.[0])
+        }}
+        className={`relative w-full min-h-24 overflow-hidden rounded-lg border border-dashed px-4 py-5 text-center transition-colors ${isDragging ? 'border-foreground/55 bg-foreground/[0.045]' : 'border-foreground/15 bg-foreground/[0.018] hover:border-foreground/35 hover:bg-foreground/[0.03]'}`}
       >
-        {isLoading ? 'Uploading…' : 'Choose file'}
-      </Button>
+        <span className="block text-xs font-medium text-foreground/70">{isLoading ? `Uploading ${Math.round(progress)}%` : 'Drop a file or click to browse'}</span>
+        <span className="mt-1 block text-[11px] text-foreground/35">{accept === '*' ? 'Images and videos supported' : accept}</span>
+        {isLoading && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-foreground/8"><span className="block h-full bg-foreground transition-[width]" style={{ width: `${progress}%` }} /></span>}
+      </button>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p role="alert" className="text-xs text-red-600">{error}</p>}
     </div>
   )
 }

@@ -134,7 +134,7 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
         {/* Article Content */}
         <article>
             <header className="mb-14 pb-10 border-b border-foreground/8">
-              <h1 className="text-3xl md:text-4xl font-medium tracking-[-0.035em] text-foreground mb-5 leading-[1.08]">
+              <h1 className="text-[18px] font-medium tracking-[-0.01em] text-foreground mb-5 leading-snug">
                 {selectedWriting.title}
               </h1>
               {selectedWriting.excerpt && (
@@ -235,9 +235,9 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
                         key={block.id}
                         id={`block-${block.id}`}
                         className={`scroll-mt-8 text-foreground ${
-                          block.level === 1 ? 'text-2xl font-medium tracking-[-0.025em] mt-14 mb-5 leading-tight' :
-                          block.level === 2 ? 'text-xl font-medium tracking-[-0.02em] mt-12 mb-4 leading-snug' :
-                          'text-lg font-medium mt-9 mb-3 leading-snug'
+                          block.level === 1 ? 'text-[18px] font-medium tracking-[-0.01em] mt-14 mb-5 leading-tight' :
+                          block.level === 2 ? 'text-base font-medium tracking-[-0.01em] mt-12 mb-4 leading-snug' :
+                          'text-sm font-semibold mt-9 mb-3 leading-snug'
                         }`}
                       >{headingText}</HeadingTag>
                     )
@@ -290,11 +290,8 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
       <div className="flex justify-center">
         <div className="max-w-4xl w-full">
           {/* Section Header */}
-          <div className="mb-14 max-w-xl">
-            <h2 className="text-3xl md:text-4xl tracking-[-0.035em] font-medium text-foreground mb-4">Writing</h2>
-            <p className="text-foreground/55 leading-relaxed">
-              Thoughts, insights, and explorations on design, development, and the craft of building things.
-            </p>
+          <div className="mb-10 max-w-xl">
+            <h2 className="text-[18px] tracking-[-0.01em] font-medium text-foreground">Writing</h2>
           </div>
 
           {/* Cards Grid - 2 columns on desktop */}

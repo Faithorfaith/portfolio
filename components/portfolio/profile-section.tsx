@@ -6,6 +6,7 @@ import EmptyState from './empty-state'
 import ProgressiveImage from '@/components/progressive-image'
 import { playFeedback } from '@/lib/interaction-feedback'
 import { slugify } from '@/lib/slugify'
+import { track } from '@vercel/analytics'
 
 export interface Profile {
   id: string
@@ -18,7 +19,17 @@ export interface Profile {
   hero_image_3: string | null
   gallery_images?: string[] | null
   bio_references?: BioReference[] | null
+  positioning_headline?: string | null
+  supporting_statement?: string | null
+  availability_status?: string | null
+  contact_email?: string | null
+  linkedin_url?: string | null
+  resume_url?: string | null
+  primary_cta_label?: string | null
+  testimonials?: Testimonial[] | null
 }
+
+interface Testimonial { id: string; quote: string; name: string; role: string; company: string; url: string }
 
 interface BioReference {
   id: string
@@ -63,8 +74,10 @@ export default function ProfileSection({
   const galleryCursorLabelRef = useRef<HTMLDivElement>(null)
   const dragState = useRef({ active: false, moved: false, x: 0, scrollLeft: 0 })
 
+  const contactEmail = profile?.contact_email || 'faithawokunle1@gmail.com'
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText('faithawokunle1@gmail.com')
+    navigator.clipboard.writeText(contactEmail)
+    track('contact_email_copied', { location: 'homepage' })
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -121,7 +134,7 @@ export default function ProfileSection({
                 if (galleryCursorLabelRef.current) galleryCursorLabelRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
               }}
               onMouseLeave={() => { if (galleryCursorLabelRef.current) galleryCursorLabelRef.current.style.opacity = '0' }}
-              className="group relative block w-28 h-28 md:w-32 md:h-32 rounded-xl overflow-hidden focus-visible:outline-none transition-opacity hover:opacity-90"
+              className="group relative block w-28 h-28 md:w-32 md:h-32 rounded-lg overflow-hidden border border-transparent hover:border-foreground/40 focus-visible:border-foreground/50 transition-[border-color,opacity] hover:opacity-95"
               aria-label={galleryOpen ? 'Hide profile photos' : 'Show profile photos'}
               aria-expanded={galleryOpen}
             >
@@ -162,6 +175,27 @@ export default function ProfileSection({
           {profile.full_name || profile.username}
         </h1>
 
+      {profile.positioning_headline && (
+        <p className="mt-4 max-w-xl text-[18px] leading-[1.45] tracking-[-0.01em] text-foreground">
+          {profile.positioning_headline}
+        </p>
+      )}
+      {profile.supporting_statement && <p className="mt-3 max-w-xl text-sm leading-relaxed text-foreground/55">{profile.supporting_statement}</p>}
+      {profile.availability_status && (
+        <p className="mt-5 inline-flex items-center gap-2 text-[11px] text-foreground/50">
+          <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+          {profile.availability_status}
+        </p>
+      )}
+
+      <div className="mt-6 mb-8 flex flex-wrap items-center gap-2">
+        <a onClick={() => track('project_enquiry_started', { location: 'homepage' })} href={`mailto:${contactEmail}?subject=${encodeURIComponent('Project enquiry')}`} className="inline-flex min-h-10 items-center rounded-md bg-foreground px-4 text-xs font-medium text-background hover:opacity-85 transition-opacity">
+          {profile.primary_cta_label || 'Start a project'}
+        </a>
+        {profile.linkedin_url && <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center px-3 text-xs text-foreground/55 hover:text-foreground transition-colors">LinkedIn ↗</a>}
+        {profile.resume_url && <a href={profile.resume_url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center px-3 text-xs text-foreground/55 hover:text-foreground transition-colors">Résumé ↗</a>}
+      </div>
+
       {/* Bio - Display as paragraphs */}
       {profile.bio && (
         <div className="mb-6">
@@ -198,14 +232,30 @@ export default function ProfileSection({
         </div>
       )}
 
+      {profile.testimonials && profile.testimonials.filter((item) => item.quote.trim()).length > 0 && (
+        <section className="mb-16" aria-labelledby="client-proof-title">
+          <h2 id="client-proof-title" className="text-[11px] text-foreground/40 mb-6">What collaborators say</h2>
+          <div className="grid gap-8 sm:grid-cols-2">
+            {profile.testimonials.filter((item) => item.quote.trim()).slice(0, 4).map((item) => (
+              <figure key={item.id} className="space-y-3">
+                <blockquote className="text-sm leading-relaxed text-foreground/75">“{item.quote}”</blockquote>
+                <figcaption className="text-[11px] leading-relaxed text-foreground/42">
+                  {item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">{item.name} ↗</a> : item.name}
+                  {(item.role || item.company) && <span> · {[item.role, item.company].filter(Boolean).join(', ')}</span>}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Contact CTA - Below Bio */}
-      <div className="mb-20 border-t border-border/30 pt-6">
+      <div className="mb-20 pt-2">
         <p className="text-foreground/70 leading-relaxed flex items-center gap-2 flex-wrap">
           Got something in mind? Reach out at{' '}
           <button
             onClick={handleCopyEmail}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg transition-all duration-200 group cursor-pointer active:scale-[0.98]"
-            style={{ border: '0.5px solid rgba(0,0,0,0.2)' }}
+            className="inline-flex min-h-9 items-center gap-1 px-2 py-1 rounded-md bg-foreground/[0.045] hover:bg-foreground/[0.075] transition-colors group cursor-pointer"
             title="Click to copy email"
           >
             <span className="font-medium text-foreground/70">
@@ -270,6 +320,7 @@ export default function ProfileSection({
               <a
                 key={caseStudy.id}
                 href={`/case-studies/${slugify(caseStudy.title) || caseStudy.slug || caseStudy.id}`}
+                onClick={() => track('case_study_opened', { title: caseStudy.title })}
                 className="case-study-rail-card group block shrink-0 snap-start"
                 onMouseEnter={(event) => {
                   if (!cursorLabelRef.current || window.matchMedia('(hover: none)').matches) return

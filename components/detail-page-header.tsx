@@ -20,7 +20,7 @@ export default function DetailPageHeader({
       </div>
 
       {eyebrow && <p className="text-[11px] text-foreground/40 mb-3">{eyebrow}</p>}
-      <h1 className="text-3xl md:text-4xl font-medium tracking-[-0.035em] text-foreground max-w-2xl">
+      <h1 className="text-[18px] font-medium tracking-[-0.01em] text-foreground max-w-2xl">
         {title}
       </h1>
       {description && (

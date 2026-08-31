@@ -10,7 +10,7 @@ import CopyLinkButton from '@/components/copy-link-button'
 import SafeEmbed from '@/components/safe-embed'
 import { slugify } from '@/lib/slugify'
 import ViewportVideo from '@/components/viewport-video'
-import { useSlickWindowScroll } from '@/hooks/use-slick-scroll'
+import { track } from '@vercel/analytics'
 
 interface Section {
   id: string
@@ -66,7 +66,7 @@ export default function CaseStudyClient() {
   const [activeNavItem, setActiveNavItem] = useState<string | null>(null)
   const [readingProgress, setReadingProgress] = useState(0)
   const [relatedArticle, setRelatedArticle] = useState<RelatedArticle | null>(null)
-  useSlickWindowScroll(Boolean(caseStudy))
+  const [contactEmail, setContactEmail] = useState('faithawokunle1@gmail.com')
   const sections: Section[] = useMemo(() => Array.isArray(caseStudy?.sections)
     ? caseStudy.sections
     : typeof caseStudy?.sections === 'string'
@@ -77,6 +77,11 @@ export default function CaseStudyClient() {
     : typeof caseStudy?.nav_items === 'string'
     ? JSON.parse(caseStudy.nav_items)
     : [], [caseStudy])
+
+  useEffect(() => {
+    createClient().from('profiles').select('contact_email').limit(1).maybeSingle()
+      .then(({ data }) => { if (data?.contact_email) setContactEmail(data.contact_email) })
+  }, [])
 
   useEffect(() => {
     const fetchCaseStudy = async () => {
@@ -198,6 +203,7 @@ export default function CaseStudyClient() {
                         ? 'text-foreground font-semibold'
                         : 'text-foreground/48 font-normal hover:text-foreground/75'
                     }`}
+                    aria-current={activeNavItem === item.id ? 'location' : undefined}
                   >
                     {item.label}
                   </button>
@@ -209,8 +215,21 @@ export default function CaseStudyClient() {
 
         <div className="flex-1 min-w-0 px-6 md:px-10 lg:px-16 py-14 md:py-20 flex justify-center">
           <div className="w-full max-w-4xl">
+          {navItems.length > 0 && (
+            <label className="lg:hidden block mb-10">
+              <span className="block text-[11px] text-foreground/40 mb-2">Jump to section</span>
+              <select
+                value={activeNavItem || ''}
+                onChange={(event) => handleNavClick(event.target.value)}
+                className="w-full h-10 rounded-md border border-foreground/12 bg-background px-3 text-sm"
+              >
+                <option value="" disabled>Select a section</option>
+                {navItems.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
+              </select>
+            </label>
+          )}
           <header className="mb-14 md:mb-20 max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-medium tracking-[-0.015em] leading-[1.08] text-foreground">{caseStudy.title}</h1>
+            <h1 className="text-[18px] font-medium tracking-[-0.01em] leading-snug text-foreground">{caseStudy.title}</h1>
             {caseStudy.excerpt && <p className="mt-6 text-sm text-foreground/65 leading-relaxed max-w-2xl">{caseStudy.excerpt}</p>}
           </header>
 
@@ -260,7 +279,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.title && (
-                  <h2 className="text-2xl md:text-3xl font-medium tracking-[-0.01em] text-foreground mb-6">
+                  <h2 className="text-[18px] font-medium tracking-[-0.01em] text-foreground mb-6">
                     {section.title}
                   </h2>
                 )}
@@ -303,7 +322,7 @@ export default function CaseStudyClient() {
             const words = content.reduce((total: number, block: { content?: string }) => total + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0)
             return (
               <section className="max-w-3xl mt-24 pt-12 border-t border-foreground/8">
-                <h2 className="text-sm text-foreground/45 font-normal mb-8">Related article</h2>
+                <h2 className="text-[11px] text-foreground/45 font-normal mb-8">Related writing</h2>
                 <a href={`/?article=${encodeURIComponent(relatedArticle.slug)}`} className="group grid grid-cols-[112px_1fr_auto] gap-5 items-center">
                   {relatedArticle.cover_image ? <img src={relatedArticle.cover_image} alt="" className="w-28 aspect-[4/3] object-cover" /> : <div className="w-28 aspect-[4/3] bg-foreground/5" />}
                   <div className="min-w-0">
@@ -316,6 +335,15 @@ export default function CaseStudyClient() {
               </section>
             )
           })()}
+
+          <section className="max-w-3xl mt-24 pt-12 border-t border-foreground/8">
+            <p className="text-[11px] text-foreground/40 mb-3">Have a complex product that needs clarity?</p>
+            <h2 className="text-[18px] font-medium tracking-[-0.01em] text-foreground max-w-xl">Let&apos;s turn it into something people can understand and use.</h2>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <a onClick={() => track('project_enquiry_started', { location: 'case-study', caseStudy: caseStudy.title })} href={`mailto:${contactEmail}?subject=Project%20enquiry`} className="inline-flex min-h-10 items-center rounded-md bg-foreground px-4 text-xs font-medium text-background hover:opacity-85 transition-opacity">Discuss a project</a>
+              <button onClick={() => router.push('/')} className="inline-flex min-h-10 items-center px-3 text-xs text-foreground/55 hover:text-foreground transition-colors">Back to My Work</button>
+            </div>
+          </section>
           </div>
         </div>
       </div>

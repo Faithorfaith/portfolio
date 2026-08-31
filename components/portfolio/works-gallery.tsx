@@ -122,11 +122,8 @@ export default function WorksGallery({ onSubPageChange }: { onSubPageChange?: (v
       <div className="flex justify-center">
         <div className="max-w-4xl w-full">
           {/* Section Header */}
-          <div className="mb-14 max-w-xl">
-            <h2 className="text-3xl md:text-4xl tracking-[-0.035em] font-medium text-foreground mb-4">Playground</h2>
-            <p className="text-foreground/55 leading-relaxed">
-              A collection of experiments, projects, and things I&apos;ve built. Each piece represents a learning opportunity or a creative exploration.
-            </p>
+          <div className="mb-10 max-w-xl">
+            <h2 className="text-[18px] tracking-[-0.01em] font-medium text-foreground">Playground</h2>
           </div>
 
           {/* Grid Layout - 2 cols */}
@@ -142,7 +139,7 @@ export default function WorksGallery({ onSubPageChange }: { onSubPageChange?: (v
                       className="group text-left w-full focus-visible:outline-offset-6"
                     >
                       {/* Card */}
-                      <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden mb-4 bg-foreground/5 border border-foreground/8 group-hover:border-foreground/22 transition-colors duration-300">
+                      <div className="relative w-full aspect-[4/3] rounded-md overflow-hidden mb-4 bg-foreground/5 ring-1 ring-transparent group-hover:ring-foreground/25 transition-[box-shadow,filter] duration-200 group-hover:brightness-[0.98]">
                         {coverImage ? (
                           <ProgressiveImage
                             src={coverImage}
@@ -204,7 +201,7 @@ export default function WorksGallery({ onSubPageChange }: { onSubPageChange?: (v
           onClick={closeWork}
         >
           <div
-            className="bg-background rounded-xl max-w-5xl w-full max-h-[90vh] overflow-hidden relative shadow-2xl shadow-black/10"
+            className="bg-background rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden relative shadow-2xl shadow-black/10"
             onClick={(e) => e.stopPropagation()}
             style={{
               border: '0.5px solid rgba(0,0,0,0.1)',
@@ -269,7 +266,7 @@ export default function WorksGallery({ onSubPageChange }: { onSubPageChange?: (v
                 )}
 
                 {/* Title */}
-                <h2 className="text-2xl font-medium tracking-[-0.025em] text-foreground mb-4">
+                <h2 className="text-[18px] font-medium tracking-[-0.01em] text-foreground mb-4">
                   {selectedWork.title}
                 </h2>
 

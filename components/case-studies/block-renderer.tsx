@@ -26,9 +26,9 @@ export default function BlockRenderer({ blocks }: BlockRendererProps) {
               <HeadingTag
                 key={block.id}
                 className={`font-medium text-foreground ${
-                  block.level === 1 ? 'text-3xl mt-8 mb-2' :
-                  block.level === 2 ? 'text-2xl mt-6 mb-2' :
-                  'text-xl mt-4 mb-2'
+                  block.level === 1 ? 'text-[18px] mt-8 mb-2' :
+                  block.level === 2 ? 'text-base mt-6 mb-2' :
+                  'text-sm mt-4 mb-2'
                 }`}
               >
                 {headingText}

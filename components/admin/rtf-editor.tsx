@@ -6,7 +6,7 @@ import Link from '@tiptap/extension-link'
 import BulletList from '@tiptap/extension-bullet-list'
 import OrderedList from '@tiptap/extension-ordered-list'
 import ListItem from '@tiptap/extension-list-item'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface RTFEditorProps {
   value: string
@@ -15,6 +15,8 @@ interface RTFEditorProps {
 }
 
 export default function RTFEditor({ value, onChange, placeholder = 'Enter content...' }: RTFEditorProps) {
+  const [linkOpen, setLinkOpen] = useState(false)
+  const [linkUrl, setLinkUrl] = useState('https://')
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -52,13 +54,17 @@ export default function RTFEditor({ value, onChange, placeholder = 'Enter conten
 
   const setLink = () => {
     const currentHref = editor.getAttributes('link').href as string | undefined
-    const href = window.prompt('Paste a link URL', currentHref || 'https://')
-    if (href === null) return
-    if (!href.trim()) {
+    setLinkUrl(currentHref || 'https://')
+    setLinkOpen(true)
+  }
+
+  const applyLink = () => {
+    if (!linkUrl.trim() || linkUrl === 'https://') {
       editor.chain().focus().extendMarkRange('link').unsetLink().run()
-      return
+    } else {
+      editor.chain().focus().extendMarkRange('link').setLink({ href: linkUrl.trim(), target: '_blank' }).run()
     }
-    editor.chain().focus().extendMarkRange('link').setLink({ href: href.trim(), target: '_blank' }).run()
+    setLinkOpen(false)
   }
 
   return (
@@ -171,6 +177,24 @@ export default function RTFEditor({ value, onChange, placeholder = 'Enter conten
         >
           Link
         </button>
+        {linkOpen && (
+          <form
+            className="flex min-w-[280px] flex-1 items-center gap-1.5"
+            onSubmit={(event) => { event.preventDefault(); applyLink() }}
+          >
+            <input
+              autoFocus
+              type="url"
+              value={linkUrl}
+              onChange={(event) => setLinkUrl(event.target.value)}
+              onKeyDown={(event) => { if (event.key === 'Escape') setLinkOpen(false) }}
+              className="h-8 min-h-8 flex-1 rounded-md border border-foreground/15 bg-background px-2 text-xs outline-none focus:border-foreground/40"
+              aria-label="Link URL"
+            />
+            <button type="submit" className="h-8 min-h-8 rounded-md bg-foreground px-2.5 text-xs text-background">Apply</button>
+            <button type="button" onClick={() => setLinkOpen(false)} className="h-8 min-h-8 rounded-md px-2 text-xs text-foreground/50 hover:bg-foreground/5">Cancel</button>
+          </form>
+        )}
         <button
           type="button"
           onClick={() => editor.chain().focus().extendMarkRange('link').unsetLink().run()}

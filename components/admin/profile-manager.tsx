@@ -14,6 +14,14 @@ interface Profile {
   hero_image_3: string | null
   gallery_images: string[] | null
   bio_references: BioReference[] | null
+  positioning_headline: string | null
+  supporting_statement: string | null
+  availability_status: string | null
+  contact_email: string | null
+  linkedin_url: string | null
+  resume_url: string | null
+  primary_cta_label: string | null
+  testimonials: Testimonial[] | null
 }
 
 interface BioReference {
@@ -22,6 +30,8 @@ interface BioReference {
   description: string
   url: string
 }
+
+interface Testimonial { id: string; quote: string; name: string; role: string; company: string; url: string }
 
 interface ProfileManagerProps {
   userId: string
@@ -89,6 +99,14 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
     hero_image_3: '',
     gallery_images: [] as string[],
     bio_references: [] as BioReference[],
+    positioning_headline: '',
+    supporting_statement: '',
+    availability_status: '',
+    contact_email: '',
+    linkedin_url: '',
+    resume_url: '',
+    primary_cta_label: 'Start a project',
+    testimonials: [] as Testimonial[],
   })
   const supabase = createClient()
 
@@ -115,6 +133,14 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
               ? data.gallery_images
               : [data.hero_image_1, data.hero_image_2, data.hero_image_3].filter(Boolean),
             bio_references: Array.isArray(data.bio_references) ? data.bio_references : [],
+            positioning_headline: data.positioning_headline || '',
+            supporting_statement: data.supporting_statement || '',
+            availability_status: data.availability_status || '',
+            contact_email: data.contact_email || '',
+            linkedin_url: data.linkedin_url || '',
+            resume_url: data.resume_url || '',
+            primary_cta_label: data.primary_cta_label || 'Start a project',
+            testimonials: Array.isArray(data.testimonials) ? data.testimonials : [],
           })
         } else {
           const { data: newProfile, error: createError } = await supabase
@@ -133,6 +159,14 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
               hero_image_3: newProfile.hero_image_3 || '',
               gallery_images: newProfile.gallery_images || [],
               bio_references: newProfile.bio_references || [],
+              positioning_headline: newProfile.positioning_headline || '',
+              supporting_statement: newProfile.supporting_statement || '',
+              availability_status: newProfile.availability_status || '',
+              contact_email: newProfile.contact_email || '',
+              linkedin_url: newProfile.linkedin_url || '',
+              resume_url: newProfile.resume_url || '',
+              primary_cta_label: newProfile.primary_cta_label || 'Start a project',
+              testimonials: newProfile.testimonials || [],
             })
           }
         }
@@ -168,6 +202,14 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
           gallery_images: formData.gallery_images,
           hero_image_1: formData.gallery_images[0] || null,
           bio_references: formData.bio_references,
+          positioning_headline: formData.positioning_headline || null,
+          supporting_statement: formData.supporting_statement || null,
+          availability_status: formData.availability_status || null,
+          contact_email: formData.contact_email || null,
+          linkedin_url: formData.linkedin_url || null,
+          resume_url: formData.resume_url || null,
+          primary_cta_label: formData.primary_cta_label || 'Start a project',
+          testimonials: formData.testimonials,
         }),
       })
       const result = await response.json()
@@ -250,6 +292,44 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
               style={{ padding: '8px 12px', border: '1px solid oklch(0.91 0 0)' }}
             />
           </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Client positioning" description="Tell a prospective client what you do, who it is for, and whether you are available.">
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="block">Positioning headline</label>
+            <textarea value={formData.positioning_headline} onChange={e => set('positioning_headline', e.target.value)} rows={2} placeholder="Product designer helping early-stage teams turn complex products into clear experiences." className="w-full px-3 py-2 resize-none" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="block">Supporting statement</label>
+            <textarea value={formData.supporting_statement} onChange={e => set('supporting_statement', e.target.value)} rows={2} placeholder="Focused on AI, fintech, developer tools, and infrastructure products." className="w-full px-3 py-2 resize-none" />
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5"><label className="block">Availability</label><input value={formData.availability_status} onChange={e => set('availability_status', e.target.value)} placeholder="Available for selected projects · Q4 2026" className="w-full px-3 py-2" /></div>
+            <div className="space-y-1.5"><label className="block">Primary button label</label><input value={formData.primary_cta_label} onChange={e => set('primary_cta_label', e.target.value)} placeholder="Start a project" className="w-full px-3 py-2" /></div>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5"><label className="block">Contact email</label><input type="email" value={formData.contact_email} onChange={e => set('contact_email', e.target.value)} placeholder="you@example.com" className="w-full px-3 py-2" /></div>
+            <div className="space-y-1.5"><label className="block">LinkedIn URL</label><input type="url" value={formData.linkedin_url} onChange={e => set('linkedin_url', e.target.value)} placeholder="https://linkedin.com/in/..." className="w-full px-3 py-2" /></div>
+          </div>
+          <div className="space-y-1.5"><label className="block">Résumé URL</label><input type="url" value={formData.resume_url} onChange={e => set('resume_url', e.target.value)} placeholder="https://..." className="w-full px-3 py-2" /></div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Client proof" description="Add up to four concise, genuine testimonials.">
+        <div className="space-y-3">
+          {formData.testimonials.map((item, index) => (
+            <div key={item.id} className="rounded-lg border border-border p-3 space-y-2">
+              <textarea value={item.quote} onChange={e => setFormData(current => ({ ...current, testimonials: current.testimonials.map((entry, i) => i === index ? { ...entry, quote: e.target.value } : entry) }))} rows={3} placeholder="Short testimonial" className="w-full px-3 py-2 resize-none" />
+              <div className="grid sm:grid-cols-3 gap-2">
+                {(['name', 'role', 'company'] as const).map(field => <input key={field} value={item[field]} onChange={e => setFormData(current => ({ ...current, testimonials: current.testimonials.map((entry, i) => i === index ? { ...entry, [field]: e.target.value } : entry) }))} placeholder={field[0].toUpperCase() + field.slice(1)} className="w-full px-3 py-2" />)}
+              </div>
+              <input type="url" value={item.url} onChange={e => setFormData(current => ({ ...current, testimonials: current.testimonials.map((entry, i) => i === index ? { ...entry, url: e.target.value } : entry) }))} placeholder="Optional profile URL" className="w-full px-3 py-2" />
+              <button type="button" onClick={() => setFormData(current => ({ ...current, testimonials: current.testimonials.filter((_, i) => i !== index) }))} className="text-xs text-red-600">Remove</button>
+            </div>
+          ))}
+          {formData.testimonials.length < 4 && <button type="button" onClick={() => setFormData(current => ({ ...current, testimonials: [...current.testimonials, { id: crypto.randomUUID(), quote: '', name: '', role: '', company: '', url: '' }] }))} className="w-full py-2 text-xs font-medium border border-dashed border-border rounded-lg hover:border-foreground/30 transition-colors">+ Add testimonial</button>}
         </div>
       </SectionCard>
 

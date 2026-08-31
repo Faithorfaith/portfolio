@@ -54,6 +54,17 @@
 }
 
 :root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-5: 1.25rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --measure-reading: 42rem;
+  --measure-content: 64rem;
+  --motion-fast: 140ms;
+  --motion-base: 200ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -177,13 +188,15 @@
   body {
     @apply bg-background text-foreground;
     font-size: 14px;
-    line-height: 1.4;
+    line-height: 1.65;
     letter-spacing: 0.01em;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
   ::selection { background: oklch(0.145 0 0 / 0.12); }
   button, a { -webkit-tap-highlight-color: transparent; }
+  button:not(:disabled), a[href] { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
 }
 
 @layer utilities {
@@ -270,12 +283,10 @@
     will-change: transform;
   }
 
-  /* Subtle focus ring for interactive elements */
-  button:focus-visible,
-  a:focus-visible {
-    outline: 1px solid oklch(0.145 0 0 / 0.55);
-    outline-offset: 4px;
-    border-radius: 6px;
+  :where(button, a, input, textarea, select, [tabindex]):focus-visible {
+    outline: 2px solid oklch(0.145 0 0 / 0.78);
+    outline-offset: 3px;
+    border-radius: 5px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -287,15 +298,50 @@
     }
   }
 
-  /* Smooth scroll for all scrollable containers */
-  .overflow-y-auto {
-    scroll-behavior: smooth;
+  .portfolio-scroll {
     -webkit-overflow-scrolling: touch;
-  }
-
-  .slick-scroll-container {
     overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
     scroll-padding-top: 2rem;
+  }
+
+  .editorial-title { font-size: 18px; line-height: 1.35; font-weight: 500; letter-spacing: -0.01em; }
+  .editorial-label { font-size: 11px; line-height: 1.4; letter-spacing: 0.01em; }
+  .interactive-row { transition: color var(--motion-fast) ease, background-color var(--motion-fast) ease, transform var(--motion-fast) ease; }
+  .interactive-row:hover { transform: translateX(2px); }
+
+  .admin-surface :where(input:not([type='checkbox']):not([type='radio']), textarea, select) {
+    min-height: 38px;
+    border-color: oklch(0.145 0 0 / 0.12);
+    border-radius: 7px;
+    background: white;
+    font-size: 13px;
+  }
+  .admin-surface :where(input, textarea, select):focus-visible {
+    border-color: oklch(0.145 0 0 / 0.42);
+    box-shadow: 0 0 0 3px oklch(0.145 0 0 / 0.06);
+  }
+  .admin-surface label { font-size: 12px; font-weight: 500; color: oklch(0.145 0 0 / 0.72); }
+  .admin-surface button { min-height: 36px; }
+
+  @media (max-width: 767px) {
+    .admin-shell { flex-direction: column; overflow: auto; }
+    .admin-sidebar {
+      width: 100% !important;
+      min-width: 0 !important;
+      height: auto;
+      flex-direction: row !important;
+      align-items: center;
+      border-right: 0 !important;
+      border-bottom: 1px solid oklch(0.91 0 0);
+      overflow-x: auto !important;
+    }
+    .admin-sidebar > div:first-child { padding: 10px 12px !important; }
+    .admin-sidebar > nav { display: flex; flex: none !important; padding: 8px !important; overflow: visible !important; }
+    .admin-sidebar > nav > p { display: none; }
+    .admin-sidebar > nav button { width: auto !important; margin: 0 2px !important; }
+    .admin-sidebar > div:last-child { display: none; }
+    .admin-main { overflow: visible !important; }
+    .admin-content { padding: 24px 16px 40px !important; }
   }
 }

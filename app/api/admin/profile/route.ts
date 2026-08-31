@@ -31,6 +31,14 @@ export async function POST(request: NextRequest) {
         hero_image_3: body.hero_image_3 || null,
         gallery_images: Array.isArray(body.gallery_images) ? body.gallery_images : [],
         bio_references: Array.isArray(body.bio_references) ? body.bio_references : [],
+        positioning_headline: body.positioning_headline || null,
+        supporting_statement: body.supporting_statement || null,
+        availability_status: body.availability_status || null,
+        contact_email: body.contact_email || null,
+        linkedin_url: body.linkedin_url || null,
+        resume_url: body.resume_url || null,
+        primary_cta_label: body.primary_cta_label || 'Start a project',
+        testimonials: Array.isArray(body.testimonials) ? body.testimonials : [],
       })
       .select()
       .single()

@@ -107,9 +107,9 @@ export default function AdminPage() {
   const activeNav = NAV_ITEMS.find(n => n.id === activeTab)
 
   return (
-    <div style={{ display: 'flex', width: '100%', height: '100%', background: 'oklch(0.985 0 0)' }}>
+    <div className="admin-surface admin-shell" style={{ display: 'flex', width: '100%', height: '100%', background: 'oklch(0.985 0 0)' }}>
       {/* Sidebar */}
-      <aside style={{ width: '216px', minWidth: '216px', display: 'flex', flexDirection: 'column', borderRight: '1px solid oklch(0.91 0 0)', background: 'oklch(0.985 0 0)', overflow: 'hidden' }}>
+      <aside className="admin-sidebar" style={{ width: '216px', minWidth: '216px', display: 'flex', flexDirection: 'column', borderRight: '1px solid oklch(0.91 0 0)', background: 'oklch(0.985 0 0)', overflow: 'hidden' }}>
         {/* Brand */}
         <div style={{ padding: '22px 18px 18px', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -184,7 +184,7 @@ export default function AdminPage() {
       </aside>
 
       {/* Main Area */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflowY: 'auto', background: 'oklch(1 0 0)' }}>
+      <div className="admin-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflowY: 'auto', background: 'oklch(1 0 0)' }}>
         {/* Top Bar */}
         <header style={{ height: '50px', flexShrink: 0, borderBottom: '1px solid oklch(0.93 0 0)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px', background: 'oklch(1 0 0)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', color: 'var(--foreground)' }}>
@@ -199,7 +199,7 @@ export default function AdminPage() {
         </header>
 
         {/* Content Area */}
-        <main style={{ flex: 1, padding: '36px 40px' }}>
+        <main className="admin-content" style={{ flex: 1, padding: '36px 40px' }}>
           {userId ? (
             <>
               {activeTab === 'profile' && <ProfileManager userId={userId} />}
@@ -218,4 +218,3 @@ export default function AdminPage() {
     </div>
   )
 }
-

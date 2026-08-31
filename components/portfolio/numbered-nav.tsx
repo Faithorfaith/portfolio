@@ -52,7 +52,7 @@ function NumberedNav({ activeTab, onTabChange }: NumberedNavProps) {
             <button
               key={tab}
               onClick={() => changeTab(tab)}
-              className="relative text-sm font-normal text-left group active:translate-y-px"
+              className="relative min-h-10 -my-1 text-sm font-normal text-left group active:translate-y-px"
               style={{
                 color: isActive ? 'var(--foreground)' : undefined,
                 transition: 'color 0.25s ease',
@@ -83,7 +83,7 @@ function NumberedNav({ activeTab, onTabChange }: NumberedNavProps) {
             <button
               key={tab}
               onClick={() => changeTab(tab)}
-              className="relative flex flex-col items-center gap-1"
+              className="relative min-h-11 min-w-20 flex flex-col items-center justify-center gap-1"
             >
               <span
                 className="text-xs font-normal transition-colors duration-300"
