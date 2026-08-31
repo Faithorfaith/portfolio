@@ -24,7 +24,6 @@ export default function ToolsGallery() {
         const { data, error } = await supabase
           .from('portfolio_tools')
           .select('*')
-          .order('order_index', { ascending: true })
           .order('created_at', { ascending: false })
 
         if (error) {

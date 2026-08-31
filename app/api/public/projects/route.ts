@@ -14,7 +14,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from('projects')
       .select('id, title, slug, description, link, type, year, date_from, date_to, is_new, order_index, created_at')
-      .order('order_index', { ascending: true })
+      .order('created_at', { ascending: false })
 
     if (error) {
       console.error('[v0] Projects fetch error:', error)

@@ -36,7 +36,6 @@ export default function ProjectsManager() {
       const { data, error: fetchError } = await supabase
         .from('projects')
         .select('*')
-        .order('year', { ascending: false })
         .order('created_at', { ascending: false })
 
       if (fetchError) throw fetchError

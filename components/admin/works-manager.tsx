@@ -48,7 +48,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
           .from('portfolio_works')
           .select('*')
           .eq('user_id', userId)
-          .order('order_index', { ascending: true })
+          .order('created_at', { ascending: false })
 
         if (fetchError) throw fetchError
         setWorks(data || [])
@@ -103,7 +103,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
         .from('portfolio_works')
         .select('*')
         .eq('user_id', userId)
-        .order('order_index', { ascending: true })
+        .order('created_at', { ascending: false })
 
       if (fetchError) throw fetchError
       setWorks(works || [])
@@ -179,7 +179,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
         .from('portfolio_works')
         .select('*')
         .eq('user_id', userId)
-        .order('order_index', { ascending: true })
+        .order('created_at', { ascending: false })
 
       setWorks(data || [])
       setSuccess(true)

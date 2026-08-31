@@ -335,34 +335,6 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
     setCaseStudies(await refreshList())
   }
 
-  const updateCaseStudyOrder = async (caseStudyId: string, direction: 'up' | 'down') => {
-    const index = caseStudies.findIndex(cs => cs.id === caseStudyId)
-    if ((direction === 'up' && index === 0) || (direction === 'down' && index === caseStudies.length - 1)) return
-
-    const newIndex = direction === 'up' ? index - 1 : index + 1
-    const newOrder = caseStudies.map((cs, i) => {
-      if (i === index) return { ...cs, order_index: newIndex }
-      if (i === newIndex) return { ...cs, order_index: index }
-      return cs
-    }).sort((a, b) => a.order_index - b.order_index)
-
-    // Update each case study's order_index in DB
-    for (const cs of newOrder) {
-      await fetch('/api/case-studies', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...cs,
-          sections: cs.sections || [],
-          isUpdate: true,
-          blocks: cs.blocks || []
-        })
-      })
-    }
-
-    setCaseStudies(newOrder)
-  }
-
   // ── Upload Progress Banner ───────────────────────────────────────────────
   const UploadProgress = () => isUploading ? (
     <div className="flex items-center gap-3 p-3 bg-foreground/5 border border-border rounded-lg">
@@ -795,14 +767,6 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <h4 className="text-sm font-semibold text-foreground leading-tight">{cs.title || 'Untitled'}</h4>
-                  <div className="flex items-center gap-0.5 shrink-0">
-                    <button onClick={() => updateCaseStudyOrder(cs.id, 'up')} disabled={index === 0} className="p-1 rounded text-foreground/30 hover:text-foreground hover:bg-foreground/8 disabled:opacity-20 transition-all">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
-                    </button>
-                    <button onClick={() => updateCaseStudyOrder(cs.id, 'down')} disabled={index === caseStudies.length - 1} className="p-1 rounded text-foreground/30 hover:text-foreground hover:bg-foreground/8 disabled:opacity-20 transition-all">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                    </button>
-                  </div>
                 </div>
                 <p className="text-xs text-foreground/50 line-clamp-2 mb-4 leading-relaxed">{cs.excerpt || 'No description added'}</p>
                 <div className="flex items-center gap-2">

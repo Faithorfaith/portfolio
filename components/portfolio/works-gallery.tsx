@@ -54,7 +54,7 @@ export default function WorksGallery({ onSubPageChange }: { onSubPageChange?: (v
             const { data, error } = await supabase
               .from('portfolio_works')
               .select('*')
-              .order('order_index', { ascending: true })
+              .order('created_at', { ascending: false })
             
             if (error) throw error
             return data || []

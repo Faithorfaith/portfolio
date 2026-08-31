@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 export async function PUT(
   request: NextRequest,
@@ -42,6 +43,7 @@ export async function PUT(
     )
   }
 
+  revalidatePath('/')
   return NextResponse.json(data)
 }
 
@@ -75,5 +77,6 @@ export async function DELETE(
     )
   }
 
+  revalidatePath('/')
   return NextResponse.json({ success: true })
 }

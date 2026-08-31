@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 const ITEMS_PER_PAGE = 12
 
@@ -13,7 +14,6 @@ export async function GET(request: NextRequest) {
   let query = supabase
     .from('portfolio_works')
     .select('*')
-    .order('order_index', { ascending: true })
     .order('created_at', { ascending: false })
     .range(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE - 1)
 
@@ -69,5 +69,6 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  revalidatePath('/')
   return NextResponse.json(data)
 }

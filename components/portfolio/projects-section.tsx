@@ -15,35 +15,16 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
     return null
   }
 
-  // Group projects by year
-  const projectsByYear = projects.reduce((acc, project) => {
-    const year = project.year
-    if (!acc[year]) {
-      acc[year] = []
-    }
-    acc[year].push(project)
-    return acc
-  }, {} as Record<string, Project[]>)
-
-  const sortedYears = Object.keys(projectsByYear)
-    .sort((a, b) => Number(b) - Number(a))
+  const recentProjects = [...projects].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  )
 
   return (
       <div className="w-full max-w-2xl mx-auto px-8 py-12 md:py-12">
       <h2 className="text-foreground mb-12">Projects I&apos;ve Built</h2>
 
-      {/* Projects by year */}
-      {sortedYears.map((year) => (
-        <div key={year} className="mb-12">
-          {/* Year */}
-          <p className="text-foreground/50 text-sm mb-8">
-            {year}
-          </p>
-
-          {/* Projects for this year */}
-          <div className="space-y-6">
-            {projectsByYear[year].map((project) => {
-              return (
+      <div className="space-y-6">
+        {recentProjects.map((project) => (
                 <button
                   key={project.id}
                   onClick={() => {
@@ -68,19 +49,18 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                       )}
                     </div>
 
-                    {/* Right - Type */}
-                    {project.type && (
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-foreground/35 text-sm whitespace-nowrap">{project.year}</span>
+                      {project.type && (
                       <span className="text-foreground/40 text-sm whitespace-nowrap shrink-0 transition-colors duration-200 group-hover:text-foreground/60">
                         {project.type}
                       </span>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </button>
-              )
-            })}
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }

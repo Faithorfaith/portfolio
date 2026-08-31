@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { revalidatePath } from 'next/cache'
 
 export async function PUT(
   request: Request,
@@ -40,6 +41,7 @@ export async function PUT(
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
+    revalidatePath('/')
     return NextResponse.json(data)
   } catch (error) {
     return NextResponse.json({ error: 'Failed to update project' }, { status: 500 })
@@ -70,6 +72,7 @@ export async function DELETE(
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
+    revalidatePath('/')
     return NextResponse.json({ success: true })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 })
