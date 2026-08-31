@@ -10,7 +10,6 @@ import CopyLinkButton from '@/components/copy-link-button'
 import SafeEmbed from '@/components/safe-embed'
 import { slugify } from '@/lib/slugify'
 import ViewportVideo from '@/components/viewport-video'
-import { track } from '@vercel/analytics'
 
 interface Section {
   id: string
@@ -66,7 +65,6 @@ export default function CaseStudyClient() {
   const [activeNavItem, setActiveNavItem] = useState<string | null>(null)
   const [readingProgress, setReadingProgress] = useState(0)
   const [relatedArticle, setRelatedArticle] = useState<RelatedArticle | null>(null)
-  const [contactEmail, setContactEmail] = useState('faithawokunle1@gmail.com')
   const sections: Section[] = useMemo(() => Array.isArray(caseStudy?.sections)
     ? caseStudy.sections
     : typeof caseStudy?.sections === 'string'
@@ -77,11 +75,6 @@ export default function CaseStudyClient() {
     : typeof caseStudy?.nav_items === 'string'
     ? JSON.parse(caseStudy.nav_items)
     : [], [caseStudy])
-
-  useEffect(() => {
-    createClient().from('profiles').select('contact_email').limit(1).maybeSingle()
-      .then(({ data }) => { if (data?.contact_email) setContactEmail(data.contact_email) })
-  }, [])
 
   useEffect(() => {
     const fetchCaseStudy = async () => {
@@ -185,23 +178,23 @@ export default function CaseStudyClient() {
               <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="font-medium truncate hover:text-foreground/60 transition-colors">{caseStudy.title}</button>
             </div>
           </div>
-          <CopyLinkButton className="size-9 p-0 justify-center border-0 [&_span]:hidden" />
+          <CopyLinkButton className="border-0 bg-foreground/[0.045] hover:bg-foreground/[0.075]" />
         </div>
       </header>
 
-      <div className="flex pt-[72px]">
+      <div className={`pt-[72px] w-full max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12 ${navItems.length > 0 ? 'lg:grid lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-14 xl:gap-20' : ''}`}>
         {navItems.length > 0 && (
-          <aside className="hidden lg:block w-64 shrink-0">
-            <div className="sticky top-[72px] h-[calc(100vh-72px)] overflow-y-auto border-r border-foreground/8 px-8 py-14">
-              <nav className="space-y-2" aria-label="Case study sections">
+          <aside className="hidden lg:block min-w-0 py-14 md:py-20">
+            <div className="sticky top-[112px] max-h-[calc(100vh-144px)] overflow-y-auto pr-5">
+              <nav className="space-y-3" aria-label="Case study sections">
                 {navItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => handleNavClick(item.id)}
-                    className={`relative block text-left text-sm py-1.5 w-full transition-[color,font-weight] ${
+                    className={`relative block min-h-8 text-left text-sm leading-5 w-full transition-[color,font-weight] ${
                       activeNavItem === item.id
-                        ? 'text-foreground font-semibold'
-                        : 'text-foreground/48 font-normal hover:text-foreground/75'
+                        ? 'text-foreground font-medium'
+                        : 'text-foreground/50 font-normal hover:text-foreground/80'
                     }`}
                     aria-current={activeNavItem === item.id ? 'location' : undefined}
                   >
@@ -213,8 +206,8 @@ export default function CaseStudyClient() {
           </aside>
         )}
 
-        <div className="flex-1 min-w-0 px-6 md:px-10 lg:px-16 py-14 md:py-20 flex justify-center">
-          <div className="w-full max-w-4xl">
+        <div className="min-w-0 py-14 md:py-20">
+          <div className="w-full max-w-[1100px]">
           {navItems.length > 0 && (
             <label className="lg:hidden block mb-10">
               <span className="block text-[11px] text-foreground/40 mb-2">Jump to section</span>
@@ -336,14 +329,6 @@ export default function CaseStudyClient() {
             )
           })()}
 
-          <section className="max-w-3xl mt-24 pt-12 border-t border-foreground/8">
-            <p className="text-[11px] text-foreground/40 mb-3">Have a complex product that needs clarity?</p>
-            <h2 className="text-[18px] font-medium tracking-[-0.01em] text-foreground max-w-xl">Let&apos;s turn it into something people can understand and use.</h2>
-            <div className="mt-6 flex flex-wrap gap-2">
-              <a onClick={() => track('project_enquiry_started', { location: 'case-study', caseStudy: caseStudy.title })} href={`mailto:${contactEmail}?subject=Project%20enquiry`} className="inline-flex min-h-10 items-center rounded-md bg-foreground px-4 text-xs font-medium text-background hover:opacity-85 transition-opacity">Discuss a project</a>
-              <button onClick={() => router.push('/')} className="inline-flex min-h-10 items-center px-3 text-xs text-foreground/55 hover:text-foreground transition-colors">Back to My Work</button>
-            </div>
-          </section>
           </div>
         </div>
       </div>
