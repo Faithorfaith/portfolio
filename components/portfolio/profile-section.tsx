@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import EmptyState from './empty-state'
 import ProgressiveImage from '@/components/progressive-image'
@@ -57,14 +57,6 @@ export default function ProfileSection({
   const legacyImages = [profile?.hero_image_1, profile?.hero_image_2, profile?.hero_image_3].filter(Boolean) as string[]
   const galleryImages = profile?.gallery_images?.length ? profile.gallery_images : legacyImages
 
-  useEffect(() => {
-    if (!galleryOpen) return
-    const close = (event: KeyboardEvent) => event.key === 'Escape' && setGalleryOpen(false)
-    document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', close)
-    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', close) }
-  }, [galleryOpen])
-
   if (!profile) {
     return (
       <div className="flex items-center justify-center w-full h-full">
@@ -96,13 +88,34 @@ export default function ProfileSection({
       </div>
 
       <div className="w-full max-w-2xl mx-auto px-8 py-12 md:py-16 relative z-10">
-        {/* One profile cover opens the full gallery. */}
+        {/* One quiet cover reveals the gallery in place. */}
         {galleryImages.length > 0 && (
           <div className="mb-8">
-            <button onClick={() => setGalleryOpen(true)} className="group relative block w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden border border-border/60 shadow-sm" aria-label={`Open photo gallery with ${galleryImages.length} images`}>
-              <Image src={galleryImages[0]} alt="Profile gallery cover" fill sizes="128px" className="object-cover transition-transform duration-500 group-hover:scale-105" priority />
-              <span className="absolute right-2 bottom-2 rounded-full bg-black/65 px-2 py-1 text-[11px] text-white backdrop-blur-sm">{galleryImages.length} photos</span>
+            <button
+              type="button"
+              onClick={() => setGalleryOpen((open) => !open)}
+              className="group relative block w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden border border-transparent hover:border-foreground/45 focus-visible:border-foreground/60 focus-visible:outline-none transition-colors"
+              aria-label={galleryOpen ? 'Hide profile photos' : 'Show profile photos'}
+              aria-expanded={galleryOpen}
+            >
+              <Image src={galleryImages[0]} alt="Profile gallery cover" fill sizes="128px" className="object-cover" priority />
             </button>
+
+            {galleryOpen && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3" aria-label="Profile photos">
+                {galleryImages.map((src, index) => (
+                  <div key={`${src}-${index}`} className="relative w-full aspect-[4/5] overflow-hidden bg-foreground/5">
+                    <Image
+                      src={src}
+                      alt={`Profile photo ${index + 1}`}
+                      fill
+                      sizes="(max-width: 640px) 50vw, 150px"
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -159,13 +172,12 @@ export default function ProfileSection({
             Case Studies
           </h2>
 
-          <div className="relative left-1/2 w-[calc(100vw-2rem)] -translate-x-1/2 md:w-[calc(100vw-10rem)]">
-          <div className="flex gap-5 md:gap-8 overflow-x-auto snap-x snap-mandatory pb-6 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {caseStudies.map((caseStudy) => (
               <a
                 key={caseStudy.id}
                 href={`/case-studies/${caseStudy.id}`}
-                className="group block min-w-[84vw] md:min-w-[560px] lg:min-w-[640px] max-w-[720px] snap-start"
+                className="group block min-w-[88%] sm:min-w-[72%] snap-start"
               >
                 {/* Thumbnail */}
                 {caseStudy.thumbnail_url && (
@@ -174,7 +186,7 @@ export default function ProfileSection({
                       src={caseStudy.thumbnail_url}
                       alt={caseStudy.title}
                       fill
-                      sizes="(max-width: 768px) 84vw, 640px"
+                      sizes="(max-width: 640px) 88vw, 480px"
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
@@ -197,39 +209,9 @@ export default function ProfileSection({
               </a>
             ))}
           </div>
-          </div>
         </div>
       )}
       </div>
-
-      {galleryOpen && (
-        <div className="fixed inset-0 z-[100] bg-background overflow-hidden" role="dialog" aria-modal="true" aria-label="Photo gallery">
-          <div className="h-full flex flex-col max-w-[1600px] mx-auto">
-            <div className="flex items-center justify-between px-5 md:px-12 lg:px-16 pt-7 md:pt-10 pb-6 md:pb-10">
-              <div className="flex items-center gap-4">
-                <div className="relative w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden ring-2 ring-foreground/80 ring-offset-4 ring-offset-background">
-                  <Image src={galleryImages[0]} alt="Gallery cover" fill sizes="64px" className="object-cover" />
-                </div>
-                <div>
-                  <p className="font-medium text-base">{profile.full_name || profile.username}</p>
-                  <p className="text-xs text-foreground/45">{galleryImages.length} photos</p>
-                </div>
-              </div>
-              <button onClick={() => setGalleryOpen(false)} className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-xl hover:bg-foreground/5 transition-colors" aria-label="Close gallery">×</button>
-            </div>
-
-            <div className="flex-1 min-h-0 flex items-center">
-              <div className="w-full flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory px-5 md:px-12 lg:px-16 pb-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {galleryImages.map((src, index) => (
-                  <div key={`${src}-${index}`} className="relative shrink-0 w-[76vw] sm:w-[360px] md:w-[300px] lg:w-[340px] h-[58vh] md:h-[62vh] max-h-[620px] snap-start overflow-hidden bg-foreground/5">
-                    <Image src={src} alt={`Gallery image ${index + 1}`} fill sizes="(max-width: 640px) 76vw, 340px" className="object-cover" priority={index < 3} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
