@@ -29,11 +29,15 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
       <h2 className="text-foreground mb-8">Projects I&apos;ve built</h2>
 
       <div className="space-y-10">
-        {Object.entries(projectsByYear).map(([year, items]) => (
+        {Object.entries(projectsByYear)
+          .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
+          .map(([year, items]) => (
           <section key={year} className="grid grid-cols-[52px_1fr] md:grid-cols-[72px_1fr] gap-4 md:gap-6">
             <h3 className="text-[11px] text-foreground/38 pt-3 tabular-nums sticky top-6 self-start">{year}</h3>
             <div className="relative before:absolute before:left-[3px] before:top-5 before:bottom-5 before:w-px before:bg-foreground/10">
-              {items.map((project) => (
+              {[...items]
+                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                .map((project) => (
                 <button
                   key={project.id}
                   onClick={() => {
@@ -67,7 +71,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                     </div>
                   </div>
                 </button>
-              ))}
+                ))}
             </div>
           </section>
         ))}

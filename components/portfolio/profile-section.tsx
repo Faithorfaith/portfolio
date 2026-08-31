@@ -189,9 +189,6 @@ export default function ProfileSection({
       )}
 
       <div className="mt-6 mb-8 flex flex-wrap items-center gap-2">
-        <a onClick={() => track('project_enquiry_started', { location: 'homepage' })} href={`mailto:${contactEmail}?subject=${encodeURIComponent('Project enquiry')}`} className="inline-flex min-h-10 items-center rounded-md bg-foreground px-4 text-xs font-medium text-background hover:opacity-85 transition-opacity">
-          {profile.primary_cta_label || 'Start a project'}
-        </a>
         {profile.linkedin_url && <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center px-3 text-xs text-foreground/55 hover:text-foreground transition-colors">LinkedIn ↗</a>}
         {profile.resume_url && <a href={profile.resume_url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center px-3 text-xs text-foreground/55 hover:text-foreground transition-colors">Résumé ↗</a>}
       </div>
