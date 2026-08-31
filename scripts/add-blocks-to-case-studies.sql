@@ -1,0 +1,21 @@
+-- Add blocks column to case_studies table for flexible content sections
+ALTER TABLE case_studies ADD COLUMN blocks JSONB DEFAULT '[]'::jsonb;
+
+-- blocks structure will contain:
+-- [
+--   {
+--     id: "uuid",
+--     type: "paragraph" | "buttons" | "image" | "video" | "divider" | "cta",
+--     content: "text/html",
+--     buttons: [
+--       {
+--         id: "uuid",
+--         text: "Button Text",
+--         link: "https://example.com",
+--         variant: "primary" | "secondary" | "outline"
+--       }
+--     ],
+--     imageUrl: "string",
+--     alignment: "left" | "center" | "right"
+--   }
+-- ]
