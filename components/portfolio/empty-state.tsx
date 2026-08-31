@@ -15,20 +15,20 @@ export default function EmptyState({
   const doodleImage = doodleVariant === 1 ? DOODLE_1 : DOODLE_2
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-8 py-24 md:py-32 flex flex-col items-center justify-center text-center relative">
+    <div className="w-full max-w-2xl mx-auto px-8 py-24 md:py-32 flex flex-col items-start justify-center text-left relative">
       {/* Background Doodles */}
       <div className="fixed pointer-events-none z-30 top-16 left-5">
         <img 
           src={DOODLE_1}
           alt="Doodle decoration" 
-          className="w-16 h-16 md:w-20 md:h-20 animate-doodle-shake"
+          className="w-12 h-12 md:w-14 md:h-14 animate-doodle-shake"
         />
       </div>
       <div className="fixed pointer-events-none z-30 bottom-40 right-5">
         <img 
           src={DOODLE_2}
           alt="Doodle decoration" 
-          className="w-16 h-16 md:w-20 md:h-20 animate-doodle-shake"
+          className="w-12 h-12 md:w-14 md:h-14 animate-doodle-shake"
         />
       </div>
 
@@ -36,16 +36,16 @@ export default function EmptyState({
       <img 
         src={doodleImage} 
         alt="Coming soon decoration"
-        className="w-24 h-24 md:w-32 md:h-32 mb-8 animate-doodle-shake"
+        className="w-16 h-16 md:w-20 md:h-20 mb-8 animate-doodle-shake"
       />
       
       {/* Title */}
-      <h2 className="text-2xl md:text-3xl font-medium text-foreground mb-3">
+      <h2 className="text-2xl font-medium tracking-[-0.025em] text-foreground mb-2">
         {title}
       </h2>
       
       {/* Description */}
-      <p className="text-foreground/60 text-lg">
+      <p className="text-foreground/50 text-base">
         {description}
       </p>
     </div>

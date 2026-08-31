@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import EmptyState from './empty-state'
 import ProgressiveImage from '@/components/progressive-image'
+import { playFeedback } from '@/lib/interaction-feedback'
 
 export interface Profile {
   id: string
@@ -74,7 +75,7 @@ export default function ProfileSection({
           alt="Doodle dinosaur" 
           loading="lazy"
           decoding="async"
-          className="w-16 h-16 md:w-20 md:h-20 animate-doodle-shake"
+          className="w-12 h-12 md:w-14 md:h-14 animate-doodle-shake"
         />
       </div>
       <div className="fixed pointer-events-none z-30 bottom-40 right-5">
@@ -83,7 +84,7 @@ export default function ProfileSection({
           alt="Doodle cool character" 
           loading="lazy"
           decoding="async"
-          className="w-16 h-16 md:w-20 md:h-20 animate-doodle-shake"
+          className="w-12 h-12 md:w-14 md:h-14 animate-doodle-shake"
         />
       </div>
 
@@ -93,7 +94,10 @@ export default function ProfileSection({
           <div className="mb-8">
             <button
               type="button"
-              onClick={() => setGalleryOpen((open) => !open)}
+              onClick={() => {
+                playFeedback('tap')
+                setGalleryOpen((open) => !open)
+              }}
               className="group relative block w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden border border-transparent hover:border-foreground/45 focus-visible:border-foreground/60 focus-visible:outline-none transition-colors"
               aria-label={galleryOpen ? 'Hide profile photos' : 'Show profile photos'}
               aria-expanded={galleryOpen}
@@ -102,9 +106,13 @@ export default function ProfileSection({
             </button>
 
             {galleryOpen && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3" aria-label="Profile photos">
+              <div className="gallery-linear-reveal grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3" aria-label="Profile photos">
                 {galleryImages.map((src, index) => (
-                  <div key={`${src}-${index}`} className="relative w-full aspect-[4/5] overflow-hidden bg-foreground/5">
+                  <div
+                    key={`${src}-${index}`}
+                    className="gallery-photo-reveal relative w-full aspect-[4/5] overflow-hidden bg-foreground/5"
+                    style={{ animationDelay: `${120 + index * 55}ms` }}
+                  >
                     <Image
                       src={src}
                       alt={`Profile photo ${index + 1}`}
@@ -168,16 +176,17 @@ export default function ProfileSection({
       {/* Case Studies Section */}
       {caseStudies.length > 0 && (
         <div className="mt-16">
-          <h2 className="text-foreground mb-8">
-            Case Studies
-          </h2>
+          <div className="flex items-baseline justify-between mb-8">
+            <h2 className="text-foreground">Case studies</h2>
+            {caseStudies.length > 1 && <span className="text-xs text-foreground/35">Scroll →</span>}
+          </div>
 
-          <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex w-[calc(50vw+50%-2rem)] gap-5 overflow-x-auto snap-x snap-mandatory pb-6 pr-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {caseStudies.map((caseStudy) => (
               <a
                 key={caseStudy.id}
                 href={`/case-studies/${caseStudy.id}`}
-                className="group block min-w-[88%] sm:min-w-[72%] snap-start"
+                className="group block min-w-[78vw] sm:min-w-[480px] md:min-w-[560px] snap-start"
               >
                 {/* Thumbnail */}
                 {caseStudy.thumbnail_url && (
@@ -186,7 +195,7 @@ export default function ProfileSection({
                       src={caseStudy.thumbnail_url}
                       alt={caseStudy.title}
                       fill
-                      sizes="(max-width: 640px) 88vw, 480px"
+                      sizes="(max-width: 640px) 78vw, 560px"
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>

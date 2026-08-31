@@ -29,7 +29,7 @@ export default function ProgressiveImage({
   const [isLoaded, setIsLoaded] = useState(false)
 
   return (
-    <div className={`overflow-hidden ${containerClassName} ${fill ? 'relative' : ''}`}>
+    <div className={`overflow-hidden bg-foreground/[0.035] ${containerClassName} ${fill ? 'relative' : ''}`}>
       {fill ? (
         <Image
           src={src}

@@ -6,7 +6,7 @@ interface ScrollProgressBarProps {
   scrollRef: RefObject<HTMLDivElement | null>
 }
 
-// Ruler-style scroll bar — equal height rectangles, only shows on scrollable pages
+// A single quiet line keeps progress useful without adding visual noise.
 function ScrollProgressBar({ scrollRef }: ScrollProgressBarProps) {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isScrollable, setIsScrollable] = useState(false)
@@ -45,28 +45,12 @@ function ScrollProgressBar({ scrollRef }: ScrollProgressBarProps) {
   // Don't render if page isn't scrollable
   if (!isScrollable) return null
 
-  const totalBars = 60
-
   return (
-    <div
-      className="fixed top-0 left-0 right-0 z-[100] flex items-stretch"
-      style={{ height: '6px', backgroundColor: 'transparent' }}
-    >
-      {Array.from({ length: totalBars }).map((_, i) => {
-        const barProgress = (i / totalBars) * 100
-        const isScrolled = scrollProgress >= barProgress
-
-        return (
-          <div
-            key={i}
-            className="flex-1 transition-colors duration-100"
-            style={{
-              backgroundColor: isScrolled ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.08)',
-              marginRight: '1px',
-            }}
-          />
-        )
-      })}
+    <div className="fixed top-0 left-0 right-0 z-[100] h-px bg-foreground/8" aria-hidden="true">
+      <div
+        className="h-full bg-foreground/55 transition-[width] duration-100 ease-out"
+        style={{ width: `${scrollProgress}%` }}
+      />
     </div>
   )
 }

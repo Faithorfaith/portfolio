@@ -2,6 +2,8 @@
 
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
+import { createClient } from '@/lib/supabase/client'
+import { uploadFileWithProgress } from '@/lib/upload-utils'
 
 interface FileUploadProps {
   userId: string
@@ -28,6 +30,23 @@ export default function FileUpload({
     setError(null)
 
     try {
+      // Videos upload straight to Storage so they do not hit Vercel's request
+      // body limit. Images continue through the authenticated server route.
+      if (file.type.startsWith('video/')) {
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-')
+        const filePath = `${folder}/${userId}/${Date.now()}-${safeName}`
+        const result = await uploadFileWithProgress(
+          createClient(),
+          'portfolio-uploads',
+          filePath,
+          file,
+        )
+        if (!result.success || !result.publicUrl) throw new Error(result.error || 'Video upload failed')
+        onUpload(result.publicUrl)
+        if (fileInputRef.current) fileInputRef.current.value = ''
+        return
+      }
+
       const formData = new FormData()
       formData.append('file', file)
       formData.append('folder', folder)
@@ -89,7 +108,7 @@ export default function FileUpload({
         onClick={() => fileInputRef.current?.click()}
         className="w-full"
       >
-        {isLoading ? 'Uploading...' : 'Choose File'}
+        {isLoading ? 'Uploading…' : 'Choose file'}
       </Button>
 
       {error && <p className="text-sm text-red-600">{error}</p>}

@@ -11,7 +11,7 @@ export default function Doodles() {
         <img 
           src={DOODLE_1}
           alt="" 
-          className="w-16 h-16 md:w-20 md:h-20 animate-doodle-shake"
+          className="w-12 h-12 md:w-14 md:h-14 animate-doodle-shake"
         />
       </div>
       {/* Bottom-right doodle */}
@@ -19,7 +19,7 @@ export default function Doodles() {
         <img 
           src={DOODLE_2}
           alt="" 
-          className="w-16 h-16 md:w-20 md:h-20 animate-doodle-shake"
+          className="w-12 h-12 md:w-14 md:h-14 animate-doodle-shake"
         />
       </div>
     </>

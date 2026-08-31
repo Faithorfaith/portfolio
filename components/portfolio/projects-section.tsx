@@ -21,9 +21,9 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
 
   return (
       <div className="w-full max-w-2xl mx-auto px-8 py-12 md:py-12">
-      <h2 className="text-foreground mb-12">Projects I&apos;ve Built</h2>
+      <h2 className="text-foreground mb-8">Projects I&apos;ve built</h2>
 
-      <div className="space-y-6">
+      <div className="border-t border-foreground/8">
         {recentProjects.map((project) => (
                 <button
                   key={project.id}
@@ -35,15 +35,14 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                   }}
                   className={`w-full text-left group ${project.link ? 'cursor-pointer' : ''}`}
                 >
-                    <div className="flex items-start justify-between gap-6 py-4 px-4 rounded-lg transition-colors duration-200 group-hover:bg-foreground/4" style={{ borderBottom: '0.5px solid rgba(0,0,0,0.08)' }}>
+                    <div className="flex items-start justify-between gap-6 py-5 border-b border-foreground/8 transition-colors duration-200 group-hover:border-foreground/20">
                     {/* Left - Title & Description */}
                     <div className="flex-1 min-w-0">
                       <h3 className="text-foreground/70 font-normal group-hover:text-foreground transition-colors duration-200">
                         {project.title}
                       </h3>
-                      {/* Description — expands on row hover */}
                       {project.description && (
-                        <p className="text-foreground/55 leading-relaxed overflow-hidden max-h-0 mt-0 opacity-0 group-hover:max-h-20 group-hover:mt-1.5 group-hover:opacity-100 transition-all duration-300 ease-out">
+                        <p className="text-sm text-foreground/45 leading-relaxed mt-1 line-clamp-1">
                           {project.description}
                         </p>
                       )}

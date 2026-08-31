@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ProgressiveImage from '@/components/progressive-image'
 import SafeHtml from '@/components/safe-html'
-import CopyLinkButton from '@/components/copy-link-button'
+import DetailPageHeader from '@/components/detail-page-header'
 
 interface Section {
   id: string
@@ -29,6 +29,8 @@ interface CaseStudy {
   title: string
   excerpt: string | null
   thumbnail_url: string | null
+  video_url: string | null
+  media_type: 'image' | 'video' | null
   sections: Section[] | string | null
   nav_items: NavItem[] | string | null
   slug: string | null
@@ -103,11 +105,11 @@ export default function CaseStudyClient() {
   return (
     <main className="min-h-screen bg-background">
       <div className="flex">
-        {/* TOC - Fixed left column, exactly 1/4 width */}
+        {/* A quiet sticky contents rail on larger screens. */}
         {navItems.length > 0 && (
-          <aside className="hidden lg:block w-1/4 shrink-0">
-            <div className="sticky top-0 h-screen overflow-y-auto border-r border-foreground/10 px-6 py-16">
-              <p className="text-xs uppercase tracking-wider text-foreground/40 font-medium mb-4">Contents</p>
+          <aside className="hidden lg:block w-56 shrink-0">
+            <div className="sticky top-0 h-screen overflow-y-auto border-r border-foreground/8 px-7 py-20">
+              <p className="text-xs text-foreground/35 mb-4">Contents</p>
               <div className="space-y-1">
                 {navItems.map((item) => (
                   <button
@@ -127,16 +129,17 @@ export default function CaseStudyClient() {
           </aside>
         )}
 
-        {/* Content - Right column, 3/4 width, centered */}
-        <div className="flex-1 min-w-0 px-8 lg:px-12 py-16 flex justify-center">
-          <div className="w-full max-w-2xl">
-          <div className="flex items-center justify-between mb-8">
-            <button onClick={() => router.push('/')} className="text-sm text-foreground/45 hover:text-foreground transition-colors">← Back</button>
-            <CopyLinkButton />
-          </div>
+        <div className="flex-1 min-w-0 px-8 lg:px-14 py-12 md:py-20 flex justify-center">
+          <div className="w-full max-w-4xl">
+          <DetailPageHeader
+            title={caseStudy.title}
+            eyebrow="Case study"
+            description={caseStudy.excerpt}
+          />
+
           {/* Thumbnail */}
-          {caseStudy.thumbnail_url && (
-            <div className="mb-8 rounded-xl overflow-hidden">
+          {caseStudy.thumbnail_url && caseStudy.media_type !== 'video' && (
+            <div className="mb-16 overflow-hidden bg-foreground/4">
               <ProgressiveImage
                 src={caseStudy.thumbnail_url}
                 alt={caseStudy.title}
@@ -145,16 +148,17 @@ export default function CaseStudyClient() {
             </div>
           )}
 
-          {/* Title */}
-          <h1 className="text-xl font-medium text-foreground mb-6">
-            {caseStudy.title}
-          </h1>
-
-          {/* Excerpt */}
-          {caseStudy.excerpt && (
-            <p className="text-foreground/70 leading-relaxed mb-8">
-              {caseStudy.excerpt}
-            </p>
+          {caseStudy.media_type === 'video' && caseStudy.video_url && (
+            <div className="mb-16 overflow-hidden bg-black">
+              <video
+                src={caseStudy.video_url}
+                controls
+                playsInline
+                preload="metadata"
+                poster={caseStudy.thumbnail_url || undefined}
+                className="w-full h-auto"
+              />
+            </div>
           )}
 
           {/* CTA Button - Right after excerpt */}
@@ -172,23 +176,23 @@ export default function CaseStudyClient() {
           )}
 
           {/* Sections */}
-          <div className="space-y-16">
+          <div className="max-w-2xl space-y-20">
             {sections.map((section) => (
               <section key={section.id} id={section.id} className="scroll-mt-20">
                 {section.label && (
-                  <p className="text-xs uppercase tracking-widest text-foreground/40 font-medium mb-2">
+                  <p className="text-sm text-foreground/40 mb-2">
                     {section.label}
                   </p>
                 )}
 
                 {section.title && (
-                  <h2 className="text-2xl md:text-3xl font-medium text-foreground mb-4">
+                  <h2 className="text-2xl md:text-3xl font-medium tracking-[-0.025em] text-foreground mb-5">
                     {section.title}
                   </h2>
                 )}
 
                 {section.image && (
-                  <div className="mb-6 rounded-xl overflow-hidden">
+                  <div className="mb-8 overflow-hidden bg-foreground/4">
                     <ProgressiveImage
                       src={section.image}
                       alt={section.title || section.label || 'Section image'}

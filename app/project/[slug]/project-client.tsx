@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import CopyLinkButton from '@/components/copy-link-button'
+import DetailPageHeader from '@/components/detail-page-header'
 
 interface Project {
   id: string
@@ -58,36 +57,12 @@ export default function ProjectClient() {
   }
 
   return (
-    <main className="w-full max-w-3xl mx-auto px-8 py-16 md:py-24">
-      <div className="flex items-center justify-between mb-10">
-        <Link href="/" className="text-sm text-foreground/50 hover:text-foreground transition-colors">← Back</Link>
-        <CopyLinkButton />
-      </div>
-
-      {/* Project Title */}
-      <h1 className="text-5xl md:text-6xl font-normal text-foreground mb-4">
-        {project.title}
-      </h1>
-
-      {project.year && (
-        <p className="text-foreground/50 text-lg mb-12">{project.year}</p>
-      )}
-
-      {/* Project Description */}
-      {project.description && (
-        <div className="prose prose-invert max-w-none mb-16">
-          <div className="space-y-6">
-            {project.description.split('\n\n').map((paragraph, index) => (
-              <p
-                key={index}
-                className="text-lg text-foreground/80 leading-relaxed"
-              >
-                {paragraph}
-              </p>
-            ))}
-          </div>
-        </div>
-      )}
+    <main className="w-full max-w-4xl mx-auto px-8 py-12 md:py-20">
+      <DetailPageHeader
+        title={project.title}
+        eyebrow={project.year}
+        description={project.description}
+      />
     </main>
   )
 }

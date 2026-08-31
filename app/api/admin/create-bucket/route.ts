@@ -22,11 +22,21 @@ export async function POST(request: NextRequest) {
     // Create the portfolio-uploads bucket
     const { data, error } = await supabase.storage.createBucket('portfolio-uploads', {
       public: true,
+      fileSizeLimit: 100 * 1024 * 1024,
+      allowedMimeTypes: ['image/*', 'video/mp4', 'video/webm', 'video/quicktime'],
     })
 
     if (error) {
       // If bucket already exists, that's fine
       if (error.message?.includes('already exists')) {
+        const { error: updateError } = await supabase.storage.updateBucket('portfolio-uploads', {
+          public: true,
+          fileSizeLimit: 100 * 1024 * 1024,
+          allowedMimeTypes: ['image/*', 'video/mp4', 'video/webm', 'video/quicktime'],
+        })
+        if (updateError) {
+          return NextResponse.json({ error: `Failed to configure bucket: ${updateError.message}` }, { status: 400 })
+        }
         return NextResponse.json({
           success: true,
           message: 'Bucket already exists',

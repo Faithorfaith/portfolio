@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { playFeedback } from '@/lib/interaction-feedback'
 
 export default function CopyLinkButton({ className = '' }: { className?: string }) {
   const [copied, setCopied] = useState(false)
@@ -19,6 +20,7 @@ export default function CopyLinkButton({ className = '' }: { className?: string 
       document.execCommand('copy')
       input.remove()
     }
+    playFeedback('success')
     setCopied(true)
     window.setTimeout(() => setCopied(false), 1800)
   }
@@ -27,7 +29,7 @@ export default function CopyLinkButton({ className = '' }: { className?: string 
     <button
       type="button"
       onClick={copyLink}
-      className={`inline-flex items-center gap-2 h-9 px-3 rounded-full border border-border text-xs text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors ${className}`}
+      className={`inline-flex items-center gap-2 h-9 px-3 rounded-full border border-foreground/12 text-xs text-foreground/55 hover:text-foreground hover:border-foreground/25 transition-colors ${className}`}
       aria-label="Copy page link"
     >
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

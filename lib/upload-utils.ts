@@ -95,65 +95,19 @@ export async function uploadFileWithProgress(
       }
     }
     
-    // For large files, use chunked upload
-    const chunkSize = 5 * 1024 * 1024 // 5MB chunks
-    
-    if (file.size > chunkSize) {
-      return uploadChunked(supabase, bucket, filePath, file, onProgress)
-    }
-    
-    // For smaller files, regular upload
-    const { error } = await supabase.storage.from(bucket).upload(filePath, file)
+    // Upload the complete object. The previous "chunked" path uploaded separate
+    // .part files but returned a URL for an object that never existed.
+    onProgress?.(8)
+    const { error } = await supabase.storage.from(bucket).upload(filePath, file, {
+      contentType: file.type || undefined,
+      upsert: true,
+      cacheControl: '3600',
+    })
     
     if (error) {
       return { success: false, error: error.message }
     }
     
-    const { data } = supabase.storage.from(bucket).getPublicUrl(filePath)
-    onProgress?.(100)
-    
-    return { success: true, publicUrl: data.publicUrl }
-  } catch (err) {
-    return { success: false, error: (err as Error).message }
-  }
-}
-
-// Chunked upload for large files
-async function uploadChunked(
-  supabase: any,
-  bucket: string,
-  filePath: string,
-  file: File,
-  onProgress?: (progress: number) => void
-): Promise<{ success: boolean; publicUrl?: string; error?: string }> {
-  try {
-    const chunkSize = 5 * 1024 * 1024 // 5MB
-    const chunks = Math.ceil(file.size / chunkSize)
-    
-    let uploadedBytes = 0
-    const chunks_data = []
-    
-    for (let i = 0; i < chunks; i++) {
-      const start = i * chunkSize
-      const end = Math.min(start + chunkSize, file.size)
-      const chunk = file.slice(start, end)
-      
-      const chunkPath = `${filePath}.part${i}`
-      
-      const { error } = await supabase.storage.from(bucket).upload(chunkPath, chunk)
-      
-      if (error) {
-        return { success: false, error: error.message }
-      }
-      
-      uploadedBytes += chunk.size
-      const progress = Math.round((uploadedBytes / file.size) * 100)
-      onProgress?.(progress)
-      chunks_data.push(chunkPath)
-    }
-    
-    // For Supabase, we can just upload the complete file instead
-    // This is a simplified approach - production should use a backend endpoint
     const { data } = supabase.storage.from(bucket).getPublicUrl(filePath)
     onProgress?.(100)
     

@@ -9,6 +9,7 @@ import EmptyState from './empty-state'
 import SafeHtml from '@/components/safe-html'
 import Doodles from './doodles'
 import ProgressiveImage from '@/components/progressive-image'
+import { playFeedback } from '@/lib/interaction-feedback'
 
 interface ContentBlock {
   id: string
@@ -36,7 +37,7 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
   
   const { isPlaying, isPaused, speak, pause, resume, stop } = useTextToSpeech()
 
-  const openWriting = (w: Writing) => { setSelectedWriting(w); onSubPageChange?.(true) }
+  const openWriting = (w: Writing) => { playFeedback('tap'); setSelectedWriting(w); onSubPageChange?.(true) }
   const closeWriting = () => { setSelectedWriting(null); onSubPageChange?.(false); stop() }
 
   useEffect(() => {
@@ -111,12 +112,12 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
   // Article View - Medium-style clean layout
   if (selectedWriting) {
     return (
-      <div className="w-full max-w-2xl mx-auto px-8 py-12 md:py-16" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
+      <div className="w-full max-w-2xl mx-auto px-8 py-12 md:py-20" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
         <Doodles />
         {/* Back Button */}
         <button
           onClick={closeWriting}
-          className="flex items-center gap-2 text-foreground/50 hover:text-foreground mb-8 transition-colors group"
+          className="flex items-center gap-2 text-sm text-foreground/45 hover:text-foreground mb-12 transition-colors group"
         >
           <svg className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
@@ -126,12 +127,12 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
 
         {/* Article Content */}
         <article>
-            <header className="mb-12 pb-8 border-b border-foreground/10">
-              <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-4 leading-tight">
+            <header className="mb-14 pb-10 border-b border-foreground/8">
+              <h1 className="text-3xl md:text-4xl font-medium tracking-[-0.035em] text-foreground mb-5 leading-[1.08]">
                 {selectedWriting.title}
               </h1>
               {selectedWriting.excerpt && (
-                <p className="text-foreground/70 leading-7 mb-6 text-base font-normal">
+                <p className="text-foreground/55 leading-7 mb-7 text-lg font-normal">
                   {selectedWriting.excerpt}
                 </p>
               )}
@@ -176,7 +177,7 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
                       speak(textToRead)
                     }
                   }}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-foreground/20 hover:bg-foreground/5 transition-colors text-sm text-foreground/70 hover:text-foreground/80 font-medium cursor-pointer hover:border-foreground/30"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-foreground/12 transition-colors text-sm text-foreground/55 hover:text-foreground hover:border-foreground/25 cursor-pointer"
                 >
                   {isPlaying && !isPaused ? (
                     <>
@@ -206,12 +207,12 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
 
               {/* Thumbnail Image - After metadata */}
               {selectedWriting.cover_image && (
-                <div className="rounded-xl overflow-hidden">
+                <div className="rounded-lg overflow-hidden">
                   <ProgressiveImage
                     src={selectedWriting.cover_image}
                     alt={selectedWriting.title}
-                    className="w-full h-48 md:h-64 object-cover"
-                    containerClassName="rounded-xl overflow-hidden"
+                    className="w-full h-48 md:h-72 object-cover"
+                    containerClassName="rounded-lg overflow-hidden"
                   />
                 </div>
               )}
@@ -228,9 +229,9 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
                         key={block.id}
                         id={`block-${block.id}`}
                         className={`scroll-mt-8 text-foreground ${
-                          block.level === 1 ? 'text-lg font-bold mt-10 mb-4 leading-tight' :
-                          block.level === 2 ? 'text-base font-semibold mt-8 mb-3 leading-snug' :
-                          'text-base font-semibold mt-6 mb-2 leading-snug'
+                          block.level === 1 ? 'text-2xl font-medium tracking-[-0.025em] mt-14 mb-5 leading-tight' :
+                          block.level === 2 ? 'text-xl font-medium tracking-[-0.02em] mt-12 mb-4 leading-snug' :
+                          'text-lg font-medium mt-9 mb-3 leading-snug'
                         }`}
                       >{headingText}</HeadingTag>
                     )
@@ -239,12 +240,12 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
                       <SafeHtml
                         key={block.id}
                         html={block.content}
-                        className="text-foreground/70 leading-8 mb-5 text-base font-normal [&>p]:mb-4 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-4 [&>li]:mb-1 [&>strong]:font-semibold [&>strong]:text-foreground [&>em]:italic [&_strong]:font-semibold [&_strong]:text-foreground"
+                        className="text-foreground/65 leading-8 mb-6 text-base font-normal [&>p]:mb-5 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-5 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-5 [&>li]:mb-2 [&>strong]:font-medium [&>strong]:text-foreground [&>em]:italic [&_strong]:font-medium [&_strong]:text-foreground"
                       />
                     )
                   case 'image':
                     return block.content ? (
-                      <figure key={block.id} className="my-12 -mx-8">
+                      <figure key={block.id} className="my-14 -mx-4 md:-mx-16">
                         <ProgressiveImage
                           src={block.content}
                           alt=""
@@ -259,7 +260,7 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
                         key={block.id}
                         as="blockquote"
                         html={block.content}
-                        className="pl-6 border-l-4 border-foreground/20 italic text-foreground/70 my-10 text-base leading-8 font-normal [&>p]:mb-0"
+                        className="pl-6 border-l border-foreground/25 text-foreground/60 my-12 text-lg leading-8 font-normal [&>p]:mb-0"
                       />
                     )
                   case 'divider':
@@ -276,49 +277,50 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
 
   // Writings List - Medium-style card grid
   return (
-    <div className="w-full max-w-6xl mx-auto px-8 py-12 md:py-16">
+    <div className="w-full max-w-6xl mx-auto px-8 py-12 md:py-20">
       <Doodles />
       
       {/* Centered Content Container */}
       <div className="flex justify-center">
         <div className="max-w-4xl w-full">
           {/* Section Header */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-medium text-foreground mb-3">Writings</h2>
-            <p className="text-foreground/70 leading-relaxed">
+          <div className="mb-14 max-w-xl">
+            <p className="text-sm text-foreground/35 mb-3">Notes and essays</p>
+            <h2 className="text-3xl md:text-4xl tracking-[-0.035em] font-medium text-foreground mb-4">Writing</h2>
+            <p className="text-foreground/55 leading-relaxed">
               Thoughts, insights, and explorations on design, development, and the craft of building things.
             </p>
           </div>
 
           {/* Cards Grid - 2 columns on desktop */}
           <StaggerContainer delay={0.2}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-8">
+            <div className="border-t border-foreground/8">
               {writings.map((writing) => (
                 <StaggerItem key={writing.id}>
                   <button
                     onClick={() => openWriting(writing)}
-                    className="group text-left hover:opacity-80 transition-opacity w-full"
+                    className="group text-left grid grid-cols-[96px_1fr] md:grid-cols-[160px_1fr] grid-rows-[auto_auto] gap-x-5 md:gap-x-7 w-full py-6 border-b border-foreground/8 hover:border-foreground/20 transition-colors"
                   >
               {/* Cover Image */}
               {writing.cover_image && (
-                <div className="mb-4 aspect-video rounded-lg overflow-hidden bg-foreground/5 relative">
+                <div className="col-start-1 row-span-2 aspect-[4/3] rounded-md overflow-hidden bg-foreground/5 relative">
                   <ProgressiveImage
                     src={writing.cover_image}
                     alt={writing.title}
                     fill
-                    className="group-hover:scale-105 transition-transform duration-500"
-                    containerClassName="w-full h-full rounded-lg overflow-hidden"
+                    className="transition-opacity duration-500"
+                    containerClassName="w-full h-full rounded-md overflow-hidden"
                   />
                 </div>
               )}
 
               {/* Title */}
-              <h3 className="text-lg font-semibold text-foreground mb-3 leading-snug">
+              <h3 className="col-start-2 self-end text-lg font-medium tracking-[-0.015em] text-foreground mb-2 leading-snug group-hover:text-foreground/70 transition-colors">
                 {writing.title}
               </h3>
 
               {/* Date and Read Time */}
-              <p className="text-xs text-foreground/50">
+              <p className="col-start-2 self-start text-xs text-foreground/40">
                 {new Date(writing.created_at).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'short',
