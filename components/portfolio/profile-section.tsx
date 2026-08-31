@@ -171,16 +171,16 @@ export default function ProfileSection({
         )}
 
         {/* Name - Left Aligned */}
-        <h1 className="font-medium text-foreground mb-1">
+        <h1 className="font-medium text-foreground">
           {profile.full_name || profile.username}
         </h1>
 
       {profile.positioning_headline && (
-        <p className="mt-4 max-w-xl text-[18px] leading-[1.45] tracking-[-0.01em] text-foreground">
+        <p className="mt-2 max-w-xl text-[18px] leading-[1.45] tracking-[-0.01em] text-foreground">
           {profile.positioning_headline}
         </p>
       )}
-      {profile.supporting_statement && <p className="mt-3 max-w-xl text-sm leading-relaxed text-foreground/55">{profile.supporting_statement}</p>}
+      {profile.supporting_statement && <p className="mt-2 max-w-xl text-sm leading-relaxed text-foreground/55">{profile.supporting_statement}</p>}
       {profile.availability_status && (
         <p className="mt-5 inline-flex items-center gap-2 text-[11px] text-foreground/50">
           <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
@@ -188,14 +188,16 @@ export default function ProfileSection({
         </p>
       )}
 
-      <div className="mt-6 mb-8 flex flex-wrap items-center gap-2">
-        {profile.linkedin_url && <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center px-3 text-xs text-foreground/55 hover:text-foreground transition-colors">LinkedIn ↗</a>}
-        {profile.resume_url && <a href={profile.resume_url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center px-3 text-xs text-foreground/55 hover:text-foreground transition-colors">Résumé ↗</a>}
-      </div>
+      {(profile.linkedin_url || profile.resume_url) && (
+        <div className="mt-3 mb-4 flex flex-wrap items-center gap-2">
+          {profile.linkedin_url && <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-9 items-center pr-3 text-xs text-foreground/55 hover:text-foreground transition-colors">LinkedIn ↗</a>}
+          {profile.resume_url && <a href={profile.resume_url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-9 items-center px-3 text-xs text-foreground/55 hover:text-foreground transition-colors">Résumé ↗</a>}
+        </div>
+      )}
 
       {/* Bio - Display as paragraphs */}
       {profile.bio && (
-        <div className="mb-6">
+        <div className="mt-2 mb-6">
           <div className="space-y-4">
             {profile.bio.split('\n\n').map((paragraph, index) => (
               <p
