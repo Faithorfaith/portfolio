@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Image from 'next/image'
 import EmptyState from './empty-state'
 import ProgressiveImage from '@/components/progressive-image'
 import { playFeedback } from '@/lib/interaction-feedback'
+import { slugify } from '@/lib/slugify'
 
 export interface Profile {
   id: string
@@ -49,6 +50,9 @@ export default function ProfileSection({
 }) {
   const [copied, setCopied] = useState(false)
   const [galleryOpen, setGalleryOpen] = useState(false)
+  const railRef = useRef<HTMLDivElement>(null)
+  const cursorLabelRef = useRef<HTMLDivElement>(null)
+  const dragState = useRef({ active: false, moved: false, x: 0, scrollLeft: 0 })
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText('faithawokunle1@gmail.com')
@@ -182,21 +186,62 @@ export default function ProfileSection({
             {caseStudies.length > 1 && <span className="text-xs text-foreground/35">Scroll →</span>}
           </div>
 
-          <div className="flex w-[calc(50vw+50%-2rem)] gap-4 md:gap-5 overflow-x-auto snap-x snap-mandatory pb-6 pr-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div
+            ref={railRef}
+            tabIndex={0}
+            aria-label="Case studies. Scroll horizontally to browse."
+            onKeyDown={(event) => {
+              if (event.key === 'ArrowRight') railRef.current?.scrollBy({ left: 320, behavior: 'smooth' })
+              if (event.key === 'ArrowLeft') railRef.current?.scrollBy({ left: -320, behavior: 'smooth' })
+            }}
+            onPointerDown={(event) => {
+              if (event.pointerType === 'touch') return
+              dragState.current = { active: true, moved: false, x: event.clientX, scrollLeft: railRef.current?.scrollLeft || 0 }
+              event.currentTarget.setPointerCapture(event.pointerId)
+            }}
+            onPointerMove={(event) => {
+              if (!dragState.current.active || !railRef.current) return
+              if (Math.abs(event.clientX - dragState.current.x) > 5) dragState.current.moved = true
+              railRef.current.scrollLeft = dragState.current.scrollLeft - (event.clientX - dragState.current.x)
+            }}
+            onPointerUp={(event) => {
+              dragState.current.active = false
+              event.currentTarget.releasePointerCapture(event.pointerId)
+            }}
+            onClickCapture={(event) => {
+              if (!dragState.current.moved) return
+              event.preventDefault()
+              event.stopPropagation()
+              dragState.current.moved = false
+            }}
+            className="case-study-rail flex w-[calc(50vw+50%-2rem)] gap-4 md:gap-5 overflow-x-auto snap-x snap-mandatory pb-6 pr-8 cursor-grab active:cursor-grabbing select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
             {caseStudies.map((caseStudy) => (
               <a
                 key={caseStudy.id}
-                href={`/case-studies/${caseStudy.slug || caseStudy.id}`}
-                className="group block min-w-[72vw] sm:min-w-[360px] md:min-w-[400px] snap-start"
+                href={`/case-studies/${slugify(caseStudy.title) || caseStudy.slug || caseStudy.id}`}
+                className="case-study-rail-card group block shrink-0 snap-start"
+                onMouseEnter={(event) => {
+                  if (!cursorLabelRef.current || window.matchMedia('(hover: none)').matches) return
+                  cursorLabelRef.current.style.opacity = '1'
+                  cursorLabelRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
+                }}
+                onMouseMove={(event) => {
+                  if (!cursorLabelRef.current || dragState.current.active) return
+                  cursorLabelRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
+                }}
+                onMouseLeave={() => {
+                  if (cursorLabelRef.current) cursorLabelRef.current.style.opacity = '0'
+                }}
               >
                 {/* Thumbnail */}
                 {caseStudy.thumbnail_url && (
-                  <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-foreground/5 border border-foreground/8 group-hover:border-foreground/22 transition-colors">
+                  <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-foreground/5">
                     <Image
                       src={caseStudy.thumbnail_url}
                       alt={caseStudy.title}
                       fill
-                      sizes="(max-width: 640px) 72vw, 400px"
+                      sizes="(max-width: 640px) 72vw, 36vw"
                       className="object-cover"
                     />
                   </div>
@@ -205,7 +250,7 @@ export default function ProfileSection({
                 {/* Card Content */}
                 <div className="pt-3 pr-1">
                   {/* Title */}
-                  <h3 className="text-foreground text-base font-medium mb-1.5 group-hover:text-foreground/70 transition-colors">
+                  <h3 className="text-foreground text-sm font-medium mb-1.5 group-hover:text-foreground/70 transition-colors">
                     {caseStudy.title}
                   </h3>
 
@@ -218,6 +263,13 @@ export default function ProfileSection({
                 </div>
               </a>
             ))}
+          </div>
+          <div
+            ref={cursorLabelRef}
+            className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm"
+            aria-hidden="true"
+          >
+            View case study
           </div>
         </div>
       )}

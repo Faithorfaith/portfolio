@@ -123,7 +123,7 @@ export default function WorksGallery({ onSubPageChange }: { onSubPageChange?: (v
         <div className="max-w-4xl w-full">
           {/* Section Header */}
           <div className="mb-14 max-w-xl">
-            <p className="text-sm text-foreground/35 mb-3">Selected explorations</p>
+            <p className="text-[11px] text-foreground/35 mb-3">Selected explorations</p>
             <h2 className="text-3xl md:text-4xl tracking-[-0.035em] font-medium text-foreground mb-4">Playground</h2>
             <p className="text-foreground/55 leading-relaxed">
               A collection of experiments, projects, and things I&apos;ve built. Each piece represents a learning opportunity or a creative exploration.

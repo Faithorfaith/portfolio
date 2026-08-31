@@ -2,12 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireUser } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
-
-const slugify = (value: string) => value
-  .toLowerCase()
-  .trim()
-  .replace(/[^a-z0-9]+/g, '-')
-  .replace(/^-+|-+$/g, '')
+import { slugify } from '@/lib/slugify'
 
 export async function GET() {
   try {

@@ -176,6 +176,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-size: 14px;
     line-height: 1.4;
     letter-spacing: 0.01em;
     text-rendering: optimizeLegibility;
@@ -219,6 +220,23 @@
   .gallery-photo-reveal {
     opacity: 0;
     animation: galleryPhotoReveal 360ms ease-out both;
+  }
+
+  .case-study-rail-card {
+    flex-basis: 72vw;
+    min-width: 72vw;
+  }
+
+  .case-study-rail {
+    mask-image: linear-gradient(to right, black 0, black calc(100% - 28px), transparent 100%);
+  }
+
+  @media (min-width: 640px) {
+    .case-study-rail-card {
+      /* Two complete cards and half of the next card remain visible. */
+      flex-basis: calc((100% - 2.5rem) / 2.5);
+      min-width: calc((100% - 2.5rem) / 2.5);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

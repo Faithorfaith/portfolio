@@ -65,6 +65,9 @@ export default function RTFEditor({ value, onChange, placeholder = 'Enter conten
     <div className="space-y-2 border rounded-lg bg-background overflow-hidden">
       {/* Toolbar */}
       <div className="flex flex-wrap gap-1 p-3 border-b bg-foreground/5">
+        <button type="button" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} className="px-2 py-1 rounded text-sm hover:bg-foreground/10 disabled:opacity-30" title="Undo">↶</button>
+        <button type="button" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} className="px-2 py-1 rounded text-sm hover:bg-foreground/10 disabled:opacity-30" title="Redo">↷</button>
+        <div className="border-l border-foreground/20" />
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={`px-2 py-1 rounded text-sm transition-colors ${

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -8,6 +8,8 @@ import ProgressiveImage from '@/components/progressive-image'
 import SafeHtml from '@/components/safe-html'
 import CopyLinkButton from '@/components/copy-link-button'
 import SafeEmbed from '@/components/safe-embed'
+import { slugify } from '@/lib/slugify'
+import ViewportVideo from '@/components/viewport-video'
 
 interface Section {
   id: string
@@ -49,17 +51,32 @@ export default function CaseStudyClient() {
   const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [activeNavItem, setActiveNavItem] = useState<string | null>(null)
+  const [readingProgress, setReadingProgress] = useState(0)
+  const sections: Section[] = useMemo(() => Array.isArray(caseStudy?.sections)
+    ? caseStudy.sections
+    : typeof caseStudy?.sections === 'string'
+    ? JSON.parse(caseStudy.sections)
+    : [], [caseStudy])
+  const navItems: NavItem[] = useMemo(() => Array.isArray(caseStudy?.nav_items)
+    ? caseStudy.nav_items
+    : typeof caseStudy?.nav_items === 'string'
+    ? JSON.parse(caseStudy.nav_items)
+    : [], [caseStudy])
 
   useEffect(() => {
     const fetchCaseStudy = async () => {
       try {
         const supabase = createClient()
         const bySlug = await supabase.from('case_studies').select('*').eq('slug', id).maybeSingle()
-        const fallback = !bySlug.data && /^[0-9a-f-]{36}$/i.test(id)
+        const byTitle = !bySlug.data && !/^[0-9a-f-]{36}$/i.test(id)
+          ? await supabase.from('case_studies').select('*').eq('published', true)
+          : null
+        const titleMatch = byTitle?.data?.find((item) => slugify(item.title) === id) || null
+        const fallback = !bySlug.data && !titleMatch && /^[0-9a-f-]{36}$/i.test(id)
           ? await supabase.from('case_studies').select('*').eq('id', id).maybeSingle()
           : null
-        const data = bySlug.data || fallback?.data
-        const error = bySlug.error || fallback?.error
+        const data = bySlug.data || titleMatch || fallback?.data
+        const error = bySlug.error || byTitle?.error || fallback?.error
 
         if (error || !data) {
           router.push('/404')
@@ -78,24 +95,32 @@ export default function CaseStudyClient() {
     fetchCaseStudy()
   }, [id, router])
 
+  useEffect(() => {
+    const updateProgress = () => {
+      const height = document.documentElement.scrollHeight - window.innerHeight
+      setReadingProgress(height > 0 ? Math.min(100, (window.scrollY / height) * 100) : 0)
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true })
+    updateProgress()
+    return () => window.removeEventListener('scroll', updateProgress)
+  }, [])
+
+  useEffect(() => {
+    if (!caseStudy) return
+    const elements = navItems.map((item) => document.getElementById(item.id)).filter(Boolean) as HTMLElement[]
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]
+      if (visible) setActiveNavItem(visible.target.id)
+    }, { rootMargin: '-20% 0px -65% 0px' })
+    elements.forEach((element) => observer.observe(element))
+    return () => observer.disconnect()
+  }, [caseStudy, navItems.length])
+
   if (isLoading) {
     return null
   }
 
   if (!caseStudy) return null
-
-  // Parse sections and nav_items if they're strings
-  const sections: Section[] = Array.isArray(caseStudy.sections)
-    ? caseStudy.sections
-    : typeof caseStudy.sections === 'string'
-    ? JSON.parse(caseStudy.sections)
-    : []
-
-  const navItems: NavItem[] = Array.isArray(caseStudy.nav_items)
-    ? caseStudy.nav_items
-    : typeof caseStudy.nav_items === 'string'
-    ? JSON.parse(caseStudy.nav_items)
-    : []
 
   const handleNavClick = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -106,7 +131,8 @@ export default function CaseStudyClient() {
   }
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background" style={{ animation: 'articleEntrance 320ms cubic-bezier(0.22,1,0.36,1) both' }}>
+      <div className="fixed top-0 left-0 z-[60] h-px bg-foreground/70 transition-[width] duration-100" style={{ width: `${readingProgress}%` }} aria-hidden="true" />
       <header className="fixed top-0 inset-x-0 z-50 h-[72px] border-b border-foreground/8 bg-background/88 backdrop-blur-xl">
         <div className="h-full max-w-[1440px] mx-auto px-5 md:px-8 flex items-center justify-between">
           <div className="flex items-center gap-4 md:gap-7 min-w-0">
@@ -123,9 +149,7 @@ export default function CaseStudyClient() {
                   <img src={caseStudy.thumbnail_url} alt="" className="w-full h-full object-cover" />
                 </div>
               )}
-              <button onClick={() => router.push('/')} className="text-foreground/45 hover:text-foreground transition-colors">Home</button>
-              <span className="text-foreground/25">/</span>
-              <span className="font-medium truncate">{caseStudy.title}</span>
+              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="font-medium truncate hover:text-foreground/60 transition-colors">{caseStudy.title}</button>
             </div>
           </div>
           <CopyLinkButton className="size-9 p-0 justify-center border-0 [&_span]:hidden" />
@@ -158,9 +182,9 @@ export default function CaseStudyClient() {
         <div className="flex-1 min-w-0 px-6 md:px-10 lg:px-16 py-14 md:py-20 flex justify-center">
           <div className="w-full max-w-4xl">
           <header className="mb-14 md:mb-20 max-w-3xl">
-            <p className="text-sm text-foreground/45 mb-4">Case study</p>
+            <p className="text-[11px] text-foreground/45 mb-4">Case study</p>
             <h1 className="text-4xl md:text-5xl font-medium tracking-[-0.015em] leading-[1.08] text-foreground">{caseStudy.title}</h1>
-            {caseStudy.excerpt && <p className="mt-6 text-lg md:text-xl text-foreground/65 leading-relaxed">{caseStudy.excerpt}</p>}
+            {caseStudy.excerpt && <p className="mt-6 text-sm text-foreground/65 leading-relaxed max-w-2xl">{caseStudy.excerpt}</p>}
           </header>
 
           {/* Thumbnail */}
@@ -176,13 +200,10 @@ export default function CaseStudyClient() {
 
           {caseStudy.media_type === 'video' && caseStudy.video_url && (
             <div className="mb-16 overflow-hidden bg-black">
-              <video
+              <ViewportVideo
                 src={caseStudy.video_url}
                 controls
-                playsInline
-                preload="metadata"
                 poster={caseStudy.thumbnail_url || undefined}
-                className="w-full h-auto"
               />
             </div>
           )}
@@ -229,13 +250,9 @@ export default function CaseStudyClient() {
 
                 {section.video_url && (
                   <div className="mb-10 overflow-hidden bg-black lg:w-[calc(100%+8rem)]">
-                    <video
+                    <ViewportVideo
                       src={section.video_url}
-                      autoPlay
-                      muted
-                      loop
-                      className="w-full h-auto"
-                      preload="metadata"
+                      decorative
                     />
                   </div>
                 )}
@@ -248,7 +265,7 @@ export default function CaseStudyClient() {
 
                 <SafeHtml
                   html={section.body}
-                  className="text-[1.05rem] [&_p]:text-foreground/78 [&_p]:leading-[1.8] [&_p]:mb-6 [&_ul]:list-disc [&_ul]:pl-7 [&_ul]:my-7 [&_ol]:list-decimal [&_ol]:pl-7 [&_ol]:my-7 [&_li]:text-foreground/78 [&_li]:leading-[1.75] [&_li]:mb-3 [&_strong]:text-foreground [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 max-w-none"
+                  className="text-sm [&_p]:text-foreground/78 [&_p]:leading-[1.8] [&_p]:mb-6 [&_ul]:list-disc [&_ul]:pl-7 [&_ul]:my-7 [&_ol]:list-decimal [&_ol]:pl-7 [&_ol]:my-7 [&_li]:text-foreground/78 [&_li]:leading-[1.75] [&_li]:mb-3 [&_strong]:text-foreground [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 max-w-none"
                 />
               </section>
             ))}

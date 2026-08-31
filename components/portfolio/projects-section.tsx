@@ -23,7 +23,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
       <div className="w-full max-w-2xl mx-auto px-8 py-12 md:py-12">
       <h2 className="text-foreground mb-8">Projects I&apos;ve built</h2>
 
-      <div className="border-t border-foreground/8">
+      <div className="space-y-1">
         {recentProjects.map((project) => (
                 <button
                   key={project.id}
@@ -35,7 +35,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                   }}
                   className={`w-full text-left group ${project.link ? 'cursor-pointer' : ''}`}
                 >
-                    <div className="flex items-start justify-between gap-6 py-5 border-b border-foreground/8 transition-colors duration-200 group-hover:border-foreground/20">
+                    <div className="flex items-start justify-between gap-6 py-4">
                     {/* Left - Title & Description */}
                     <div className="flex-1 min-w-0">
                       <h3 className="text-foreground/70 font-normal group-hover:text-foreground transition-colors duration-200">

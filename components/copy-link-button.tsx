@@ -32,9 +32,15 @@ export default function CopyLinkButton({ className = '' }: { className?: string 
       className={`inline-flex items-center gap-2 h-9 px-3 rounded-full border border-foreground/12 text-xs text-foreground/55 hover:text-foreground hover:border-foreground/25 transition-colors ${className}`}
       aria-label="Copy page link"
     >
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M10 13a5 5 0 007.07.07l2-2a5 5 0 00-7.07-7.07l-1.15 1.15M14 11a5 5 0 00-7.07-.07l-2 2A5 5 0 0012 20l1.15-1.15" />
-      </svg>
+      {copied ? (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="m5 12 4 4L19 6" />
+        </svg>
+      ) : (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M10 13a5 5 0 007.07.07l2-2a5 5 0 00-7.07-7.07l-1.15 1.15M14 11a5 5 0 00-7.07-.07l-2 2A5 5 0 0012 20l1.15-1.15" />
+        </svg>
+      )}
       <span aria-live="polite">{copied ? 'Copied' : 'Copy link'}</span>
     </button>
   )

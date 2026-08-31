@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic'
 import { compressImage, uploadFileWithProgress, formatFileSize } from '@/lib/upload-utils'
 import ProgressiveImage from '@/components/progressive-image'
 import ButtonBlockBuilder from './button-block-builder'
+import SafeEmbed from '@/components/safe-embed'
 
 const RTFEditor = dynamic(() => import('./rtf-editor'), { ssr: false })
 
@@ -78,6 +79,17 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
   const [success, setSuccess] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+
+  useEffect(() => {
+    const warn = (event: BeforeUnloadEvent) => {
+      if (!hasUnsavedChanges) return
+      event.preventDefault()
+    }
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [hasUnsavedChanges])
 
   useEffect(() => {
     refreshList().then(setCaseStudies)
@@ -122,6 +134,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
 
   const updateSection = (sectionId: string, updates: Partial<Section>) => {
     if (!editing) return
+    setHasUnsavedChanges(true)
     setEditing({
       ...editing,
       sections: editing.sections.map(s => s.id === sectionId ? { ...s, ...updates } : s),
@@ -134,6 +147,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
       ...editing,
       sections: editing.sections.filter(s => s.id !== sectionId),
     })
+    setHasUnsavedChanges(true)
   }
 
   const moveSection = (sectionId: string, direction: 'up' | 'down') => {
@@ -146,6 +160,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
     const swap = direction === 'up' ? index - 1 : index + 1
     ;[next[index], next[swap]] = [next[swap], next[index]]
     setEditing({ ...editing, sections: next })
+    setHasUnsavedChanges(true)
   }
 
   const generateNavItems = (sections: Section[]) =>
@@ -319,6 +334,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
       })
       const result = await res.json()
       if (!res.ok) throw new Error(result.error || 'Failed to save')
+      setHasUnsavedChanges(false)
       setSuccess(true)
       setEditing(null)
       setIsCreating(false)
@@ -356,12 +372,17 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
   // ── Editor View ──────────────────────────────────────────────────────────
   if (editing) {
     return (
-      <div className="max-w-3xl space-y-6">
+      <div className="max-w-3xl space-y-6" onInput={() => setHasUnsavedChanges(true)}>
         {/* Header */}
         <div className="flex items-center justify-between pb-2">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => { setEditing(null); setIsCreating(false) }}
+              onClick={() => {
+                if (hasUnsavedChanges && !window.confirm('Discard unsaved changes?')) return
+                setHasUnsavedChanges(false)
+                setEditing(null)
+                setIsCreating(false)
+              }}
               className="p-1.5 rounded-lg hover:bg-foreground/5 transition-colors text-foreground/50 hover:text-foreground"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -589,6 +610,19 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                   />
                   <div className="flex items-center gap-1 shrink-0">
                     <button
+                      type="button"
+                      onClick={() => setCollapsedSections((current) => {
+                        const next = new Set(current)
+                        if (next.has(section.id)) next.delete(section.id)
+                        else next.add(section.id)
+                        return next
+                      })}
+                      className="p-1.5 rounded-md text-foreground/40 hover:text-foreground hover:bg-background transition-all"
+                      aria-label={collapsedSections.has(section.id) ? 'Expand section' : 'Collapse section'}
+                    >
+                      <span className="block transition-transform" style={{ transform: collapsedSections.has(section.id) ? 'rotate(-90deg)' : 'rotate(0deg)' }}>⌄</span>
+                    </button>
+                    <button
                       onClick={() => moveSection(section.id, 'up')}
                       disabled={index === 0}
                       className="p-1.5 rounded-md text-foreground/30 hover:text-foreground hover:bg-background disabled:opacity-20 transition-all"
@@ -611,7 +645,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                   </div>
                 </div>
 
-                <div className="px-5 py-5 space-y-4">
+                {!collapsedSections.has(section.id) && <div className="px-5 py-5 space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <label className="text-xs font-medium text-foreground/50">Section Title <span className="text-foreground/30">(optional)</span></label>
@@ -686,6 +720,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                       className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-shadow"
                     />
                     <p className="text-xs text-foreground/35">The embed appears between the section media and body text.</p>
+                    {section.embed_url && <SafeEmbed url={section.embed_url} title={`${section.label || 'Section'} embed preview`} />}
                   </div>
 
                   {/* Body */}
@@ -709,7 +744,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                       }}
                     />
                   </div>
-                </div>
+                </div>}
               </div>
             ))}
           </div>

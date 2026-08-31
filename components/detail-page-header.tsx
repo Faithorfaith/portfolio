@@ -19,12 +19,12 @@ export default function DetailPageHeader({
         <CopyLinkButton />
       </div>
 
-      {eyebrow && <p className="text-sm text-foreground/40 mb-3">{eyebrow}</p>}
+      {eyebrow && <p className="text-[11px] text-foreground/40 mb-3">{eyebrow}</p>}
       <h1 className="text-3xl md:text-4xl font-medium tracking-[-0.035em] text-foreground max-w-2xl">
         {title}
       </h1>
       {description && (
-        <p className="mt-5 max-w-xl text-base md:text-lg text-foreground/60 leading-relaxed">
+        <p className="mt-5 max-w-xl text-sm text-foreground/60 leading-relaxed">
           {description}
         </p>
       )}

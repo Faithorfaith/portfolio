@@ -132,7 +132,7 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
                 {selectedWriting.title}
               </h1>
               {selectedWriting.excerpt && (
-                <p className="text-foreground/55 leading-7 mb-7 text-lg font-normal">
+                <p className="text-foreground/55 leading-7 mb-7 text-sm font-normal">
                   {selectedWriting.excerpt}
                 </p>
               )}
@@ -240,7 +240,7 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
                       <SafeHtml
                         key={block.id}
                         html={block.content}
-                        className="text-foreground/65 leading-8 mb-6 text-base font-normal [&>p]:mb-5 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-5 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-5 [&>li]:mb-2 [&>strong]:font-medium [&>strong]:text-foreground [&>em]:italic [&_strong]:font-medium [&_strong]:text-foreground"
+                        className="text-foreground/65 leading-7 mb-6 text-sm font-normal [&>p]:mb-5 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-5 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-5 [&>li]:mb-2 [&>strong]:font-medium [&>strong]:text-foreground [&>em]:italic [&_strong]:font-medium [&_strong]:text-foreground"
                       />
                     )
                   case 'image':
@@ -285,7 +285,7 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
         <div className="max-w-4xl w-full">
           {/* Section Header */}
           <div className="mb-14 max-w-xl">
-            <p className="text-sm text-foreground/35 mb-3">Notes and essays</p>
+            <p className="text-[11px] text-foreground/35 mb-3">Notes and essays</p>
             <h2 className="text-3xl md:text-4xl tracking-[-0.035em] font-medium text-foreground mb-4">Writing</h2>
             <p className="text-foreground/55 leading-relaxed">
               Thoughts, insights, and explorations on design, development, and the craft of building things.
