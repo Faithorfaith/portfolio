@@ -12,6 +12,7 @@ interface Profile {
   hero_image_1: string | null
   hero_image_2: string | null
   hero_image_3: string | null
+  gallery_images: string[] | null
 }
 
 interface ProfileManagerProps {
@@ -78,6 +79,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
     hero_image_1: '',
     hero_image_2: '',
     hero_image_3: '',
+    gallery_images: [] as string[],
   })
   const supabase = createClient()
 
@@ -100,11 +102,14 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
             hero_image_1: data.hero_image_1 || '',
             hero_image_2: data.hero_image_2 || '',
             hero_image_3: data.hero_image_3 || '',
+            gallery_images: data.gallery_images?.length
+              ? data.gallery_images
+              : [data.hero_image_1, data.hero_image_2, data.hero_image_3].filter(Boolean),
           })
         } else {
           const { data: newProfile, error: createError } = await supabase
             .from('profiles')
-            .insert([{ id: userId, username: 'User', full_name: null, bio: null, hero_image_1: null, hero_image_2: null, hero_image_3: null }])
+            .insert([{ id: userId, username: 'User', full_name: null, bio: null, hero_image_1: null, hero_image_2: null, hero_image_3: null, gallery_images: [] }])
             .select()
             .single()
           if (createError) throw createError
@@ -116,6 +121,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
               hero_image_1: newProfile.hero_image_1 || '',
               hero_image_2: newProfile.hero_image_2 || '',
               hero_image_3: newProfile.hero_image_3 || '',
+              gallery_images: newProfile.gallery_images || [],
             })
           }
         }
@@ -129,21 +135,31 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
   }, [userId])
 
   const set = (key: string, value: string) => setFormData(prev => ({ ...prev, [key]: value }))
+  const addGalleryImage = (url: string) => setFormData(prev => ({ ...prev, gallery_images: [...prev.gallery_images, url] }))
+  const removeGalleryImage = (index: number) => setFormData(prev => ({ ...prev, gallery_images: prev.gallery_images.filter((_, itemIndex) => itemIndex !== index) }))
+  const makeGalleryCover = (index: number) => setFormData(prev => {
+    const gallery = [...prev.gallery_images]
+    const [cover] = gallery.splice(index, 1)
+    return { ...prev, gallery_images: [cover, ...gallery] }
+  })
 
   const handleSave = async () => {
     if (!formData.username.trim()) { setError('Username is required'); return }
     setIsSaving(true); setError(null); setSuccess(false)
     try {
-      const { error: upsertError } = await supabase.from('profiles').upsert({
-        id: userId,
-        username: formData.username,
-        full_name: formData.full_name || null,
-        bio: formData.bio || null,
-        hero_image_1: formData.hero_image_1 || null,
-        hero_image_2: formData.hero_image_2 || null,
-        hero_image_3: formData.hero_image_3 || null,
-      }).select().single()
-      if (upsertError) throw new Error(upsertError.message)
+      const response = await fetch('/api/admin/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: formData.username,
+          full_name: formData.full_name || null,
+          bio: formData.bio || null,
+          gallery_images: formData.gallery_images,
+          hero_image_1: formData.gallery_images[0] || null,
+        }),
+      })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || 'Failed to save')
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
@@ -245,13 +261,24 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
         )}
       </SectionCard>
 
-      {/* Hero Images */}
-      <SectionCard title="Hero Images" description="Three images shown in the hero fan on your portfolio">
-        <div className="grid grid-cols-3 gap-4">
-          <ImageSlot label="Image 1" url={formData.hero_image_1} onUpload={url => set('hero_image_1', url)} onRemove={() => set('hero_image_1', '')} userId={userId} folder="hero-images" />
-          <ImageSlot label="Image 2" url={formData.hero_image_2} onUpload={url => set('hero_image_2', url)} onRemove={() => set('hero_image_2', '')} userId={userId} folder="hero-images" />
-          <ImageSlot label="Image 3" url={formData.hero_image_3} onUpload={url => set('hero_image_3', url)} onRemove={() => set('hero_image_3', '')} userId={userId} folder="hero-images" />
-        </div>
+      <SectionCard title="Photo Gallery" description="The first image is the homepage cover. Add as many images as you like.">
+        {formData.gallery_images.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-5">
+            {formData.gallery_images.map((url, index) => (
+              <div key={`${url}-${index}`} className="space-y-2">
+                <div className="relative aspect-square rounded-xl overflow-hidden border border-border">
+                  <img src={url} alt={`Gallery image ${index + 1}`} className="w-full h-full object-cover" />
+                  {index === 0 && <span className="absolute top-2 left-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded-full">Cover</span>}
+                </div>
+                <div className="flex gap-2">
+                  {index > 0 && <button type="button" onClick={() => makeGalleryCover(index)} className="flex-1 text-[11px] border border-border rounded-md py-1.5">Make cover</button>}
+                  <button type="button" onClick={() => removeGalleryImage(index)} className="flex-1 text-[11px] border border-border rounded-md py-1.5 text-red-600">Remove</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <FileUpload userId={userId} folder="profile-gallery" onUpload={addGalleryImage} accept="image/*" />
       </SectionCard>
     </div>
   )

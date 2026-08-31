@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,6 +29,7 @@ export async function POST(request: NextRequest) {
         hero_image_1: body.hero_image_1 || null,
         hero_image_2: body.hero_image_2 || null,
         hero_image_3: body.hero_image_3 || null,
+        gallery_images: Array.isArray(body.gallery_images) ? body.gallery_images : [],
       })
       .select()
       .single()
@@ -42,6 +44,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    revalidatePath('/')
     return NextResponse.json({ data })
   } catch (error) {
     console.error('[v0] Profile save error:', error)

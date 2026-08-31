@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import EmptyState from './empty-state'
 import ProgressiveImage from '@/components/progressive-image'
@@ -14,6 +14,7 @@ export interface Profile {
   hero_image_1: string | null
   hero_image_2: string | null
   hero_image_3: string | null
+  gallery_images?: string[] | null
 }
 
 interface Project {
@@ -45,7 +46,7 @@ export default function ProfileSection({
   caseStudies: CaseStudy[]
 }) {
   const [copied, setCopied] = useState(false)
-  const [heroImagesExpanded, setHeroImagesExpanded] = useState(false)
+  const [galleryOpen, setGalleryOpen] = useState(false)
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText('faithawokunle1@gmail.com')
@@ -53,21 +54,16 @@ export default function ProfileSection({
     setTimeout(() => setCopied(false), 2000)
   }
 
-  // Rotate hero images every 5 seconds on hover
-  const heroImages = profile ? [profile.hero_image_1, profile.hero_image_2, profile.hero_image_3].filter(Boolean) : []
-  
-  const handleHeroImageHover = (isHovering: boolean) => {
-    if (heroImages.length <= 1) return
-    // Use CSS class instead of direct style manipulation for better performance
-    const container = document.querySelector('[data-hero-container]')
-    if (!container) return
-    
-    if (isHovering) {
-      container.classList.add('hero-expanded')
-    } else {
-      container.classList.remove('hero-expanded')
-    }
-  }
+  const legacyImages = [profile?.hero_image_1, profile?.hero_image_2, profile?.hero_image_3].filter(Boolean) as string[]
+  const galleryImages = profile?.gallery_images?.length ? profile.gallery_images : legacyImages
+
+  useEffect(() => {
+    if (!galleryOpen) return
+    const close = (event: KeyboardEvent) => event.key === 'Escape' && setGalleryOpen(false)
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', close)
+    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', close) }
+  }, [galleryOpen])
 
   if (!profile) {
     return (
@@ -100,56 +96,13 @@ export default function ProfileSection({
       </div>
 
       <div className="w-full max-w-2xl mx-auto px-8 py-12 md:py-16 relative z-10">
-        {/* Hero Images - Layered stack, hover to spread on desktop, click on mobile */}
-        {heroImages.length > 0 && (
+        {/* One profile cover opens the full gallery. */}
+        {galleryImages.length > 0 && (
           <div className="mb-8">
-            {/* Desktop: Hover to spread */}
-            <div 
-              className="hidden md:block relative cursor-pointer"
-              data-hero-container
-              style={{ width: '200px', height: '96px' }}
-              onMouseEnter={() => handleHeroImageHover(true)}
-              onMouseLeave={() => handleHeroImageHover(false)}
-            >
-              {heroImages[0] && (
-                <div className="absolute w-24 h-24 rounded-xl overflow-hidden hero-img-1" style={{ zIndex: 1, border: '0.5px solid rgba(0,0,0,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', transition: 'transform 0.45s cubic-bezier(0.34,1.56,0.64,1)' }}>
-                  <Image src={heroImages[0]} alt="Hero image 1" fill sizes="96px" className="object-cover" priority />
-                </div>
-              )}
-              {heroImages[1] && (
-                <div className="absolute w-24 h-24 rounded-xl overflow-hidden hero-img-2" style={{ zIndex: 2, border: '0.5px solid rgba(0,0,0,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', transition: 'transform 0.45s cubic-bezier(0.34,1.56,0.64,1) 0.04s' }}>
-                  <Image src={heroImages[1]} alt="Hero image 2" fill sizes="96px" className="object-cover" />
-                </div>
-              )}
-              {heroImages[2] && (
-                <div className="absolute w-24 h-24 rounded-xl overflow-hidden hero-img-3" style={{ zIndex: 3, border: '0.5px solid rgba(0,0,0,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', transition: 'transform 0.45s cubic-bezier(0.34,1.56,0.64,1) 0.08s' }}>
-                  <Image src={heroImages[2]} alt="Hero image 3" fill sizes="96px" className="object-cover" />
-                </div>
-              )}
-            </div>
-
-            {/* Mobile: Click to spread */}
-            <div 
-              className={`md:hidden relative cursor-pointer${heroImagesExpanded ? ' hero-expanded' : ''}`}
-              style={{ width: '220px', height: '96px', marginLeft: '20px' }}
-              onClick={() => setHeroImagesExpanded(!heroImagesExpanded)}
-            >
-              {heroImages[0] && (
-                <div className="absolute w-20 h-20 rounded-xl overflow-hidden hero-img-1-mobile" style={{ zIndex: 1, border: '0.5px solid rgba(0,0,0,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', transition: 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1)' }}>
-                  <Image src={heroImages[0]} alt="Hero image 1" fill sizes="80px" className="object-cover" priority />
-                </div>
-              )}
-              {heroImages[1] && (
-                <div className="absolute w-20 h-20 rounded-xl overflow-hidden hero-img-2-mobile" style={{ zIndex: 2, border: '0.5px solid rgba(0,0,0,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', transition: 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.04s' }}>
-                  <Image src={heroImages[1]} alt="Hero image 2" fill sizes="80px" className="object-cover" />
-                </div>
-              )}
-              {heroImages[2] && (
-                <div className="absolute w-20 h-20 rounded-xl overflow-hidden hero-img-3-mobile" style={{ zIndex: 3, border: '0.5px solid rgba(0,0,0,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', transition: 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.08s' }}>
-                  <Image src={heroImages[2]} alt="Hero image 3" fill sizes="80px" className="object-cover" />
-                </div>
-              )}
-            </div>
+            <button onClick={() => setGalleryOpen(true)} className="group relative block w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden border border-border/60 shadow-sm" aria-label={`Open photo gallery with ${galleryImages.length} images`}>
+              <Image src={galleryImages[0]} alt="Profile gallery cover" fill sizes="128px" className="object-cover transition-transform duration-500 group-hover:scale-105" priority />
+              <span className="absolute right-2 bottom-2 rounded-full bg-black/65 px-2 py-1 text-[11px] text-white backdrop-blur-sm">{galleryImages.length} photos</span>
+            </button>
           </div>
         )}
 
@@ -206,31 +159,31 @@ export default function ProfileSection({
             Case Studies
           </h2>
 
-          {/* Case Studies Grid - 2 columns desktop, 1 on mobile */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          <div className="relative left-1/2 w-[calc(100vw-2rem)] -translate-x-1/2 md:w-[calc(100vw-10rem)]">
+          <div className="flex gap-5 md:gap-8 overflow-x-auto snap-x snap-mandatory pb-6 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {caseStudies.map((caseStudy) => (
               <a
                 key={caseStudy.id}
                 href={`/case-studies/${caseStudy.id}`}
-                className="group block rounded-xl overflow-hidden border border-border/40 hover:border-border/80 transition-all duration-300 hover:shadow-md"
+                className="group block min-w-[84vw] md:min-w-[560px] lg:min-w-[640px] max-w-[720px] snap-start"
               >
                 {/* Thumbnail */}
                 {caseStudy.thumbnail_url && (
-                  <div className="relative w-full aspect-video rounded-t-lg overflow-hidden bg-foreground/5">
+                  <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-foreground/5 border border-border/40">
                     <Image
                       src={caseStudy.thumbnail_url}
                       alt={caseStudy.title}
                       fill
-                      sizes="(max-width: 768px) 100vw, 50vw"
+                      sizes="(max-width: 768px) 84vw, 640px"
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                 )}
 
                 {/* Card Content */}
-                <div className="p-6">
+                <div className="pt-4 px-1">
                   {/* Title */}
-                  <h3 className="text-foreground font-medium mb-2 group-hover:text-foreground/80 transition-colors">
+                  <h3 className="text-foreground text-lg font-medium mb-2 group-hover:text-foreground/70 transition-colors">
                     {caseStudy.title}
                   </h3>
 
@@ -244,9 +197,22 @@ export default function ProfileSection({
               </a>
             ))}
           </div>
+          </div>
         </div>
       )}
       </div>
+
+      {galleryOpen && (
+        <div className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-xl overflow-y-auto" role="dialog" aria-modal="true" aria-label="Photo gallery">
+          <div className="sticky top-0 z-10 flex items-center justify-between px-5 md:px-10 py-5 bg-background/85 backdrop-blur-xl border-b border-border/40">
+            <div><p className="font-medium">Photo gallery</p><p className="text-xs text-foreground/45">{galleryImages.length} images</p></div>
+            <button onClick={() => setGalleryOpen(false)} className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-xl" aria-label="Close gallery">×</button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 p-4 md:p-10 max-w-7xl mx-auto">
+            {galleryImages.map((src, index) => <div key={`${src}-${index}`} className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-foreground/5"><Image src={src} alt={`Gallery image ${index + 1}`} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" /></div>)}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
