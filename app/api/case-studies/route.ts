@@ -3,6 +3,12 @@ import { createClient } from '@/lib/supabase/server'
 import { requireUser } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 
+const slugify = (value: string) => value
+  .toLowerCase()
+  .trim()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '')
+
 export async function GET() {
   try {
     const supabase = await createClient()
@@ -28,7 +34,9 @@ export async function POST(request: Request) {
     }
     const { supabase, user } = auth
     const body = await request.json()
-    const { id, title, slug, thumbnail_url, video_url, media_type, excerpt, sections, nav_items, published, cta_text, cta_link, blocks, isUpdate } = body
+    const { id, title, thumbnail_url, video_url, media_type, excerpt, sections, nav_items, published, cta_text, cta_link, blocks, isUpdate } = body
+    const slug = slugify(title || '')
+    if (!title?.trim() || !slug) return NextResponse.json({ error: 'A valid title is required' }, { status: 400 })
 
     if (isUpdate && id) {
       const { data, error } = await supabase

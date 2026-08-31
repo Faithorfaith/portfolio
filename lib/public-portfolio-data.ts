@@ -15,7 +15,7 @@ export const getPublicPortfolioData = unstable_cache(async (): Promise<Portfolio
   const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
   const [profileResult, caseStudiesResult, projectsResult] = await Promise.all([
     supabase.from('profiles').select('*').limit(1).maybeSingle(),
-    supabase.from('case_studies').select('id, title, excerpt, thumbnail_url, published, created_at').eq('published', true).order('created_at', { ascending: false }),
+    supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, created_at').eq('published', true).order('created_at', { ascending: false }),
     supabase.from('projects').select('id, title, year, type, link, description, created_at').order('created_at', { ascending: false }),
   ])
 

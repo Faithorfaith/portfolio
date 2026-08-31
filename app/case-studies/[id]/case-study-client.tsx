@@ -6,7 +6,8 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ProgressiveImage from '@/components/progressive-image'
 import SafeHtml from '@/components/safe-html'
-import DetailPageHeader from '@/components/detail-page-header'
+import CopyLinkButton from '@/components/copy-link-button'
+import SafeEmbed from '@/components/safe-embed'
 
 interface Section {
   id: string
@@ -16,6 +17,7 @@ interface Section {
   toc: string | null
   image: string | null
   video_url?: string | null
+  embed_url?: string | null
 }
 
 interface NavItem {
@@ -52,11 +54,12 @@ export default function CaseStudyClient() {
     const fetchCaseStudy = async () => {
       try {
         const supabase = createClient()
-        const { data, error } = await supabase
-          .from('case_studies')
-          .select('*')
-          .eq('id', id)
-          .single()
+        const bySlug = await supabase.from('case_studies').select('*').eq('slug', id).maybeSingle()
+        const fallback = !bySlug.data && /^[0-9a-f-]{36}$/i.test(id)
+          ? await supabase.from('case_studies').select('*').eq('id', id).maybeSingle()
+          : null
+        const data = bySlug.data || fallback?.data
+        const error = bySlug.error || fallback?.error
 
         if (error || !data) {
           router.push('/404')
@@ -104,38 +107,61 @@ export default function CaseStudyClient() {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="flex">
-        {/* A quiet sticky contents rail on larger screens. */}
+      <header className="fixed top-0 inset-x-0 z-50 h-[72px] border-b border-foreground/8 bg-background/88 backdrop-blur-xl">
+        <div className="h-full max-w-[1440px] mx-auto px-5 md:px-8 flex items-center justify-between">
+          <div className="flex items-center gap-4 md:gap-7 min-w-0">
+            <button
+              onClick={() => router.push('/')}
+              className="inline-flex items-center gap-2 h-10 px-3.5 rounded-xl bg-foreground/[0.045] text-sm text-foreground/55 hover:text-foreground hover:bg-foreground/[0.075] transition-colors"
+            >
+              <span aria-hidden="true">‹</span>
+              Back
+            </button>
+            <div className="hidden sm:flex items-center gap-3 text-sm min-w-0">
+              {caseStudy.thumbnail_url && (
+                <div className="relative size-9 shrink-0 overflow-hidden rounded-md bg-foreground/5">
+                  <img src={caseStudy.thumbnail_url} alt="" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <button onClick={() => router.push('/')} className="text-foreground/45 hover:text-foreground transition-colors">Home</button>
+              <span className="text-foreground/25">/</span>
+              <span className="font-medium truncate">{caseStudy.title}</span>
+            </div>
+          </div>
+          <CopyLinkButton className="size-9 p-0 justify-center border-0 [&_span]:hidden" />
+        </div>
+      </header>
+
+      <div className="flex pt-[72px]">
         {navItems.length > 0 && (
-          <aside className="hidden lg:block w-56 shrink-0">
-            <div className="sticky top-0 h-screen overflow-y-auto border-r border-foreground/8 px-7 py-20">
-              <p className="text-xs text-foreground/35 mb-4">Contents</p>
-              <div className="space-y-1">
+          <aside className="hidden lg:block w-64 shrink-0">
+            <div className="sticky top-[72px] h-[calc(100vh-72px)] overflow-y-auto border-r border-foreground/8 px-8 py-14">
+              <nav className="space-y-2" aria-label="Case study sections">
                 {navItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => handleNavClick(item.id)}
-                    className={`block text-left text-sm py-2 px-2 w-full transition-colors ${
+                    className={`relative block text-left text-sm py-1.5 w-full transition-[color,font-weight] ${
                       activeNavItem === item.id
-                        ? 'text-foreground font-medium'
-                        : 'text-foreground/60 hover:text-foreground/80'
+                        ? 'text-foreground font-semibold'
+                        : 'text-foreground/48 font-normal hover:text-foreground/75'
                     }`}
                   >
                     {item.label}
                   </button>
                 ))}
-              </div>
+              </nav>
             </div>
           </aside>
         )}
 
-        <div className="flex-1 min-w-0 px-8 lg:px-14 py-12 md:py-20 flex justify-center">
+        <div className="flex-1 min-w-0 px-6 md:px-10 lg:px-16 py-14 md:py-20 flex justify-center">
           <div className="w-full max-w-4xl">
-          <DetailPageHeader
-            title={caseStudy.title}
-            eyebrow="Case study"
-            description={caseStudy.excerpt}
-          />
+          <header className="mb-14 md:mb-20 max-w-3xl">
+            <p className="text-sm text-foreground/45 mb-4">Case study</p>
+            <h1 className="text-4xl md:text-5xl font-medium tracking-[-0.015em] leading-[1.08] text-foreground">{caseStudy.title}</h1>
+            {caseStudy.excerpt && <p className="mt-6 text-lg md:text-xl text-foreground/65 leading-relaxed">{caseStudy.excerpt}</p>}
+          </header>
 
           {/* Thumbnail */}
           {caseStudy.thumbnail_url && caseStudy.media_type !== 'video' && (
@@ -176,23 +202,23 @@ export default function CaseStudyClient() {
           )}
 
           {/* Sections */}
-          <div className="max-w-2xl space-y-20">
+          <div className="max-w-3xl space-y-24">
             {sections.map((section) => (
-              <section key={section.id} id={section.id} className="scroll-mt-20">
+              <section key={section.id} id={section.id} className="scroll-mt-24">
                 {section.label && (
-                  <p className="text-sm text-foreground/40 mb-2">
+                  <p className="text-sm text-foreground/45 mb-3">
                     {section.label}
                   </p>
                 )}
 
                 {section.title && (
-                  <h2 className="text-2xl md:text-3xl font-medium tracking-[-0.025em] text-foreground mb-5">
+                  <h2 className="text-2xl md:text-3xl font-medium tracking-[-0.01em] text-foreground mb-6">
                     {section.title}
                   </h2>
                 )}
 
                 {section.image && (
-                  <div className="mb-8 overflow-hidden bg-foreground/4">
+                  <div className="mb-10 overflow-hidden bg-foreground/4 lg:w-[calc(100%+8rem)]">
                     <ProgressiveImage
                       src={section.image}
                       alt={section.title || section.label || 'Section image'}
@@ -202,7 +228,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.video_url && (
-                  <div className="mb-6 rounded-xl overflow-hidden bg-black">
+                  <div className="mb-10 overflow-hidden bg-black lg:w-[calc(100%+8rem)]">
                     <video
                       src={section.video_url}
                       autoPlay
@@ -214,9 +240,15 @@ export default function CaseStudyClient() {
                   </div>
                 )}
 
+                {section.embed_url && (
+                  <div className="mb-10 lg:w-[calc(100%+8rem)]">
+                    <SafeEmbed url={section.embed_url} title={section.title || section.label || 'Embedded content'} />
+                  </div>
+                )}
+
                 <SafeHtml
                   html={section.body}
-                  className="[&_p]:text-foreground/70 [&_p]:leading-relaxed [&_p]:mb-4 [&_li]:text-foreground/70 [&_li]:leading-relaxed [&_strong]:text-foreground [&_a]:text-foreground/70 [&_a]:underline max-w-none"
+                  className="text-[1.05rem] [&_p]:text-foreground/78 [&_p]:leading-[1.8] [&_p]:mb-6 [&_ul]:list-disc [&_ul]:pl-7 [&_ul]:my-7 [&_ol]:list-decimal [&_ol]:pl-7 [&_ol]:my-7 [&_li]:text-foreground/78 [&_li]:leading-[1.75] [&_li]:mb-3 [&_strong]:text-foreground [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 max-w-none"
                 />
               </section>
             ))}

@@ -33,6 +33,7 @@ interface Section {
   toc: string | null
   image: string | null
   video_url?: string | null
+  embed_url?: string | null
   blocks?: ContentBlock[]
 }
 
@@ -91,7 +92,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
       video_url: null,
       media_type: 'image',
       excerpt: null,
-      sections: [{ id: crypto.randomUUID(), label: '', title: null, body: '', toc: null, image: null, blocks: [] }],
+      sections: [{ id: crypto.randomUUID(), label: '', title: null, body: '', toc: null, image: null, embed_url: null, blocks: [] }],
       blocks: [],
       published: false,
       cta_text: null,
@@ -110,6 +111,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
       body: '',
       toc: null,
       image: null,
+      embed_url: null,
       blocks: []
     }
     setEditing({
@@ -424,7 +426,11 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                 type="text"
                 placeholder="Case study title"
                 value={editing.title}
-                onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                onChange={(e) => {
+                  const title = e.target.value
+                  const slug = title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+                  setEditing({ ...editing, title, slug })
+                }}
                 className="w-full px-3 py-2.5 text-base font-medium border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-shadow"
               />
             </div>
@@ -434,8 +440,8 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                 type="text"
                 placeholder="url-slug"
                 value={editing.slug}
-                onChange={(e) => setEditing({ ...editing, slug: e.target.value })}
-                className="w-full px-3 py-2 text-sm font-mono border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-shadow text-foreground/60"
+                readOnly
+                className="w-full px-3 py-2 text-sm font-mono border border-border rounded-lg bg-muted/30 text-foreground/50 cursor-not-allowed"
               />
             </div>
             <div className="space-y-1.5">
@@ -667,6 +673,19 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                         </label>
                       )}
                     </div>
+                  </div>
+
+                  {/* Safe external embed */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-foreground/50">Embed URL <span className="text-foreground/30">(YouTube, Vimeo or Figma)</span></label>
+                    <input
+                      type="url"
+                      placeholder="Paste a YouTube, Vimeo or Figma link"
+                      value={section.embed_url || ''}
+                      onChange={(e) => updateSection(section.id, { embed_url: e.target.value || null })}
+                      className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-shadow"
+                    />
+                    <p className="text-xs text-foreground/35">The embed appears between the section media and body text.</p>
                   </div>
 
                   {/* Body */}

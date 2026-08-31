@@ -32,6 +32,7 @@ interface Project {
 
 export interface CaseStudy {
   id: string
+  slug: string | null
   title: string
   excerpt: string | null
   thumbnail_url: string | null
@@ -181,36 +182,36 @@ export default function ProfileSection({
             {caseStudies.length > 1 && <span className="text-xs text-foreground/35">Scroll →</span>}
           </div>
 
-          <div className="flex w-[calc(50vw+50%-2rem)] gap-5 overflow-x-auto snap-x snap-mandatory pb-6 pr-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex w-[calc(50vw+50%-2rem)] gap-4 md:gap-5 overflow-x-auto snap-x snap-mandatory pb-6 pr-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {caseStudies.map((caseStudy) => (
               <a
                 key={caseStudy.id}
-                href={`/case-studies/${caseStudy.id}`}
-                className="group block min-w-[78vw] sm:min-w-[480px] md:min-w-[560px] snap-start"
+                href={`/case-studies/${caseStudy.slug || caseStudy.id}`}
+                className="group block min-w-[72vw] sm:min-w-[360px] md:min-w-[400px] snap-start"
               >
                 {/* Thumbnail */}
                 {caseStudy.thumbnail_url && (
-                  <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-foreground/5 border border-border/40">
+                  <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-foreground/5 border border-foreground/8 group-hover:border-foreground/22 transition-colors">
                     <Image
                       src={caseStudy.thumbnail_url}
                       alt={caseStudy.title}
                       fill
-                      sizes="(max-width: 640px) 78vw, 560px"
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 640px) 72vw, 400px"
+                      className="object-cover"
                     />
                   </div>
                 )}
 
                 {/* Card Content */}
-                <div className="pt-4 px-1">
+                <div className="pt-3 pr-1">
                   {/* Title */}
-                  <h3 className="text-foreground text-lg font-medium mb-2 group-hover:text-foreground/70 transition-colors">
+                  <h3 className="text-foreground text-base font-medium mb-1.5 group-hover:text-foreground/70 transition-colors">
                     {caseStudy.title}
                   </h3>
 
                   {/* Excerpt */}
                   {caseStudy.excerpt && (
-                    <p className="text-foreground/60 text-sm leading-relaxed line-clamp-2">
+                    <p className="text-foreground/45 text-sm leading-relaxed line-clamp-2">
                       {caseStudy.excerpt}
                     </p>
                   )}

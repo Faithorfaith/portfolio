@@ -50,6 +50,17 @@ export default function RTFEditor({ value, onChange, placeholder = 'Enter conten
 
   if (!editor) return <div className="p-4 border rounded-lg bg-background">Loading editor...</div>
 
+  const setLink = () => {
+    const currentHref = editor.getAttributes('link').href as string | undefined
+    const href = window.prompt('Paste a link URL', currentHref || 'https://')
+    if (href === null) return
+    if (!href.trim()) {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run()
+      return
+    }
+    editor.chain().focus().extendMarkRange('link').setLink({ href: href.trim(), target: '_blank' }).run()
+  }
+
   return (
     <div className="space-y-2 border rounded-lg bg-background overflow-hidden">
       {/* Toolbar */}
@@ -145,6 +156,26 @@ export default function RTFEditor({ value, onChange, placeholder = 'Enter conten
           title="Code Block"
         >
           {'<>'}
+        </button>
+        <div className="border-l border-foreground/20" />
+        <button
+          type="button"
+          onClick={setLink}
+          className={`px-2 py-1 rounded text-sm transition-colors ${
+            editor.isActive('link') ? 'bg-foreground text-background' : 'hover:bg-foreground/10'
+          }`}
+          title="Add or edit link"
+        >
+          Link
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().extendMarkRange('link').unsetLink().run()}
+          disabled={!editor.isActive('link')}
+          className="px-2 py-1 rounded text-sm hover:bg-foreground/10 disabled:opacity-30 transition-colors"
+          title="Remove link"
+        >
+          Unlink
         </button>
         <div className="border-l border-foreground/20" />
         <button
