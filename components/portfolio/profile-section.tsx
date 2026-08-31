@@ -203,13 +203,30 @@ export default function ProfileSection({
       </div>
 
       {galleryOpen && (
-        <div className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-xl overflow-y-auto" role="dialog" aria-modal="true" aria-label="Photo gallery">
-          <div className="sticky top-0 z-10 flex items-center justify-between px-5 md:px-10 py-5 bg-background/85 backdrop-blur-xl border-b border-border/40">
-            <div><p className="font-medium">Photo gallery</p><p className="text-xs text-foreground/45">{galleryImages.length} images</p></div>
-            <button onClick={() => setGalleryOpen(false)} className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-xl" aria-label="Close gallery">×</button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 p-4 md:p-10 max-w-7xl mx-auto">
-            {galleryImages.map((src, index) => <div key={`${src}-${index}`} className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-foreground/5"><Image src={src} alt={`Gallery image ${index + 1}`} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" /></div>)}
+        <div className="fixed inset-0 z-[100] bg-background overflow-hidden" role="dialog" aria-modal="true" aria-label="Photo gallery">
+          <div className="h-full flex flex-col max-w-[1600px] mx-auto">
+            <div className="flex items-center justify-between px-5 md:px-12 lg:px-16 pt-7 md:pt-10 pb-6 md:pb-10">
+              <div className="flex items-center gap-4">
+                <div className="relative w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden ring-2 ring-foreground/80 ring-offset-4 ring-offset-background">
+                  <Image src={galleryImages[0]} alt="Gallery cover" fill sizes="64px" className="object-cover" />
+                </div>
+                <div>
+                  <p className="font-medium text-base">{profile.full_name || profile.username}</p>
+                  <p className="text-xs text-foreground/45">{galleryImages.length} photos</p>
+                </div>
+              </div>
+              <button onClick={() => setGalleryOpen(false)} className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-xl hover:bg-foreground/5 transition-colors" aria-label="Close gallery">×</button>
+            </div>
+
+            <div className="flex-1 min-h-0 flex items-center">
+              <div className="w-full flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory px-5 md:px-12 lg:px-16 pb-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {galleryImages.map((src, index) => (
+                  <div key={`${src}-${index}`} className="relative shrink-0 w-[76vw] sm:w-[360px] md:w-[300px] lg:w-[340px] h-[58vh] md:h-[62vh] max-h-[620px] snap-start overflow-hidden bg-foreground/5">
+                    <Image src={src} alt={`Gallery image ${index + 1}`} fill sizes="(max-width: 640px) 76vw, 340px" className="object-cover" priority={index < 3} />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
