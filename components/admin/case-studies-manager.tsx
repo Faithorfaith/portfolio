@@ -7,6 +7,7 @@ import { compressImage, uploadFileWithProgress, formatFileSize } from '@/lib/upl
 import ProgressiveImage from '@/components/progressive-image'
 import ButtonBlockBuilder from './button-block-builder'
 import SafeEmbed from '@/components/safe-embed'
+import SafeHtml from '@/components/safe-html'
 
 const RTFEditor = dynamic(() => import('./rtf-editor'), { ssr: false })
 
@@ -35,6 +36,7 @@ interface Section {
   image: string | null
   video_url?: string | null
   embed_url?: string | null
+  media_width?: 'reading' | 'wide' | 'full'
   blocks?: ContentBlock[]
 }
 
@@ -52,6 +54,15 @@ interface CaseStudy {
   cta_text: string | null
   cta_link: string | null
   order_index: number
+  related_article_id: string | null
+}
+
+interface RelatedArticleOption {
+  id: string
+  title: string
+  excerpt: string | null
+  cover_image: string | null
+  published: boolean
 }
 
 interface CaseStudiesManagerProps {
@@ -81,6 +92,9 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
   const [isUploading, setIsUploading] = useState(false)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null)
+  const [draggedSectionId, setDraggedSectionId] = useState<string | null>(null)
+  const [articleOptions, setArticleOptions] = useState<RelatedArticleOption[]>([])
 
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
@@ -93,9 +107,12 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
 
   useEffect(() => {
     refreshList().then(setCaseStudies)
+    createClient().from('writings').select('id, title, excerpt, cover_image, published').order('created_at', { ascending: false })
+      .then(({ data }) => setArticleOptions((data || []) as RelatedArticleOption[]))
   }, [])
 
   const createNewCaseStudy = () => {
+    const firstSectionId = crypto.randomUUID()
     setEditing({
       id: '',
       title: '',
@@ -104,13 +121,15 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
       video_url: null,
       media_type: 'image',
       excerpt: null,
-      sections: [{ id: crypto.randomUUID(), label: '', title: null, body: '', toc: null, image: null, embed_url: null, blocks: [] }],
+      sections: [{ id: firstSectionId, label: '', title: null, body: '', toc: null, image: null, embed_url: null, media_width: 'wide', blocks: [] }],
       blocks: [],
       published: false,
       cta_text: null,
       cta_link: null,
       order_index: caseStudies.length,
+      related_article_id: null,
     })
+    setSelectedSectionId(firstSectionId)
     setIsCreating(true)
   }
 
@@ -124,17 +143,22 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
       toc: null,
       image: null,
       embed_url: null,
+      media_width: 'wide',
       blocks: []
     }
     setEditing({
       ...editing,
       sections: [...editing.sections, newSection]
     })
+    setSelectedSectionId(newSection.id)
   }
 
   const updateSection = (sectionId: string, updates: Partial<Section>) => {
     if (!editing) return
     setHasUnsavedChanges(true)
+    if (selectedSectionId === sectionId) {
+      setSelectedSectionId(editing.sections.find((section) => section.id !== sectionId)?.id || null)
+    }
     setEditing({
       ...editing,
       sections: editing.sections.map(s => s.id === sectionId ? { ...s, ...updates } : s),
@@ -159,6 +183,18 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
     const next = [...editing.sections]
     const swap = direction === 'up' ? index - 1 : index + 1
     ;[next[index], next[swap]] = [next[swap], next[index]]
+    setEditing({ ...editing, sections: next })
+    setHasUnsavedChanges(true)
+  }
+
+  const reorderSection = (sourceId: string, targetId: string) => {
+    if (!editing || sourceId === targetId) return
+    const next = [...editing.sections]
+    const sourceIndex = next.findIndex((section) => section.id === sourceId)
+    const targetIndex = next.findIndex((section) => section.id === targetId)
+    if (sourceIndex < 0 || targetIndex < 0) return
+    const [moved] = next.splice(sourceIndex, 1)
+    next.splice(targetIndex, 0, moved)
     setEditing({ ...editing, sections: next })
     setHasUnsavedChanges(true)
   }
@@ -329,6 +365,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
           published: editing.published,
           cta_text: editing.cta_text,
           cta_link: editing.cta_link,
+          related_article_id: editing.related_article_id,
           isUpdate: !isCreating,
         }),
       })
@@ -371,10 +408,19 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
 
   // ── Editor View ──────────────────────────────────────────────────────────
   if (editing) {
+    const selectedSection = editing.sections.find((section) => section.id === selectedSectionId) || editing.sections[0] || null
+    const validationIssues = [
+      !editing.title.trim() ? 'Add a project title' : null,
+      !editing.excerpt?.trim() ? 'Add a short summary' : null,
+      !editing.thumbnail_url ? 'Add a cover thumbnail' : null,
+      editing.sections.length === 0 ? 'Add at least one section' : null,
+      editing.sections.some((section) => !section.label.trim() && !section.title?.trim()) ? 'Name every section' : null,
+      editing.sections.some((section) => !section.body.trim() && !section.image && !section.video_url && !section.embed_url) ? 'Some sections have no content' : null,
+    ].filter(Boolean) as string[]
     return (
-      <div className="max-w-3xl space-y-6" onInput={() => setHasUnsavedChanges(true)}>
+      <div className="max-w-none space-y-5" onInput={() => setHasUnsavedChanges(true)}>
         {/* Header */}
-        <div className="flex items-center justify-between pb-2">
+        <div className="sticky top-0 z-20 flex items-center justify-between py-3 px-1 bg-background/95 backdrop-blur-md border-b border-border">
           <div className="flex items-center gap-3">
             <button
               onClick={() => {
@@ -433,6 +479,40 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
         )}
 
         <UploadProgress />
+
+        <div className="grid grid-cols-1 xl:grid-cols-[210px_minmax(460px,680px)_minmax(280px,1fr)] gap-5 items-start">
+          <aside className="hidden xl:block sticky top-20 border border-border rounded-xl bg-background overflow-hidden">
+            <div className="px-3 py-3 border-b border-border flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium">Sections</p>
+                <p className="text-[11px] text-foreground/40 mt-0.5">Drag order with arrows</p>
+              </div>
+              <button type="button" onClick={addSection} className="size-7 rounded-md border border-border hover:bg-foreground/5" aria-label="Add section">+</button>
+            </div>
+            <nav className="p-2 space-y-1 max-h-[calc(100vh-180px)] overflow-y-auto" aria-label="Case study sections">
+              {editing.sections.map((section, index) => (
+                <button
+                  type="button"
+                  draggable
+                  key={section.id}
+                  onClick={() => setSelectedSectionId(section.id)}
+                  onDragStart={() => setDraggedSectionId(section.id)}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={() => {
+                    if (draggedSectionId) reorderSection(draggedSectionId, section.id)
+                    setDraggedSectionId(null)
+                  }}
+                  onDragEnd={() => setDraggedSectionId(null)}
+                  className={`w-full text-left px-2.5 py-2 rounded-lg transition-colors ${selectedSection?.id === section.id ? 'bg-foreground text-background' : 'hover:bg-foreground/5 text-foreground/60'}`}
+                >
+                  <span className="block text-[10px] opacity-50 tabular-nums">{String(index + 1).padStart(2, '0')}</span>
+                  <span className="block text-xs font-medium truncate mt-0.5">{section.label || section.title || 'Untitled section'}</span>
+                </button>
+              ))}
+            </nav>
+          </aside>
+
+          <div className="space-y-5 min-w-0">
 
         {/* Meta */}
         <div className="border border-border rounded-xl overflow-hidden">
@@ -596,7 +676,9 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
           </div>
 
           <div className="space-y-3">
-            {editing.sections.map((section, index) => (
+            {editing.sections.filter((section) => section.id === selectedSection?.id).map((section) => {
+              const index = editing.sections.findIndex((item) => item.id === section.id)
+              return (
               <div key={section.id} className="border border-border rounded-xl overflow-hidden">
                 {/* Section top bar */}
                 <div className="flex items-center gap-3 px-4 py-3 bg-muted/30 border-b border-border">
@@ -709,6 +791,22 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                     </div>
                   </div>
 
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-foreground/50">Media width</label>
+                    <div className="grid grid-cols-3 gap-1 rounded-lg bg-muted/40 p-1">
+                      {(['reading', 'wide', 'full'] as const).map((width) => (
+                        <button
+                          type="button"
+                          key={width}
+                          onClick={() => updateSection(section.id, { media_width: width })}
+                          className={`px-2 py-1.5 rounded-md text-xs capitalize transition-colors ${(section.media_width || 'wide') === width ? 'bg-background shadow-sm text-foreground' : 'text-foreground/45 hover:text-foreground'}`}
+                        >
+                          {width}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Safe external embed */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-medium text-foreground/50">Embed URL <span className="text-foreground/30">(YouTube, Vimeo or Figma)</span></label>
@@ -746,8 +844,72 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                   </div>
                 </div>}
               </div>
-            ))}
+            )})}
           </div>
+        </div>
+
+        <div className="border border-border rounded-xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-border bg-muted/30">
+            <p className="text-sm font-medium">Related article</p>
+            <p className="text-xs text-foreground/45 mt-0.5">Shown beneath the finished case study</p>
+          </div>
+          <div className="p-5 space-y-3">
+            <select
+              value={editing.related_article_id || ''}
+              onChange={(event) => {
+                setEditing({ ...editing, related_article_id: event.target.value || null })
+                setHasUnsavedChanges(true)
+              }}
+              className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20"
+            >
+              <option value="">No related article</option>
+              {articleOptions.map((article) => <option key={article.id} value={article.id}>{article.title}{article.published ? '' : ' (Draft)'}</option>)}
+            </select>
+            {editing.related_article_id && (() => {
+              const article = articleOptions.find((item) => item.id === editing.related_article_id)
+              return article ? (
+                <div className="flex gap-3 items-center p-3 rounded-lg bg-muted/30">
+                  {article.cover_image && <img src={article.cover_image} alt="" className="w-16 h-12 object-cover rounded-md" />}
+                  <div className="min-w-0"><p className="text-sm font-medium truncate">{article.title}</p><p className="text-xs text-foreground/45 truncate mt-0.5">{article.excerpt || 'No summary'}</p></div>
+                </div>
+              ) : null
+            })()}
+          </div>
+        </div>
+          </div>
+
+          <aside className="hidden xl:block sticky top-20 rounded-xl border border-border bg-background overflow-hidden">
+            <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium">Live preview</p>
+                <p className="text-[11px] text-foreground/40 mt-0.5">Selected section</p>
+              </div>
+              <span className="text-[10px] text-foreground/35">Desktop</span>
+            </div>
+            <div className="p-5 max-h-[calc(100vh-180px)] overflow-y-auto">
+              {selectedSection ? (
+                <article>
+                  {selectedSection.label && <p className="text-[11px] text-foreground/40 mb-2">{selectedSection.label}</p>}
+                  {selectedSection.title && <h3 className="text-xl font-medium tracking-[-0.01em] mb-4">{selectedSection.title}</h3>}
+                  {selectedSection.image && <img src={selectedSection.image} alt="" className="w-full h-auto mb-4" />}
+                  {selectedSection.video_url && <video src={selectedSection.video_url} controls className="w-full h-auto mb-4 bg-black" />}
+                  {selectedSection.embed_url && <div className="mb-4"><SafeEmbed url={selectedSection.embed_url} title="Embed preview" /></div>}
+                  <SafeHtml html={selectedSection.body} className="text-sm [&_p]:leading-6 [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_a]:underline" />
+                </article>
+              ) : <p className="text-xs text-foreground/40">Add a section to begin.</p>}
+
+              <div className="mt-6 pt-5 border-t border-border">
+                <p className="text-xs font-medium mb-2">Pre-publish check</p>
+                {validationIssues.length === 0 ? (
+                  <p className="text-xs text-green-600">Ready to publish</p>
+                ) : (
+                  <ul className="space-y-1.5">
+                    {validationIssues.map((issue) => <li key={issue} className="text-[11px] text-amber-700">• {issue}</li>)}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
     )
@@ -825,13 +987,18 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                 <p className="text-xs text-foreground/50 line-clamp-2 mb-4 leading-relaxed">{cs.excerpt || 'No description added'}</p>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => { setEditing(cs); setIsCreating(false) }}
+                    onClick={() => {
+                      setEditing(cs)
+                      setSelectedSectionId(cs.sections[0]?.id || null)
+                      setHasUnsavedChanges(false)
+                      setIsCreating(false)
+                    }}
                     className="flex-1 px-3 py-1.5 text-xs font-medium border border-border rounded-lg hover:bg-foreground/5 transition-colors"
                   >
                     Edit
                   </button>
                   <a
-                    href={`/case-studies/${cs.id}`}
+                    href={`/case-studies/${cs.slug || cs.id}`}
                     target="_blank"
                     className="p-1.5 border border-border rounded-lg hover:bg-foreground/5 transition-colors text-foreground/50 hover:text-foreground"
                   >

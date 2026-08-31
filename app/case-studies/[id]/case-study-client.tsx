@@ -10,6 +10,7 @@ import CopyLinkButton from '@/components/copy-link-button'
 import SafeEmbed from '@/components/safe-embed'
 import { slugify } from '@/lib/slugify'
 import ViewportVideo from '@/components/viewport-video'
+import { useSlickWindowScroll } from '@/hooks/use-slick-scroll'
 
 interface Section {
   id: string
@@ -20,6 +21,7 @@ interface Section {
   image: string | null
   video_url?: string | null
   embed_url?: string | null
+  media_width?: 'reading' | 'wide' | 'full'
 }
 
 interface NavItem {
@@ -42,6 +44,17 @@ interface CaseStudy {
   created_at: string
   cta_text: string | null
   cta_link: string | null
+  related_article_id: string | null
+}
+
+interface RelatedArticle {
+  id: string
+  title: string
+  slug: string
+  excerpt: string | null
+  cover_image: string | null
+  content: Array<{ content?: string }> | string | null
+  created_at: string
 }
 
 export default function CaseStudyClient() {
@@ -52,6 +65,8 @@ export default function CaseStudyClient() {
   const [isLoading, setIsLoading] = useState(true)
   const [activeNavItem, setActiveNavItem] = useState<string | null>(null)
   const [readingProgress, setReadingProgress] = useState(0)
+  const [relatedArticle, setRelatedArticle] = useState<RelatedArticle | null>(null)
+  useSlickWindowScroll(Boolean(caseStudy))
   const sections: Section[] = useMemo(() => Array.isArray(caseStudy?.sections)
     ? caseStudy.sections
     : typeof caseStudy?.sections === 'string'
@@ -94,6 +109,19 @@ export default function CaseStudyClient() {
 
     fetchCaseStudy()
   }, [id, router])
+
+  useEffect(() => {
+    if (!caseStudy?.related_article_id) {
+      setRelatedArticle(null)
+      return
+    }
+    createClient().from('writings')
+      .select('id, title, slug, excerpt, cover_image, content, created_at')
+      .eq('id', caseStudy.related_article_id)
+      .eq('published', true)
+      .maybeSingle()
+      .then(({ data }) => setRelatedArticle((data as RelatedArticle | null) || null))
+  }, [caseStudy?.related_article_id])
 
   useEffect(() => {
     const updateProgress = () => {
@@ -182,7 +210,6 @@ export default function CaseStudyClient() {
         <div className="flex-1 min-w-0 px-6 md:px-10 lg:px-16 py-14 md:py-20 flex justify-center">
           <div className="w-full max-w-4xl">
           <header className="mb-14 md:mb-20 max-w-3xl">
-            <p className="text-[11px] text-foreground/45 mb-4">Case study</p>
             <h1 className="text-4xl md:text-5xl font-medium tracking-[-0.015em] leading-[1.08] text-foreground">{caseStudy.title}</h1>
             {caseStudy.excerpt && <p className="mt-6 text-sm text-foreground/65 leading-relaxed max-w-2xl">{caseStudy.excerpt}</p>}
           </header>
@@ -239,7 +266,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.image && (
-                  <div className="mb-10 overflow-hidden bg-foreground/4 lg:w-[calc(100%+8rem)]">
+                  <div className={`mb-10 overflow-hidden bg-foreground/4 ${section.media_width === 'reading' ? '' : section.media_width === 'full' ? 'lg:w-[calc(100%+14rem)]' : 'lg:w-[calc(100%+8rem)]'}`}>
                     <ProgressiveImage
                       src={section.image}
                       alt={section.title || section.label || 'Section image'}
@@ -249,7 +276,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.video_url && (
-                  <div className="mb-10 overflow-hidden bg-black lg:w-[calc(100%+8rem)]">
+                  <div className={`mb-10 overflow-hidden bg-black ${section.media_width === 'reading' ? '' : section.media_width === 'full' ? 'lg:w-[calc(100%+14rem)]' : 'lg:w-[calc(100%+8rem)]'}`}>
                     <ViewportVideo
                       src={section.video_url}
                       decorative
@@ -258,18 +285,37 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.embed_url && (
-                  <div className="mb-10 lg:w-[calc(100%+8rem)]">
+                  <div className={`mb-10 ${section.media_width === 'reading' ? '' : section.media_width === 'full' ? 'lg:w-[calc(100%+14rem)]' : 'lg:w-[calc(100%+8rem)]'}`}>
                     <SafeEmbed url={section.embed_url} title={section.title || section.label || 'Embedded content'} />
                   </div>
                 )}
 
                 <SafeHtml
                   html={section.body}
-                  className="text-sm [&_p]:text-foreground/78 [&_p]:leading-[1.8] [&_p]:mb-6 [&_ul]:list-disc [&_ul]:pl-7 [&_ul]:my-7 [&_ol]:list-decimal [&_ol]:pl-7 [&_ol]:my-7 [&_li]:text-foreground/78 [&_li]:leading-[1.75] [&_li]:mb-3 [&_strong]:text-foreground [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 max-w-none"
+                  className="text-sm [&_p]:text-foreground/90 [&_p]:leading-[1.85] [&_p]:mb-7 [&_ul]:list-disc [&_ul]:pl-7 [&_ul]:my-7 [&_ol]:list-decimal [&_ol]:pl-7 [&_ol]:my-7 [&_li]:text-foreground/90 [&_li]:leading-[1.8] [&_li]:mb-3 [&_strong]:text-foreground [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 max-w-none"
                 />
               </section>
             ))}
           </div>
+
+          {relatedArticle && (() => {
+            const content = typeof relatedArticle.content === 'string' ? JSON.parse(relatedArticle.content) : (relatedArticle.content || [])
+            const words = content.reduce((total: number, block: { content?: string }) => total + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0)
+            return (
+              <section className="max-w-3xl mt-24 pt-12 border-t border-foreground/8">
+                <h2 className="text-sm text-foreground/45 font-normal mb-8">Related article</h2>
+                <a href={`/?article=${encodeURIComponent(relatedArticle.slug)}`} className="group grid grid-cols-[112px_1fr_auto] gap-5 items-center">
+                  {relatedArticle.cover_image ? <img src={relatedArticle.cover_image} alt="" className="w-28 aspect-[4/3] object-cover" /> : <div className="w-28 aspect-[4/3] bg-foreground/5" />}
+                  <div className="min-w-0">
+                    <h3 className="text-base font-medium text-foreground group-hover:text-foreground/65 transition-colors">{relatedArticle.title}</h3>
+                    {relatedArticle.excerpt && <p className="text-sm text-foreground/50 mt-1.5 line-clamp-1">{relatedArticle.excerpt}</p>}
+                    <p className="text-xs text-foreground/35 mt-2">{Math.max(1, Math.ceil(words / 200))} min · {new Date(relatedArticle.created_at).getFullYear()}</p>
+                  </div>
+                  <span className="text-xl text-foreground/35 group-hover:translate-x-1 group-hover:text-foreground transition-all" aria-hidden="true">→</span>
+                </a>
+              </section>
+            )
+          })()}
           </div>
         </div>
       </div>

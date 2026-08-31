@@ -222,6 +222,11 @@
     animation: galleryPhotoReveal 360ms ease-out both;
   }
 
+  .gallery-photo-card { width: 72%; }
+  @media (min-width: 640px) {
+    .gallery-photo-card { width: calc((100% - 1.875rem) / 4); }
+  }
+
   .case-study-rail-card {
     flex-basis: 72vw;
     min-width: 72vw;
@@ -286,5 +291,11 @@
   .overflow-y-auto {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .slick-scroll-container {
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    scroll-padding-top: 2rem;
   }
 }

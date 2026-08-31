@@ -29,11 +29,15 @@ function NumberedNav({ activeTab, onTabChange }: NumberedNavProps) {
     <button
       type="button"
       onClick={toggleSound}
-      className="text-xs text-foreground/30 hover:text-foreground transition-colors"
+      className={`fixed right-5 md:right-7 bottom-20 md:bottom-7 z-[70] size-11 rounded-full flex items-center justify-center shadow-lg shadow-black/10 border transition-all ${soundEnabled ? 'bg-foreground text-background border-foreground' : 'bg-background text-foreground/55 border-foreground/12 hover:text-foreground hover:border-foreground/25'}`}
       aria-label={soundEnabled ? 'Turn interface sounds off' : 'Turn interface sounds on'}
       title={soundEnabled ? 'Sound on' : 'Sound off'}
     >
-      {soundEnabled ? 'Sound on' : 'Sound off'}
+      {soundEnabled ? (
+        <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18 6a8.5 8.5 0 0 1 0 12"/></svg>
+      ) : (
+        <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 5m0-5-5 5"/></svg>
+      )}
     </button>
   )
 
@@ -48,7 +52,7 @@ function NumberedNav({ activeTab, onTabChange }: NumberedNavProps) {
             <button
               key={tab}
               onClick={() => changeTab(tab)}
-              className="relative text-sm font-normal text-left group"
+              className="relative text-sm font-normal text-left group active:translate-y-px"
               style={{
                 color: isActive ? 'var(--foreground)' : undefined,
                 transition: 'color 0.25s ease',
@@ -68,7 +72,6 @@ function NumberedNav({ activeTab, onTabChange }: NumberedNavProps) {
             </button>
           )
         })}
-        <div className="pt-2">{soundToggle}</div>
       </nav>
 
       {/* Mobile Navigation - Bottom bar */}
@@ -96,8 +99,8 @@ function NumberedNav({ activeTab, onTabChange }: NumberedNavProps) {
             </button>
           )
         })}
-        {soundToggle}
       </nav>
+      {soundToggle}
     </>
   )
 }

@@ -29,14 +29,14 @@ export async function POST(request: Request) {
     }
     const { supabase, user } = auth
     const body = await request.json()
-    const { id, title, thumbnail_url, video_url, media_type, excerpt, sections, nav_items, published, cta_text, cta_link, blocks, isUpdate } = body
+    const { id, title, thumbnail_url, video_url, media_type, excerpt, sections, nav_items, published, cta_text, cta_link, blocks, related_article_id, isUpdate } = body
     const slug = slugify(title || '')
     if (!title?.trim() || !slug) return NextResponse.json({ error: 'A valid title is required' }, { status: 400 })
 
     if (isUpdate && id) {
       const { data, error } = await supabase
         .from('case_studies')
-        .update({ title, slug, thumbnail_url, video_url, media_type, excerpt, sections, nav_items, published, cta_text, cta_link, blocks })
+        .update({ title, slug, thumbnail_url, video_url, media_type, excerpt, sections, nav_items, published, cta_text, cta_link, blocks, related_article_id: related_article_id || null })
         .eq('id', id)
         .eq('user_id', user.id)
         .select()
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     } else {
       const { data, error } = await supabase
         .from('case_studies')
-        .insert([{ user_id: user.id, title, slug, thumbnail_url, video_url, media_type, excerpt, sections, nav_items, published, cta_text, cta_link, blocks }])
+        .insert([{ user_id: user.id, title, slug, thumbnail_url, video_url, media_type, excerpt, sections, nav_items, published, cta_text, cta_link, blocks, related_article_id: related_article_id || null }])
         .select()
         .single()
 

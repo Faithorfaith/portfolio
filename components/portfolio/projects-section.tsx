@@ -35,7 +35,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                   }}
                   className={`w-full text-left group ${project.link ? 'cursor-pointer' : ''}`}
                 >
-                    <div className="flex items-start justify-between gap-6 py-4">
+                    <div className="flex items-start justify-between gap-6 py-4 transition-transform duration-200 group-hover:translate-x-0.5">
                     {/* Left - Title & Description */}
                     <div className="flex-1 min-w-0">
                       <h3 className="text-foreground/70 font-normal group-hover:text-foreground transition-colors duration-200">

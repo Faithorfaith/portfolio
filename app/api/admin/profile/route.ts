@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
         hero_image_2: body.hero_image_2 || null,
         hero_image_3: body.hero_image_3 || null,
         gallery_images: Array.isArray(body.gallery_images) ? body.gallery_images : [],
+        bio_references: Array.isArray(body.bio_references) ? body.bio_references : [],
       })
       .select()
       .single()

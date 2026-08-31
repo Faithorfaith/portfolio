@@ -70,6 +70,12 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
           )
           setWritings(published)
+          const requestedSlug = new URLSearchParams(window.location.search).get('article')
+          const requestedArticle = requestedSlug ? published.find((writing: Writing) => writing.slug === requestedSlug) : null
+          if (requestedArticle) {
+            setSelectedWriting(requestedArticle)
+            onSubPageChange?.(true)
+          }
         }
       } catch (error) {
         console.error('Error:', error)
@@ -285,7 +291,6 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
         <div className="max-w-4xl w-full">
           {/* Section Header */}
           <div className="mb-14 max-w-xl">
-            <p className="text-[11px] text-foreground/35 mb-3">Notes and essays</p>
             <h2 className="text-3xl md:text-4xl tracking-[-0.035em] font-medium text-foreground mb-4">Writing</h2>
             <p className="text-foreground/55 leading-relaxed">
               Thoughts, insights, and explorations on design, development, and the craft of building things.

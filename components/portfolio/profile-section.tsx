@@ -17,6 +17,14 @@ export interface Profile {
   hero_image_2: string | null
   hero_image_3: string | null
   gallery_images?: string[] | null
+  bio_references?: BioReference[] | null
+}
+
+interface BioReference {
+  id: string
+  label: string
+  description: string
+  url: string
 }
 
 interface Project {
@@ -52,6 +60,7 @@ export default function ProfileSection({
   const [galleryOpen, setGalleryOpen] = useState(false)
   const railRef = useRef<HTMLDivElement>(null)
   const cursorLabelRef = useRef<HTMLDivElement>(null)
+  const galleryCursorLabelRef = useRef<HTMLDivElement>(null)
   const dragState = useRef({ active: false, moved: false, x: 0, scrollLeft: 0 })
 
   const handleCopyEmail = () => {
@@ -103,7 +112,16 @@ export default function ProfileSection({
                 playFeedback('tap')
                 setGalleryOpen((open) => !open)
               }}
-              className="group relative block w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden border border-transparent hover:border-foreground/45 focus-visible:border-foreground/60 focus-visible:outline-none transition-colors"
+              onMouseEnter={(event) => {
+                if (!galleryCursorLabelRef.current || window.matchMedia('(hover: none)').matches) return
+                galleryCursorLabelRef.current.style.opacity = '1'
+                galleryCursorLabelRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
+              }}
+              onMouseMove={(event) => {
+                if (galleryCursorLabelRef.current) galleryCursorLabelRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
+              }}
+              onMouseLeave={() => { if (galleryCursorLabelRef.current) galleryCursorLabelRef.current.style.opacity = '0' }}
+              className="group relative block w-28 h-28 md:w-32 md:h-32 rounded-xl overflow-hidden focus-visible:outline-none transition-opacity hover:opacity-90"
               aria-label={galleryOpen ? 'Hide profile photos' : 'Show profile photos'}
               aria-expanded={galleryOpen}
             >
@@ -111,24 +129,31 @@ export default function ProfileSection({
             </button>
 
             {galleryOpen && (
-              <div className="gallery-linear-reveal grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3" aria-label="Profile photos">
+              <div className="gallery-linear-reveal flex gap-2.5 mt-3 overflow-x-auto snap-x snap-mandatory pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Profile photos">
                 {galleryImages.map((src, index) => (
                   <div
                     key={`${src}-${index}`}
-                    className="gallery-photo-reveal relative w-full aspect-[4/5] overflow-hidden bg-foreground/5"
+                    className="gallery-photo-card gallery-photo-reveal group/photo relative shrink-0 aspect-[4/5] overflow-hidden bg-foreground/5 snap-start"
                     style={{ animationDelay: `${120 + index * 55}ms` }}
                   >
                     <Image
                       src={src}
                       alt={`Profile photo ${index + 1}`}
                       fill
-                      sizes="(max-width: 640px) 50vw, 150px"
-                      className="object-cover"
+                      sizes="(max-width: 640px) 72vw, 150px"
+                      className="object-cover transition-[filter,opacity] duration-300 group-hover/photo:brightness-[0.96]"
                     />
                   </div>
                 ))}
               </div>
             )}
+            <div
+              ref={galleryCursorLabelRef}
+              className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm"
+              aria-hidden="true"
+            >
+              View gallery
+            </div>
           </div>
         )}
 
@@ -153,13 +178,33 @@ export default function ProfileSection({
         </div>
       )}
 
+      {profile.bio_references && profile.bio_references.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-8">
+          {profile.bio_references.filter((reference) => reference.label.trim()).map((reference) => {
+            const content = (
+              <>
+                <span>{reference.label}</span>
+                <span className="text-foreground/30 group-hover:text-foreground/55 transition-colors">↗</span>
+                {reference.description && (
+                  <span className="absolute left-0 top-[calc(100%+8px)] z-40 w-64 p-3 rounded-lg bg-foreground text-background text-xs leading-relaxed opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 group-focus-visible:translate-y-0 transition-all shadow-xl">
+                    {reference.description}
+                  </span>
+                )}
+              </>
+            )
+            const classes = 'group relative inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-foreground/[0.045] text-xs text-foreground/70 hover:bg-foreground/[0.075] hover:text-foreground transition-colors'
+            return reference.url ? <a key={reference.id} href={reference.url} target="_blank" rel="noopener noreferrer" className={classes}>{content}</a> : <button key={reference.id} type="button" className={classes}>{content}</button>
+          })}
+        </div>
+      )}
+
       {/* Contact CTA - Below Bio */}
       <div className="mb-20 border-t border-border/30 pt-6">
         <p className="text-foreground/70 leading-relaxed flex items-center gap-2 flex-wrap">
           Got something in mind? Reach out at{' '}
           <button
             onClick={handleCopyEmail}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg transition-all duration-200 group cursor-pointer"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg transition-all duration-200 group cursor-pointer active:scale-[0.98]"
             style={{ border: '0.5px solid rgba(0,0,0,0.2)' }}
             title="Click to copy email"
           >
@@ -182,7 +227,7 @@ export default function ProfileSection({
       {caseStudies.length > 0 && (
         <div className="mt-16">
           <div className="flex items-baseline justify-between mb-8">
-            <h2 className="text-foreground">Case studies</h2>
+            <h2 className="text-foreground">My work</h2>
             {caseStudies.length > 1 && <span className="text-xs text-foreground/35">Scroll →</span>}
           </div>
 
@@ -197,16 +242,21 @@ export default function ProfileSection({
             onPointerDown={(event) => {
               if (event.pointerType === 'touch') return
               dragState.current = { active: true, moved: false, x: event.clientX, scrollLeft: railRef.current?.scrollLeft || 0 }
-              event.currentTarget.setPointerCapture(event.pointerId)
             }}
             onPointerMove={(event) => {
               if (!dragState.current.active || !railRef.current) return
-              if (Math.abs(event.clientX - dragState.current.x) > 5) dragState.current.moved = true
+              if (Math.abs(event.clientX - dragState.current.x) > 5 && !dragState.current.moved) {
+                dragState.current.moved = true
+                event.currentTarget.setPointerCapture(event.pointerId)
+              }
+              if (!dragState.current.moved) return
               railRef.current.scrollLeft = dragState.current.scrollLeft - (event.clientX - dragState.current.x)
             }}
             onPointerUp={(event) => {
               dragState.current.active = false
-              event.currentTarget.releasePointerCapture(event.pointerId)
+              if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                event.currentTarget.releasePointerCapture(event.pointerId)
+              }
             }}
             onClickCapture={(event) => {
               if (!dragState.current.moved) return

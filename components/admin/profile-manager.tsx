@@ -13,6 +13,14 @@ interface Profile {
   hero_image_2: string | null
   hero_image_3: string | null
   gallery_images: string[] | null
+  bio_references: BioReference[] | null
+}
+
+interface BioReference {
+  id: string
+  label: string
+  description: string
+  url: string
 }
 
 interface ProfileManagerProps {
@@ -80,6 +88,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
     hero_image_2: '',
     hero_image_3: '',
     gallery_images: [] as string[],
+    bio_references: [] as BioReference[],
   })
   const supabase = createClient()
 
@@ -105,11 +114,12 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
             gallery_images: data.gallery_images?.length
               ? data.gallery_images
               : [data.hero_image_1, data.hero_image_2, data.hero_image_3].filter(Boolean),
+            bio_references: Array.isArray(data.bio_references) ? data.bio_references : [],
           })
         } else {
           const { data: newProfile, error: createError } = await supabase
             .from('profiles')
-            .insert([{ id: userId, username: 'User', full_name: null, bio: null, hero_image_1: null, hero_image_2: null, hero_image_3: null, gallery_images: [] }])
+            .insert([{ id: userId, username: 'User', full_name: null, bio: null, hero_image_1: null, hero_image_2: null, hero_image_3: null, gallery_images: [], bio_references: [] }])
             .select()
             .single()
           if (createError) throw createError
@@ -122,6 +132,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
               hero_image_2: newProfile.hero_image_2 || '',
               hero_image_3: newProfile.hero_image_3 || '',
               gallery_images: newProfile.gallery_images || [],
+              bio_references: newProfile.bio_references || [],
             })
           }
         }
@@ -156,6 +167,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
           bio: formData.bio || null,
           gallery_images: formData.gallery_images,
           hero_image_1: formData.gallery_images[0] || null,
+          bio_references: formData.bio_references,
         }),
       })
       const result = await response.json()
@@ -238,6 +250,45 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
               style={{ padding: '8px 12px', border: '1px solid oklch(0.91 0 0)' }}
             />
           </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Bio references" description="Add companies, roles, tools or tags with a short explanation.">
+        <div className="space-y-3">
+          {formData.bio_references.map((reference, index) => (
+            <div key={reference.id} className="rounded-lg border border-border p-3 space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  value={reference.label}
+                  onChange={(event) => setFormData((current) => ({ ...current, bio_references: current.bio_references.map((item, itemIndex) => itemIndex === index ? { ...item, label: event.target.value } : item) }))}
+                  placeholder="Company or tag"
+                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background"
+                />
+                <input
+                  type="url"
+                  value={reference.url}
+                  onChange={(event) => setFormData((current) => ({ ...current, bio_references: current.bio_references.map((item, itemIndex) => itemIndex === index ? { ...item, url: event.target.value } : item) }))}
+                  placeholder="Optional URL"
+                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background"
+                />
+              </div>
+              <textarea
+                value={reference.description}
+                onChange={(event) => setFormData((current) => ({ ...current, bio_references: current.bio_references.map((item, itemIndex) => itemIndex === index ? { ...item, description: event.target.value } : item) }))}
+                placeholder="Short description"
+                rows={2}
+                className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background resize-none"
+              />
+              <button type="button" onClick={() => setFormData((current) => ({ ...current, bio_references: current.bio_references.filter((_, itemIndex) => itemIndex !== index) }))} className="text-xs text-red-600">Remove</button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => setFormData((current) => ({ ...current, bio_references: [...current.bio_references, { id: crypto.randomUUID(), label: '', description: '', url: '' }] }))}
+            className="w-full py-2 text-xs font-medium border border-dashed border-border rounded-lg hover:border-foreground/30 transition-colors"
+          >
+            + Add reference
+          </button>
         </div>
       </SectionCard>
 
