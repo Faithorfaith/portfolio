@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ProgressiveImage from '@/components/progressive-image'
 import SafeHtml from '@/components/safe-html'
+import CopyLinkButton from '@/components/copy-link-button'
 
 interface Section {
   id: string
@@ -129,6 +130,10 @@ export default function CaseStudyClient() {
         {/* Content - Right column, 3/4 width, centered */}
         <div className="flex-1 min-w-0 px-8 lg:px-12 py-16 flex justify-center">
           <div className="w-full max-w-2xl">
+          <div className="flex items-center justify-between mb-8">
+            <button onClick={() => router.push('/')} className="text-sm text-foreground/45 hover:text-foreground transition-colors">← Back</button>
+            <CopyLinkButton />
+          </div>
           {/* Thumbnail */}
           {caseStudy.thumbnail_url && (
             <div className="mb-8 rounded-xl overflow-hidden">

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import CopyLinkButton from '@/components/copy-link-button'
 
 interface Project {
   id: string
@@ -58,13 +59,10 @@ export default function ProjectClient() {
 
   return (
     <main className="w-full max-w-3xl mx-auto px-8 py-16 md:py-24">
-      {/* Back Link */}
-      <Link
-        href="/"
-        className="inline-block text-sm text-foreground/50 hover:text-foreground transition-colors mb-8"
-      >
-        ← Back
-      </Link>
+      <div className="flex items-center justify-between mb-10">
+        <Link href="/" className="text-sm text-foreground/50 hover:text-foreground transition-colors">← Back</Link>
+        <CopyLinkButton />
+      </div>
 
       {/* Project Title */}
       <h1 className="text-5xl md:text-6xl font-normal text-foreground mb-4">
