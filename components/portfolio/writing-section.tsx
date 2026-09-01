@@ -29,7 +29,7 @@ interface Writing {
   created_at: string
 }
 
-export default function WritingSection({ onSubPageChange }: { onSubPageChange?: (v: boolean) => void }) {
+export default function WritingSection({ onSubPageChange, variant = 'full' }: { onSubPageChange?: (v: boolean) => void; variant?: 'home' | 'full' }) {
   const [writings, setWritings] = useState<Writing[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [selectedWriting, setSelectedWriting] = useState<Writing | null>(null)
@@ -278,6 +278,38 @@ export default function WritingSection({ onSubPageChange }: { onSubPageChange?: 
             </div>
           </article>
       </div>
+    )
+  }
+
+  if (variant === 'home') {
+    return (
+      <section className="w-full max-w-2xl mx-auto px-8 py-12" aria-labelledby="home-writing-title">
+        <h2 id="home-writing-title" className="text-[18px] font-normal text-foreground/58 mb-8">my articles</h2>
+        <div className="space-y-2">
+          {writings.slice(0, 4).map((writing) => {
+            const wordCount = writing.content.reduce((total, block) => total + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0)
+            return (
+              <button
+                key={writing.id}
+                onClick={() => openWriting(writing)}
+                className="group grid w-full grid-cols-[88px_minmax(0,1fr)_20px] md:grid-cols-[112px_minmax(0,1fr)_24px] gap-4 md:gap-5 items-center py-3 text-left"
+              >
+                {writing.cover_image ? (
+                  <div className="relative aspect-[4/3] overflow-hidden bg-foreground/5">
+                    <ProgressiveImage src={writing.cover_image} alt="" fill containerClassName="w-full h-full" />
+                  </div>
+                ) : <div className="aspect-[4/3] bg-foreground/5" />}
+                <div className="min-w-0">
+                  <h3 className="text-sm md:text-base font-medium leading-snug text-foreground group-hover:text-foreground/65 transition-colors">{writing.title}</h3>
+                  {writing.excerpt && <p className="mt-1.5 text-sm leading-relaxed text-foreground/50 line-clamp-1">{writing.excerpt}</p>}
+                  <p className="mt-2 text-[11px] text-foreground/35">{Math.max(1, Math.ceil(wordCount / 200))} min · {new Date(writing.created_at).getFullYear()}</p>
+                </div>
+                <span className="text-lg text-foreground/35 transition-transform group-hover:translate-x-1" aria-hidden="true">↗</span>
+              </button>
+            )
+          })}
+        </div>
+      </section>
     )
   }
 

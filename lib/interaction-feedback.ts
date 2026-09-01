@@ -1,31 +1,52 @@
 export const SOUND_PREFERENCE_KEY = 'portfolio-sound-enabled'
 
+type FeedbackTone = 'tap' | 'success'
+let sharedContext: AudioContext | null = null
+
 export function isSoundEnabled() {
   return typeof window !== 'undefined' && window.localStorage.getItem(SOUND_PREFERENCE_KEY) === 'true'
 }
 
-export function playFeedback(tone: 'tap' | 'success' = 'tap') {
-  if (typeof window === 'undefined') return
-
-  if ('vibrate' in navigator) navigator.vibrate(tone === 'success' ? 18 : 10)
-  if (!isSoundEnabled() || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
+function getAudioContext() {
   const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
-  if (!AudioContextClass) return
+  if (!AudioContextClass) return null
+  if (!sharedContext || sharedContext.state === 'closed') sharedContext = new AudioContextClass()
+  if (sharedContext.state === 'suspended') void sharedContext.resume()
+  return sharedContext
+}
 
-  const context = new AudioContextClass()
+function playNote(context: AudioContext, frequency: number, startsAt: number, duration: number, volume: number) {
   const oscillator = context.createOscillator()
   const gain = context.createGain()
-  const now = context.currentTime
 
   oscillator.type = 'sine'
-  oscillator.frequency.setValueAtTime(tone === 'success' ? 660 : 480, now)
-  gain.gain.setValueAtTime(0.0001, now)
-  gain.gain.exponentialRampToValueAtTime(0.025, now + 0.008)
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055)
+  oscillator.frequency.setValueAtTime(frequency, startsAt)
+  oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.92, startsAt + duration)
+  gain.gain.setValueAtTime(0.0001, startsAt)
+  gain.gain.exponentialRampToValueAtTime(volume, startsAt + 0.008)
+  gain.gain.exponentialRampToValueAtTime(0.0001, startsAt + duration)
   oscillator.connect(gain)
   gain.connect(context.destination)
-  oscillator.start(now)
-  oscillator.stop(now + 0.06)
-  oscillator.addEventListener('ended', () => void context.close())
+  oscillator.start(startsAt)
+  oscillator.stop(startsAt + duration + 0.01)
+}
+
+export function playFeedback(tone: FeedbackTone = 'tap') {
+  if (typeof window === 'undefined') return
+
+  if ('vibrate' in navigator) {
+    navigator.vibrate(tone === 'success' ? [24, 28, 34] : 22)
+  }
+  if (!isSoundEnabled()) return
+
+  const context = getAudioContext()
+  if (!context) return
+  const now = context.currentTime
+
+  if (tone === 'success') {
+    playNote(context, 620, now, 0.11, 0.075)
+    playNote(context, 880, now + 0.065, 0.14, 0.065)
+  } else {
+    playNote(context, 520, now, 0.085, 0.065)
+  }
 }

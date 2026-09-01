@@ -10,6 +10,7 @@ import CopyLinkButton from '@/components/copy-link-button'
 import SafeEmbed from '@/components/safe-embed'
 import { slugify } from '@/lib/slugify'
 import ViewportVideo from '@/components/viewport-video'
+import { playFeedback } from '@/lib/interaction-feedback'
 
 interface Section {
   id: string
@@ -149,6 +150,7 @@ export default function CaseStudyClient() {
   if (!caseStudy) return null
 
   const handleNavClick = (sectionId: string) => {
+    playFeedback('tap')
     const element = document.getElementById(sectionId)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
@@ -159,7 +161,7 @@ export default function CaseStudyClient() {
   return (
     <main className="min-h-screen bg-background" style={{ animation: 'articleEntrance 320ms cubic-bezier(0.22,1,0.36,1) both' }}>
       <div className="fixed top-0 left-0 z-[60] h-px bg-foreground/70 transition-[width] duration-100" style={{ width: `${readingProgress}%` }} aria-hidden="true" />
-      <header className="fixed top-0 inset-x-0 z-50 h-[72px] border-b border-foreground/8 bg-background/88 backdrop-blur-xl">
+      <header className="fixed top-0 inset-x-0 z-50 h-[72px] border-b border-foreground/8 bg-background/95 backdrop-blur-xl transform-gpu">
         <div className="h-full max-w-[1440px] mx-auto px-5 md:px-8 flex items-center justify-between">
           <div className="flex items-center gap-4 md:gap-7 min-w-0">
             <button
@@ -182,16 +184,16 @@ export default function CaseStudyClient() {
         </div>
       </header>
 
-      <div className={`pt-[72px] w-full max-w-[1120px] mx-auto px-6 md:px-10 lg:px-12 ${navItems.length > 0 ? 'lg:grid lg:grid-cols-[200px_minmax(0,800px)] lg:gap-12 xl:gap-16' : ''}`}>
+      <div className={`pt-[72px] w-full max-w-[920px] mx-auto px-6 md:px-10 lg:px-12 ${navItems.length > 0 ? 'lg:grid lg:grid-cols-[180px_minmax(0,600px)] lg:gap-10 xl:gap-12' : ''}`}>
         {navItems.length > 0 && (
-          <aside className="hidden lg:block min-w-0 py-14 md:py-20">
-            <div className="sticky top-[112px] max-h-[calc(100vh-144px)] overflow-y-auto pr-5">
+          <aside className="hidden lg:block min-w-0 pt-8 pb-14">
+            <div className="sticky top-[88px] max-h-[calc(100vh-104px)] overflow-y-auto pr-4">
               <nav className="space-y-3" aria-label="Case study sections">
                 {navItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => handleNavClick(item.id)}
-                    className={`relative block min-h-8 text-left text-sm leading-5 w-full transition-[color,font-weight] ${
+                    className={`relative block min-h-7 text-left text-xs leading-5 w-full transition-[color,font-weight] ${
                       activeNavItem === item.id
                         ? 'text-foreground font-medium'
                         : 'text-foreground/50 font-normal hover:text-foreground/80'
@@ -206,8 +208,8 @@ export default function CaseStudyClient() {
           </aside>
         )}
 
-        <div className="min-w-0 py-14 md:py-20">
-          <div className="w-full max-w-[800px] mx-auto">
+        <div className="min-w-0 py-8 md:py-8">
+          <div className="w-full max-w-[600px] mx-auto">
           {navItems.length > 0 && (
             <label className="lg:hidden block mb-10">
               <span className="block text-[11px] text-foreground/40 mb-2">Jump to section</span>
@@ -221,7 +223,7 @@ export default function CaseStudyClient() {
               </select>
             </label>
           )}
-          <header className="mb-14 md:mb-20 w-full max-w-[800px]">
+          <header className="mb-12 w-full max-w-[600px]">
             <h1 className="text-[18px] font-medium tracking-[-0.01em] leading-snug text-foreground">{caseStudy.title}</h1>
             {caseStudy.excerpt && <p className="mt-6 text-sm text-foreground/65 leading-relaxed max-w-2xl">{caseStudy.excerpt}</p>}
           </header>
@@ -262,7 +264,7 @@ export default function CaseStudyClient() {
           )}
 
           {/* Sections */}
-          <div className="w-full max-w-[800px] space-y-24">
+          <div className="w-full max-w-[600px] space-y-20">
             {sections.map((section) => (
               <section key={section.id} id={section.id} className="scroll-mt-24">
                 {section.label && (
@@ -278,7 +280,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.image && (
-                  <div className="w-full max-w-[800px] mb-10 overflow-hidden bg-foreground/4">
+                  <div className="w-full max-w-[600px] mb-10 overflow-hidden bg-foreground/4">
                     <ProgressiveImage
                       src={section.image}
                       alt={section.title || section.label || 'Section image'}
@@ -288,7 +290,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.video_url && (
-                  <div className="w-full max-w-[800px] mb-10 overflow-hidden bg-black">
+                  <div className="w-full max-w-[600px] mb-10 overflow-hidden bg-black">
                     <ViewportVideo
                       src={section.video_url}
                       decorative
@@ -297,7 +299,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.embed_url && (
-                  <div className="w-full max-w-[800px] mb-10">
+                  <div className="w-full max-w-[600px] mb-10">
                     <SafeEmbed url={section.embed_url} title={section.title || section.label || 'Embedded content'} />
                   </div>
                 )}
@@ -314,7 +316,7 @@ export default function CaseStudyClient() {
             const content = typeof relatedArticle.content === 'string' ? JSON.parse(relatedArticle.content) : (relatedArticle.content || [])
             const words = content.reduce((total: number, block: { content?: string }) => total + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0)
             return (
-              <section className="w-full max-w-[800px] mt-24 pt-12 border-t border-foreground/8">
+              <section className="w-full max-w-[600px] mt-20 pt-10 border-t border-foreground/8">
                 <h2 className="text-[11px] text-foreground/45 font-normal mb-8">Related writing</h2>
                 <a href={`/?article=${encodeURIComponent(relatedArticle.slug)}`} className="group grid grid-cols-[112px_1fr_auto] gap-5 items-center">
                   {relatedArticle.cover_image ? <img src={relatedArticle.cover_image} alt="" className="w-28 aspect-[4/3] object-cover" /> : <div className="w-28 aspect-[4/3] bg-foreground/5" />}

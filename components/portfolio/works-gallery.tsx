@@ -8,6 +8,7 @@ import EmptyState from './empty-state'
 import Doodles from './doodles'
 import ProgressiveImage from '@/components/progressive-image'
 import { playFeedback } from '@/lib/interaction-feedback'
+import Link from 'next/link'
 
 interface Work {
   id: string
@@ -21,7 +22,7 @@ interface Work {
   type?: string | null
 }
 
-export default function WorksGallery({ onSubPageChange }: { onSubPageChange?: (v: boolean) => void }) {
+export default function WorksGallery({ onSubPageChange, variant = 'full' }: { onSubPageChange?: (v: boolean) => void; variant?: 'preview' | 'full' }) {
   const [works, setWorks] = useState<Work[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [selectedWork, setSelectedWork] = useState<Work | null>(null)
@@ -115,12 +116,47 @@ export default function WorksGallery({ onSubPageChange }: { onSubPageChange?: (v
   // Helper to check if media is video
   const isVideo = (work: Work) => work.media_type?.startsWith('video')
 
+  if (variant === 'preview') {
+    return (
+      <section className="w-full max-w-2xl mx-auto px-8 py-12" aria-labelledby="playground-preview-title">
+        <div className="flex items-baseline justify-between gap-4 mb-8">
+          <h2 id="playground-preview-title" className="text-[18px] font-medium tracking-[-0.01em] text-foreground">Playground</h2>
+          <Link href="/playground" className="text-[11px] text-foreground/45 hover:text-foreground transition-colors">View all projects →</Link>
+        </div>
+        <div className="columns-2 sm:columns-3 gap-3" aria-label="Playground preview">
+          {works.slice(0, 6).map((work) => {
+            const coverImage = getCoverImage(work)
+            return (
+              <Link
+                key={work.id}
+                href="/playground"
+                onClick={() => playFeedback('tap')}
+                className="group relative block break-inside-avoid mb-3 overflow-hidden rounded-md bg-foreground/5 ring-1 ring-transparent hover:ring-foreground/25 transition-[box-shadow,filter] hover:brightness-[0.98]"
+                aria-label={`View ${work.title} in Playground`}
+              >
+                {coverImage ? (
+                  <img src={coverImage} alt={work.title} className="block w-full h-auto" loading="lazy" />
+                ) : isVideo(work) && work.media_url ? (
+                  <video src={work.media_url} className="block w-full h-auto" muted playsInline preload="metadata" />
+                ) : (
+                  <div className="aspect-[4/3] flex items-center justify-center text-[11px] text-foreground/30">{work.title}</div>
+                )}
+              </Link>
+            )
+          })}
+        </div>
+        <Link href="/playground" className="mt-5 inline-flex min-h-9 items-center text-xs text-foreground/50 hover:text-foreground transition-colors">View all Playground projects →</Link>
+      </section>
+    )
+  }
+
   return (
     <div className="w-full max-w-6xl mx-auto px-8 py-12 md:py-20">
       <Doodles />
 
       <div className="flex justify-center">
         <div className="max-w-4xl w-full">
+          <Link href="/" className="mb-12 inline-flex min-h-9 items-center text-xs text-foreground/45 hover:text-foreground transition-colors">← Back to portfolio</Link>
           {/* Section Header */}
           <div className="mb-10 max-w-xl">
             <h2 className="text-[18px] tracking-[-0.01em] font-medium text-foreground">Playground</h2>

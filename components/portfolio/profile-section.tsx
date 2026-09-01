@@ -326,7 +326,7 @@ export default function ProfileSection({
               <a
                 key={caseStudy.id}
                 href={`/case-studies/${slugify(caseStudy.title) || caseStudy.slug || caseStudy.id}`}
-                onClick={() => track('case_study_opened', { title: caseStudy.title })}
+                onClick={() => { playFeedback('tap'); track('case_study_opened', { title: caseStudy.title }) }}
                 className="case-study-rail-card group block shrink-0 snap-start"
                 onMouseEnter={(event) => {
                   if (!cursorLabelRef.current || window.matchMedia('(hover: none)').matches) return

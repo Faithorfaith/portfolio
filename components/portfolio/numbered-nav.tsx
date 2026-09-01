@@ -22,7 +22,7 @@ function NumberedNav({ activeTab, onTabChange }: NumberedNavProps) {
     const nextValue = !soundEnabled
     window.localStorage.setItem(SOUND_PREFERENCE_KEY, String(nextValue))
     setSoundEnabled(nextValue)
-    if (nextValue) window.setTimeout(() => playFeedback('success'), 0)
+    if (nextValue) playFeedback('success')
   }
 
   const soundToggle = (

@@ -1,5 +1,7 @@
 'use client'
 
+import { playFeedback } from '@/lib/interaction-feedback'
+
 export interface Project {
   id: string
   title: string
@@ -42,6 +44,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                   key={project.id}
                   onClick={() => {
                     if (project.link) {
+                      playFeedback('tap')
                       // Both mobile and desktop: open link directly
                       window.open(project.link, '_blank')
                     }
