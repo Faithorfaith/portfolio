@@ -66,6 +66,7 @@ export default function CaseStudyClient() {
   const [activeNavItem, setActiveNavItem] = useState<string | null>(null)
   const [readingProgress, setReadingProgress] = useState(0)
   const [relatedArticle, setRelatedArticle] = useState<RelatedArticle | null>(null)
+  const [expandedImage, setExpandedImage] = useState<{ src: string; alt: string } | null>(null)
   const sections: Section[] = useMemo(() => Array.isArray(caseStudy?.sections)
     ? caseStudy.sections
     : typeof caseStudy?.sections === 'string'
@@ -76,6 +77,14 @@ export default function CaseStudyClient() {
     : typeof caseStudy?.nav_items === 'string'
     ? JSON.parse(caseStudy.nav_items)
     : [], [caseStudy])
+
+  useEffect(() => {
+    const closeExpandedImage = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setExpandedImage(null)
+    }
+    window.addEventListener('keydown', closeExpandedImage)
+    return () => window.removeEventListener('keydown', closeExpandedImage)
+  }, [])
 
   useEffect(() => {
     const fetchCaseStudy = async () => {
@@ -159,21 +168,21 @@ export default function CaseStudyClient() {
   }
 
   return (
-    <main className="min-h-screen bg-background" style={{ animation: 'articleEntrance 320ms cubic-bezier(0.22,1,0.36,1) both' }}>
+    <main className="min-h-screen bg-background">
       <div className="fixed top-0 left-0 z-[60] h-px bg-foreground/70 transition-[width] duration-100" style={{ width: `${readingProgress}%` }} aria-hidden="true" />
-      <header className="fixed top-0 inset-x-0 z-50 h-[72px] border-b border-foreground/8 bg-background/95 backdrop-blur-xl transform-gpu">
+      <header className="fixed top-0 inset-x-0 z-50 h-[52px] border-b border-foreground/8 bg-background/95 backdrop-blur-xl">
         <div className="h-full max-w-[1440px] mx-auto px-5 md:px-8 flex items-center justify-between">
           <div className="flex items-center gap-4 md:gap-7 min-w-0">
             <button
               onClick={() => router.push('/')}
-              className="inline-flex items-center gap-2 h-10 px-3.5 rounded-xl bg-foreground/[0.045] text-sm text-foreground/55 hover:text-foreground hover:bg-foreground/[0.075] transition-colors"
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-foreground/[0.045] text-xs text-foreground/55 hover:text-foreground hover:bg-foreground/[0.075] transition-colors"
             >
               <span aria-hidden="true">‹</span>
               Back
             </button>
             <div className="hidden sm:flex items-center gap-3 text-sm min-w-0">
               {caseStudy.thumbnail_url && (
-                <div className="relative size-9 shrink-0 overflow-hidden rounded-md bg-foreground/5">
+                <div className="relative size-7 shrink-0 overflow-hidden rounded-sm bg-foreground/5">
                   <img src={caseStudy.thumbnail_url} alt="" className="w-full h-full object-cover" />
                 </div>
               )}
@@ -184,10 +193,10 @@ export default function CaseStudyClient() {
         </div>
       </header>
 
-      <div className={`pt-[72px] w-full max-w-[920px] mx-auto px-6 md:px-10 lg:px-12 ${navItems.length > 0 ? 'lg:grid lg:grid-cols-[180px_minmax(0,600px)] lg:gap-10 xl:gap-12' : ''}`}>
+      <div className={`pt-[52px] w-full max-w-[920px] mx-auto px-6 md:px-10 lg:px-12 ${navItems.length > 0 ? 'lg:grid lg:grid-cols-[180px_minmax(0,600px)] lg:gap-10 xl:gap-12' : ''}`}>
         {navItems.length > 0 && (
           <aside className="hidden lg:block min-w-0 pt-8 pb-14">
-            <div className="sticky top-[88px] max-h-[calc(100vh-104px)] overflow-y-auto pr-4">
+            <div className="sticky top-[68px] max-h-[calc(100vh-84px)] overflow-y-auto pr-4">
               <nav className="space-y-3" aria-label="Case study sections">
                 {navItems.map((item) => (
                   <button
@@ -230,13 +239,14 @@ export default function CaseStudyClient() {
 
           {/* Thumbnail */}
           {caseStudy.thumbnail_url && caseStudy.media_type !== 'video' && (
-            <div className="mb-16 overflow-hidden bg-foreground/4">
+            <button type="button" onClick={() => setExpandedImage({ src: caseStudy.thumbnail_url!, alt: caseStudy.title })} className="group block w-full mb-16 overflow-hidden bg-foreground/4 cursor-zoom-in" aria-label={`Expand ${caseStudy.title} image`}>
               <ProgressiveImage
                 src={caseStudy.thumbnail_url}
                 alt={caseStudy.title}
                 className="w-full h-auto"
               />
-            </div>
+              <span className="sr-only">Open full-size image</span>
+            </button>
           )}
 
           {caseStudy.media_type === 'video' && caseStudy.video_url && (
@@ -280,13 +290,13 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.image && (
-                  <div className="w-full max-w-[600px] mb-10 overflow-hidden bg-foreground/4">
+                  <button type="button" onClick={() => setExpandedImage({ src: section.image!, alt: section.title || section.label || 'Section image' })} className="block w-full max-w-[600px] mb-10 overflow-hidden bg-foreground/4 cursor-zoom-in" aria-label={`Expand ${section.title || section.label || 'section'} image`}>
                     <ProgressiveImage
                       src={section.image}
                       alt={section.title || section.label || 'Section image'}
                       className="w-full h-auto"
                     />
-                  </div>
+                  </button>
                 )}
 
                 {section.video_url && (
@@ -334,6 +344,12 @@ export default function CaseStudyClient() {
           </div>
         </div>
       </div>
+      {expandedImage && (
+        <div className="fixed inset-0 z-[90] bg-black/88 p-4 md:p-8 flex items-center justify-center" role="dialog" aria-modal="true" aria-label="Expanded case study image" onClick={() => setExpandedImage(null)}>
+          <button type="button" onClick={() => setExpandedImage(null)} className="absolute top-4 right-4 size-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20" aria-label="Close image">×</button>
+          <img src={expandedImage.src} alt={expandedImage.alt} className="max-w-full max-h-full object-contain" onClick={(event) => event.stopPropagation()} />
+        </div>
+      )}
     </main>
   )
 }

@@ -27,7 +27,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
   }, {})
 
   return (
-      <div className="w-full max-w-2xl mx-auto px-8 py-12 md:py-12">
+      <section id="projects" className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 scroll-mt-20">
       <h2 className="text-foreground mb-8">Projects I&apos;ve built</h2>
 
       <div className="space-y-10">
@@ -79,6 +79,6 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
           </section>
         ))}
       </div>
-    </div>
+    </section>
   )
 }

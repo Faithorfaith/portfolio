@@ -7,9 +7,9 @@ import { useTextToSpeech } from '@/hooks/use-text-to-speech'
 import { StaggerContainer, StaggerItem } from '@/components/animations/scroll-animations'
 import EmptyState from './empty-state'
 import SafeHtml from '@/components/safe-html'
-import Doodles from './doodles'
 import ProgressiveImage from '@/components/progressive-image'
 import { playFeedback } from '@/lib/interaction-feedback'
+import Link from 'next/link'
 
 interface ContentBlock {
   id: string
@@ -18,7 +18,7 @@ interface ContentBlock {
   level?: 1 | 2 | 3
 }
 
-interface Writing {
+export interface Writing {
   id: string
   title: string
   slug: string
@@ -29,10 +29,10 @@ interface Writing {
   created_at: string
 }
 
-export default function WritingSection({ onSubPageChange, variant = 'full' }: { onSubPageChange?: (v: boolean) => void; variant?: 'home' | 'full' }) {
-  const [writings, setWritings] = useState<Writing[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [selectedWriting, setSelectedWriting] = useState<Writing | null>(null)
+export default function WritingSection({ onSubPageChange, variant = 'full', initialSlug, initialWritings }: { onSubPageChange?: (v: boolean) => void; variant?: 'home' | 'full'; initialSlug?: string; initialWritings?: Writing[] }) {
+  const [writings, setWritings] = useState<Writing[]>(initialWritings || [])
+  const [isLoading, setIsLoading] = useState(!initialWritings)
+  const [selectedWriting, setSelectedWriting] = useState<Writing | null>(() => initialSlug ? initialWritings?.find((writing) => writing.slug === initialSlug) || null : null)
   const [userProfile, setUserProfile] = useState<{ full_name: string | null; avatar_url: string | null }>({ full_name: null, avatar_url: null })
   
   const { isPlaying, isPaused, speak, pause, resume, stop } = useTextToSpeech()
@@ -41,6 +41,13 @@ export default function WritingSection({ onSubPageChange, variant = 'full' }: { 
   const closeWriting = () => { setSelectedWriting(null); onSubPageChange?.(false); stop() }
 
   useEffect(() => {
+    if (initialWritings) {
+      if (initialSlug) {
+        const requested = initialWritings.find((writing) => writing.slug === initialSlug)
+        if (requested) setSelectedWriting(requested)
+      }
+      return
+    }
     const fetchWritings = async () => {
       try {
         // Batch fetch profile + writings with caching
@@ -70,7 +77,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full' }: { 
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
           )
           setWritings(published)
-          const requestedSlug = new URLSearchParams(window.location.search).get('article')
+          const requestedSlug = initialSlug || new URLSearchParams(window.location.search).get('article')
           const requestedArticle = requestedSlug ? published.find((writing: Writing) => writing.slug === requestedSlug) : null
           if (requestedArticle) {
             setSelectedWriting(requestedArticle)
@@ -85,7 +92,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full' }: { 
     }
 
     fetchWritings()
-  }, [])
+  }, [initialSlug, initialWritings, onSubPageChange])
 
   if (isLoading) {
     return (
@@ -111,7 +118,6 @@ export default function WritingSection({ onSubPageChange, variant = 'full' }: { 
     return <EmptyState 
       title="Writing"
       description="Coming soon..."
-      doodleVariant={2}
     />
   }
 
@@ -119,10 +125,9 @@ export default function WritingSection({ onSubPageChange, variant = 'full' }: { 
   if (selectedWriting) {
     return (
       <div className="w-full max-w-2xl mx-auto px-8 py-12 md:py-20" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
-        <Doodles />
         {/* Back Button */}
         <button
-          onClick={closeWriting}
+          onClick={() => initialSlug ? window.location.assign('/#writing') : closeWriting()}
           className="flex items-center gap-2 text-sm text-foreground/45 hover:text-foreground mb-12 transition-colors group"
         >
           <svg className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,7 +158,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full' }: { 
                       day: 'numeric'
                     })}
                   </time>
-                  <span className="text-sm text-foreground/30">•</span>
+                  <span className="text-sm text-foreground/45">•</span>
                   <span className="text-sm text-foreground/50">
                     {Math.ceil(selectedWriting.content.reduce((acc, block) => acc + (block.content?.split(' ').length || 0), 0) / 200)} min read
                   </span>
@@ -283,15 +288,16 @@ export default function WritingSection({ onSubPageChange, variant = 'full' }: { 
 
   if (variant === 'home') {
     return (
-      <section className="w-full max-w-2xl mx-auto px-8 py-12" aria-labelledby="home-writing-title">
+      <section id="writing" className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 scroll-mt-20" aria-labelledby="home-writing-title">
         <h2 id="home-writing-title" className="text-[18px] font-normal text-foreground/58 mb-8">my articles</h2>
         <div className="space-y-2">
           {writings.slice(0, 4).map((writing) => {
             const wordCount = writing.content.reduce((total, block) => total + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0)
             return (
-              <button
+              <Link
                 key={writing.id}
-                onClick={() => openWriting(writing)}
+                href={`/writing/${encodeURIComponent(writing.slug)}`}
+                onClick={() => playFeedback('tap')}
                 className="group grid w-full grid-cols-[88px_minmax(0,1fr)_20px] md:grid-cols-[112px_minmax(0,1fr)_24px] gap-4 md:gap-5 items-center py-3 text-left"
               >
                 {writing.cover_image ? (
@@ -302,13 +308,14 @@ export default function WritingSection({ onSubPageChange, variant = 'full' }: { 
                 <div className="min-w-0">
                   <h3 className="text-sm md:text-base font-medium leading-snug text-foreground group-hover:text-foreground/65 transition-colors">{writing.title}</h3>
                   {writing.excerpt && <p className="mt-1.5 text-sm leading-relaxed text-foreground/50 line-clamp-1">{writing.excerpt}</p>}
-                  <p className="mt-2 text-[11px] text-foreground/35">{Math.max(1, Math.ceil(wordCount / 200))} min · {new Date(writing.created_at).getFullYear()}</p>
+                  <p className="mt-2 text-[11px] text-foreground/45">{Math.max(1, Math.ceil(wordCount / 200))} min · {new Date(writing.created_at).getFullYear()}</p>
                 </div>
-                <span className="text-lg text-foreground/35 transition-transform group-hover:translate-x-1" aria-hidden="true">↗</span>
-              </button>
+                <span className="text-lg text-foreground/45 transition-transform group-hover:translate-x-1" aria-hidden="true">↗</span>
+              </Link>
             )
           })}
         </div>
+        {writings.length > 4 && <Link href="/writing" className="mt-5 inline-flex min-h-9 items-center text-xs text-foreground/50 hover:text-foreground transition-colors">View all writing →</Link>}
       </section>
     )
   }
@@ -316,8 +323,6 @@ export default function WritingSection({ onSubPageChange, variant = 'full' }: { 
   // Writings List - Medium-style card grid
   return (
     <div className="w-full max-w-6xl mx-auto px-8 py-12 md:py-20">
-      <Doodles />
-      
       {/* Centered Content Container */}
       <div className="flex justify-center">
         <div className="max-w-4xl w-full">
@@ -331,8 +336,9 @@ export default function WritingSection({ onSubPageChange, variant = 'full' }: { 
             <div className="border-t border-foreground/8">
               {writings.map((writing) => (
                 <StaggerItem key={writing.id}>
-                  <button
-                    onClick={() => openWriting(writing)}
+                  <Link
+                    href={`/writing/${encodeURIComponent(writing.slug)}`}
+                    onClick={() => playFeedback('tap')}
                     className="group text-left grid grid-cols-[96px_1fr] md:grid-cols-[160px_1fr] grid-rows-[auto_auto] gap-x-5 md:gap-x-7 w-full py-6 border-b border-foreground/8 hover:border-foreground/20 transition-colors"
                   >
               {/* Cover Image */}
@@ -361,7 +367,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full' }: { 
                   day: 'numeric'
                 })} • {Math.ceil(writing.content.reduce((acc, block) => acc + (block.content?.split(' ').length || 0), 0) / 200)} min read
               </p>
-                </button>
+                </Link>
                 </StaggerItem>
               ))}
             </div>

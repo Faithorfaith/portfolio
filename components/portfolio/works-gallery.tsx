@@ -5,12 +5,11 @@ import { createClient } from '@/lib/supabase/client'
 import { fetchWithCache } from '@/lib/cache-utils'
 import { StaggerContainer, StaggerItem, ParallaxImage } from '@/components/animations/scroll-animations'
 import EmptyState from './empty-state'
-import Doodles from './doodles'
 import ProgressiveImage from '@/components/progressive-image'
 import { playFeedback } from '@/lib/interaction-feedback'
 import Link from 'next/link'
 
-interface Work {
+export interface Work {
   id: string
   title: string
   description: string | null
@@ -22,9 +21,9 @@ interface Work {
   type?: string | null
 }
 
-export default function WorksGallery({ onSubPageChange, variant = 'full' }: { onSubPageChange?: (v: boolean) => void; variant?: 'preview' | 'full' }) {
-  const [works, setWorks] = useState<Work[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+export default function WorksGallery({ onSubPageChange, variant = 'full', initialWorks }: { onSubPageChange?: (v: boolean) => void; variant?: 'preview' | 'full'; initialWorks?: Work[] }) {
+  const [works, setWorks] = useState<Work[]>(initialWorks || [])
+  const [isLoading, setIsLoading] = useState(!initialWorks)
   const [selectedWork, setSelectedWork] = useState<Work | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -32,11 +31,13 @@ export default function WorksGallery({ onSubPageChange, variant = 'full' }: { on
     playFeedback('tap')
     setSelectedWork(work)
     onSubPageChange?.(true)
+    if (variant === 'full') window.history.pushState({ playgroundWork: work.id }, '', `/playground?work=${encodeURIComponent(work.id)}`)
     // Tiny delay so the element mounts before we trigger the transition
     requestAnimationFrame(() => requestAnimationFrame(() => setModalVisible(true)))
   }
   const closeWork = () => {
     setModalVisible(false)
+    if (variant === 'full' && window.location.search) window.history.replaceState(null, '', '/playground')
     setTimeout(() => { setSelectedWork(null); onSubPageChange?.(false) }, 200)
   }
 
@@ -48,6 +49,31 @@ export default function WorksGallery({ onSubPageChange, variant = 'full' }: { on
   }, [selectedWork])
 
   useEffect(() => {
+    if (variant !== 'full') return
+    const onPopState = () => {
+      const requestedId = new URLSearchParams(window.location.search).get('work')
+      if (!requestedId) {
+        setModalVisible(false)
+        setSelectedWork(null)
+        onSubPageChange?.(false)
+      }
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [variant, onSubPageChange])
+
+  useEffect(() => {
+    if (variant !== 'full' || works.length === 0 || selectedWork) return
+    const requestedId = new URLSearchParams(window.location.search).get('work')
+    const requestedWork = requestedId ? works.find((work) => work.id === requestedId) : null
+    if (!requestedWork) return
+    setSelectedWork(requestedWork)
+    onSubPageChange?.(true)
+    requestAnimationFrame(() => requestAnimationFrame(() => setModalVisible(true)))
+  }, [variant, works, selectedWork, onSubPageChange])
+
+  useEffect(() => {
+    if (initialWorks) return
     const fetchWorks = async () => {
       try {
         const data = await fetchWithCache(
@@ -74,7 +100,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full' }: { on
     }
 
     fetchWorks()
-  }, [])
+  }, [initialWorks, variant, onSubPageChange])
 
   if (isLoading) {
     return (
@@ -102,7 +128,6 @@ export default function WorksGallery({ onSubPageChange, variant = 'full' }: { on
     return <EmptyState 
       title="Playground"
       description="Coming soon..."
-      doodleVariant={1}
     />
   }
 
@@ -118,7 +143,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full' }: { on
 
   if (variant === 'preview') {
     return (
-      <section className="w-full max-w-2xl mx-auto px-8 py-12" aria-labelledby="playground-preview-title">
+      <section id="playground" className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 scroll-mt-20" aria-labelledby="playground-preview-title">
         <div className="flex items-baseline justify-between gap-4 mb-8">
           <h2 id="playground-preview-title" className="text-[18px] font-medium tracking-[-0.01em] text-foreground">Playground</h2>
           <Link href="/playground" className="text-[11px] text-foreground/45 hover:text-foreground transition-colors">View all projects →</Link>
@@ -129,7 +154,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full' }: { on
             return (
               <Link
                 key={work.id}
-                href="/playground"
+                href={`/playground?work=${encodeURIComponent(work.id)}`}
                 onClick={() => playFeedback('tap')}
                 className="group relative block break-inside-avoid mb-3 overflow-hidden rounded-md bg-foreground/5 ring-1 ring-transparent hover:ring-foreground/25 transition-[box-shadow,filter] hover:brightness-[0.98]"
                 aria-label={`View ${work.title} in Playground`}
@@ -139,7 +164,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full' }: { on
                 ) : isVideo(work) && work.media_url ? (
                   <video src={work.media_url} className="block w-full h-auto" muted playsInline preload="metadata" />
                 ) : (
-                  <div className="aspect-[4/3] flex items-center justify-center text-[11px] text-foreground/30">{work.title}</div>
+                  <div className="aspect-[4/3] flex items-center justify-center text-[11px] text-foreground/45">{work.title}</div>
                 )}
               </Link>
             )
@@ -152,8 +177,6 @@ export default function WorksGallery({ onSubPageChange, variant = 'full' }: { on
 
   return (
     <div className="w-full max-w-6xl mx-auto px-8 py-12 md:py-20">
-      <Doodles />
-
       <div className="flex justify-center">
         <div className="max-w-4xl w-full">
           <Link href="/" className="mb-12 inline-flex min-h-9 items-center text-xs text-foreground/45 hover:text-foreground transition-colors">← Back to portfolio</Link>
@@ -215,7 +238,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full' }: { on
                             {work.description}
                           </p>
                         )}
-                        <span className="absolute right-0 top-0 text-foreground/25 group-hover:text-foreground/65 group-hover:translate-x-0.5 transition-all" aria-hidden="true">↗</span>
+                        <span className="absolute right-0 top-0 text-foreground/45 group-hover:text-foreground/65 group-hover:translate-x-0.5 transition-all" aria-hidden="true">↗</span>
                       </div>
                     </button>
                   </StaggerItem>

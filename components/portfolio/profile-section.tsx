@@ -95,27 +95,7 @@ export default function ProfileSection({
 
   return (
     <div className="relative w-full">
-      {/* Doodles */}
-      <div className="fixed pointer-events-none z-30 top-16 left-5">
-        <img 
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-YTOZb6UgMNL2WcsNjULSUsbLb1fmjk.png"
-          alt="Doodle dinosaur" 
-          loading="lazy"
-          decoding="async"
-          className="w-12 h-12 md:w-14 md:h-14 animate-doodle-shake"
-        />
-      </div>
-      <div className="fixed pointer-events-none z-30 bottom-40 right-5">
-        <img 
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-hSQCOVk4FK1TJNrE7ZbEJgsiYal1rr.png"
-          alt="Doodle cool character" 
-          loading="lazy"
-          decoding="async"
-          className="w-12 h-12 md:w-14 md:h-14 animate-doodle-shake"
-        />
-      </div>
-
-      <div className="w-full max-w-2xl mx-auto px-8 py-12 md:py-16 relative z-10">
+      <div className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 md:py-16 relative z-10">
         {/* One quiet cover reveals the gallery in place. */}
         {galleryImages.length > 0 && (
           <div className="mb-8">
@@ -281,7 +261,7 @@ export default function ProfileSection({
 
       {/* Case Studies Section */}
       {caseStudies.length > 0 && (
-        <div className="mt-16">
+        <div id="work" className="mt-16 scroll-mt-20">
           <div className="flex items-baseline justify-between mb-8">
             <h2 className="text-foreground">My work</h2>
             {caseStudies.length > 1 && <span className="text-xs text-foreground/35">Scroll →</span>}

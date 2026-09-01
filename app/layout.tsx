@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
+import SoundControl from '@/components/portfolio/sound-control'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -44,6 +45,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
+        <SoundControl />
         <Analytics />
         <SpeedInsights />
       </body>
