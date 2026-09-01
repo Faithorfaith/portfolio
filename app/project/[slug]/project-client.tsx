@@ -57,7 +57,7 @@ export default function ProjectClient() {
   }
 
   return (
-    <main className="w-full max-w-4xl mx-auto px-8 py-12 md:py-20">
+    <main className="w-full max-w-4xl mx-auto px-8 pb-12 md:pb-20">
       <DetailPageHeader
         title={project.title}
         eyebrow={project.year}

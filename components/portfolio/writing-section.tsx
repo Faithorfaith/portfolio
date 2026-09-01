@@ -6,6 +6,7 @@ import { fetchWithCache, batchFetch } from '@/lib/cache-utils'
 import { useTextToSpeech } from '@/hooks/use-text-to-speech'
 import { StaggerContainer, StaggerItem } from '@/components/animations/scroll-animations'
 import EmptyState from './empty-state'
+import { DetailNavigation } from '@/components/detail-page-header'
 import SafeHtml from '@/components/safe-html'
 import ProgressiveImage from '@/components/progressive-image'
 import { playFeedback } from '@/lib/interaction-feedback'
@@ -125,17 +126,8 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
   // Article View - Medium-style clean layout
   if (selectedWriting) {
     return (
-      <div className="w-full max-w-[600px] mx-auto px-5 sm:px-8 py-12 md:py-20" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
-        {/* Back Button */}
-        <button
-          onClick={() => initialSlug ? window.location.assign('/#writing') : closeWriting()}
-          className="flex items-center gap-2 text-sm text-foreground/45 hover:text-foreground mb-12 transition-colors group"
-        >
-          <svg className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to writings
-        </button>
+      <div id="top" className="w-full max-w-[600px] mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
+        <DetailNavigation title={selectedWriting.title} backHref={initialSlug ? '/writing' : '/#writing'} />
 
         {/* Article Content */}
         <article>
@@ -240,10 +232,10 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                       <HeadingTag
                         key={block.id}
                         id={`block-${block.id}`}
-                        className={`scroll-mt-8 text-foreground ${
-                          block.level === 1 ? 'text-[18px] font-medium tracking-[-0.01em] mt-14 mb-5 leading-tight' :
-                          block.level === 2 ? 'text-base font-medium tracking-[-0.01em] mt-12 mb-4 leading-snug' :
-                          'text-sm font-semibold mt-9 mb-3 leading-snug'
+                        className={`scroll-mt-20 text-sm leading-relaxed tracking-[0.01em] ${
+                          block.level === 1 ? 'font-medium text-foreground mt-14 mb-5' :
+                          block.level === 2 ? 'font-normal text-foreground mt-12 mb-4' :
+                          'font-normal text-foreground/70 mt-9 mb-3'
                         }`}
                       >{headingText}</HeadingTag>
                     )
@@ -290,7 +282,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
   if (variant === 'home') {
     return (
       <section id="writing" className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 scroll-mt-20" aria-labelledby="home-writing-title">
-        <h2 id="home-writing-title" className="text-foreground mb-8">My articles</h2>
+        <h2 id="home-writing-title" className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground mb-8">My articles</h2>
         <div className="space-y-2">
           {writings.slice(0, 4).map((writing) => {
             const wordCount = writing.content.reduce((total, block) => total + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0)
@@ -307,7 +299,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                   </div>
                 ) : <div className="aspect-[4/3] bg-foreground/5" />}
                 <div className="min-w-0">
-                  <h3 className="text-sm font-normal leading-snug text-foreground/70 group-hover:text-foreground transition-colors">{writing.title}</h3>
+                  <h3 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground/70 group-hover:text-foreground transition-colors">{writing.title}</h3>
                   {writing.excerpt && <p className="mt-1.5 text-sm leading-relaxed text-foreground/50 line-clamp-1">{writing.excerpt}</p>}
                   <p className="mt-2 text-[11px] text-foreground/45">{Math.max(1, Math.ceil(wordCount / 200))} min · {new Date(writing.created_at).getFullYear()}</p>
                 </div>
@@ -323,13 +315,14 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
 
   // Writings List - Medium-style card grid
   return (
-    <div className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 md:py-20">
+    <div id="top" className="w-full max-w-2xl mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20">
+      <DetailNavigation title="Writing" showCopy={false} />
       {/* Centered Content Container */}
       <div className="flex justify-center">
         <div className="max-w-4xl w-full">
           {/* Section Header */}
           <div className="mb-10 max-w-xl">
-            <h2 className="text-foreground">Writing</h2>
+            <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Writing</h2>
           </div>
 
           {/* Cards Grid - 2 columns on desktop */}
@@ -356,7 +349,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
               )}
 
               {/* Title */}
-              <h3 className="col-start-2 self-end text-sm font-normal text-foreground/70 mb-2 leading-snug group-hover:text-foreground transition-colors">
+              <h3 className="col-start-2 self-end text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground/70 mb-2 group-hover:text-foreground transition-colors">
                 {writing.title}
               </h3>
 

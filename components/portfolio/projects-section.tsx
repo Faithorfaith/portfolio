@@ -28,7 +28,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
 
   return (
       <section id="projects" className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 scroll-mt-20">
-      <h2 className="text-foreground mb-8">Projects I&apos;ve built</h2>
+      <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground mb-8">Projects I&apos;ve built</h2>
 
       <div className="space-y-10">
         {Object.entries(projectsByYear)
@@ -55,7 +55,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                     <div className="flex items-start justify-between gap-6 py-3">
                     {/* Left - Title & Description */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-foreground/70 font-normal group-hover:text-foreground transition-colors duration-200">
+                      <h3 className="text-sm leading-relaxed tracking-[0.01em] text-foreground/70 font-normal group-hover:text-foreground transition-colors duration-200">
                         {project.title}
                       </h3>
                       {project.description && (

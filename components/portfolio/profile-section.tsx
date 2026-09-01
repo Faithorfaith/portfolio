@@ -259,7 +259,7 @@ export default function ProfileSection({
       {caseStudies.length > 0 && (
         <div id="work" className="mt-16 scroll-mt-20">
           <div className="flex items-baseline justify-between mb-8">
-            <h2 className="text-foreground">My work</h2>
+            <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">My work</h2>
             {caseStudies.length > 1 && <span className="text-xs text-foreground/35">Scroll →</span>}
           </div>
 
