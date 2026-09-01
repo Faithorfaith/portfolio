@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { fetchWithCache } from '@/lib/cache-utils'
 import { StaggerContainer, StaggerItem, ParallaxImage } from '@/components/animations/scroll-animations'
@@ -27,6 +27,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
   const [isLoading, setIsLoading] = useState(!initialWorks)
   const [selectedWork, setSelectedWork] = useState<Work | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
+  const viewAllCursorRef = useRef<HTMLDivElement>(null)
 
   const openWork = (work: Work) => {
     playFeedback('tap')
@@ -146,49 +147,81 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
     const visibleWorks = works.slice(0, 8)
     const hiddenWorks = works.slice(8)
     const stackWorks = hiddenWorks.slice(0, 4)
+    const renderMasonry = (columnCount: number, className: string) => (
+      <div className={`${className} w-full gap-2.5 items-start`} style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }} aria-label="Playground preview">
+        {Array.from({ length: columnCount }, (_, columnIndex) => (
+          <div key={columnIndex} className="min-w-0 space-y-2.5">
+            {visibleWorks.filter((_, index) => index % columnCount === columnIndex).map((work) => {
+              const sourceIndex = visibleWorks.findIndex((item) => item.id === work.id)
+              const coverImage = getCoverImage(work)
+              const shape = ['aspect-[4/5]', 'aspect-square', 'aspect-[3/4]', 'aspect-[5/4]', 'aspect-[2/3]'][sourceIndex % 5]
+              return (
+                <Link
+                  key={work.id}
+                  href={`/playground?work=${encodeURIComponent(work.id)}`}
+                  onClick={() => playFeedback('tap')}
+                  className={`group relative block w-full ${shape} overflow-hidden rounded-md bg-foreground/5 ring-1 ring-transparent hover:ring-foreground/25 transition-[box-shadow,filter] hover:brightness-[0.98]`}
+                  aria-label={`View ${work.title} in Playground`}
+                >
+                  {coverImage ? (
+                    <img src={coverImage} alt={work.title} className="block w-full h-full object-cover" loading="lazy" />
+                  ) : isVideo(work) && work.media_url ? (
+                    <video src={work.media_url} className="block w-full h-full object-cover" muted playsInline preload="metadata" />
+                  ) : (
+                    <div className="h-full flex items-center justify-center p-2 text-center text-[11px] text-foreground/45">{work.title}</div>
+                  )}
+                </Link>
+              )
+            })}
+            {hiddenWorks.length > 0 && columnIndex === columnCount - 1 && (
+              <Link
+                href="/playground"
+                className="group relative block w-full aspect-[4/5]"
+                aria-label={`View all Playground work, ${hiddenWorks.length} more items`}
+                onMouseEnter={(event) => {
+                  if (!viewAllCursorRef.current || window.matchMedia('(hover: none)').matches) return
+                  viewAllCursorRef.current.style.opacity = '1'
+                  viewAllCursorRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
+                }}
+                onMouseMove={(event) => {
+                  if (!viewAllCursorRef.current) return
+                  viewAllCursorRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
+                }}
+                onMouseLeave={() => {
+                  if (viewAllCursorRef.current) viewAllCursorRef.current.style.opacity = '0'
+                }}
+              >
+                {stackWorks.map((work, index) => {
+                  const coverImage = getCoverImage(work)
+                  return (
+                    <div key={work.id} className="absolute inset-0 overflow-hidden rounded-md bg-foreground/8 shadow-sm" style={{ transform: `translate(${index * 2}px, ${index * 2}px) rotate(${(index - 1.5) * 1.2}deg)`, zIndex: index }}>
+                      {coverImage ? <img src={coverImage} alt="" className="w-full h-full object-cover" loading="lazy" /> : <div className="w-full h-full bg-foreground/8" />}
+                    </div>
+                  )
+                })}
+                <div className="absolute inset-0 z-10 rounded-md bg-black/35 flex flex-col items-center justify-center text-white transition-colors group-hover:bg-black/55">
+                  <span className="text-sm font-medium">+{hiddenWorks.length}</span>
+                </div>
+              </Link>
+            )}
+          </div>
+        ))}
+      </div>
+    )
     return (
       <section id="playground" className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 scroll-mt-20" aria-labelledby="playground-preview-title">
         <div className="mb-8">
           <h2 id="playground-preview-title" className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Playground</h2>
         </div>
-        <div className="columns-2 sm:columns-3 md:columns-4 gap-2.5" aria-label="Playground preview">
-          {visibleWorks.map((work, index) => {
-            const coverImage = getCoverImage(work)
-            const shape = ['aspect-[4/5]', 'aspect-square', 'aspect-[3/4]', 'aspect-[5/4]', 'aspect-[2/3]'][index % 5]
-            return (
-              <Link
-                key={work.id}
-                href={`/playground?work=${encodeURIComponent(work.id)}`}
-                onClick={() => playFeedback('tap')}
-                className={`group relative block break-inside-avoid mb-2.5 ${shape} overflow-hidden rounded-md bg-foreground/5 ring-1 ring-transparent hover:ring-foreground/25 transition-[box-shadow,filter] hover:brightness-[0.98]`}
-                aria-label={`View ${work.title} in Playground`}
-              >
-                {coverImage ? (
-                  <img src={coverImage} alt={work.title} className="block w-full h-full object-cover" loading="lazy" />
-                ) : isVideo(work) && work.media_url ? (
-                  <video src={work.media_url} className="block w-full h-full object-cover" muted playsInline preload="metadata" />
-                ) : (
-                  <div className="h-full flex items-center justify-center p-2 text-center text-[11px] text-foreground/45">{work.title}</div>
-                )}
-              </Link>
-            )
-          })}
-          {hiddenWorks.length > 0 && (
-            <Link href="/playground" className="group relative block break-inside-avoid mb-2.5 aspect-[4/5]" aria-label={`View all Playground work, ${hiddenWorks.length} more items`}>
-              {stackWorks.map((work, index) => {
-                const coverImage = getCoverImage(work)
-                return (
-                  <div key={work.id} className="absolute inset-0 overflow-hidden rounded-md bg-foreground/8 shadow-sm" style={{ transform: `translate(${index * 2}px, ${index * 2}px) rotate(${(index - 1.5) * 1.2}deg)`, zIndex: index }}>
-                    {coverImage ? <img src={coverImage} alt="" className="w-full h-full object-cover" loading="lazy" /> : <div className="w-full h-full bg-foreground/8" />}
-                  </div>
-                )
-              })}
-              <div className="absolute inset-0 z-10 rounded-md bg-black/35 flex flex-col items-center justify-center text-white transition-colors group-hover:bg-black/55">
-                <span className="text-sm font-medium">+{hiddenWorks.length}</span>
-                <span className="mt-1 text-[10px] opacity-0 translate-y-1 group-hover:opacity-90 group-hover:translate-y-0 transition-all">View all</span>
-              </div>
-            </Link>
-          )}
+        {renderMasonry(2, 'grid sm:hidden')}
+        {renderMasonry(3, 'hidden sm:grid md:hidden')}
+        {renderMasonry(4, 'hidden md:grid')}
+        <div
+          ref={viewAllCursorRef}
+          className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm"
+          aria-hidden="true"
+        >
+          View all
         </div>
       </section>
     )

@@ -3,6 +3,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 import SoundControl from '@/components/portfolio/sound-control'
+import { ArticleAudioProvider } from '@/components/article-audio-provider'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -44,8 +45,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" crossOrigin="anonymous" />
       </head>
       <body>
-        {children}
-        <SoundControl />
+        <ArticleAudioProvider>
+          {children}
+          <SoundControl />
+        </ArticleAudioProvider>
         <Analytics />
         <SpeedInsights />
       </body>

@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { fetchWithCache, batchFetch } from '@/lib/cache-utils'
-import { useTextToSpeech } from '@/hooks/use-text-to-speech'
+import { useArticleAudio } from '@/components/article-audio-provider'
 import { StaggerContainer, StaggerItem } from '@/components/animations/scroll-animations'
 import EmptyState from './empty-state'
 import { DetailNavigation } from '@/components/detail-page-header'
@@ -37,10 +37,23 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
   const [selectedWriting, setSelectedWriting] = useState<Writing | null>(() => initialSlug ? initialWritings?.find((writing) => writing.slug === initialSlug || slugify(writing.title) === initialSlug) || null : null)
   const [userProfile, setUserProfile] = useState<{ full_name: string | null; avatar_url: string | null }>({ full_name: null, avatar_url: null })
   
-  const { isPlaying, isPaused, speak, pause, resume, stop } = useTextToSpeech()
+  const articleCursorRef = useRef<HTMLDivElement>(null)
+  const { isPlaying, isPaused, title: audioTitle, playArticle, pause, resume } = useArticleAudio()
 
   const openWriting = (w: Writing) => { playFeedback('tap'); setSelectedWriting(w); onSubPageChange?.(true) }
-  const closeWriting = () => { setSelectedWriting(null); onSubPageChange?.(false); stop() }
+  const closeWriting = () => { setSelectedWriting(null); onSubPageChange?.(false) }
+  const showArticleCursor = (event: React.MouseEvent) => {
+    if (!articleCursorRef.current || window.matchMedia('(hover: none)').matches) return
+    articleCursorRef.current.style.opacity = '1'
+    articleCursorRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
+  }
+  const moveArticleCursor = (event: React.MouseEvent) => {
+    if (!articleCursorRef.current) return
+    articleCursorRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
+  }
+  const hideArticleCursor = () => {
+    if (articleCursorRef.current) articleCursorRef.current.style.opacity = '0'
+  }
 
   useEffect(() => {
     if (initialWritings) {
@@ -160,7 +173,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                 {/* Audio Reader Button - Medium Style */}
                 <button 
                   onClick={() => {
-                    if (isPlaying) {
+                    if (isPlaying && audioTitle === selectedWriting.title) {
                       if (isPaused) {
                         resume()
                       } else {
@@ -178,12 +191,12 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                         .map(block => stripHtml(block.content || ''))
                         .join(' ')
                       
-                      speak(textToRead)
+                      playArticle(selectedWriting.title, textToRead)
                     }
                   }}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-foreground/12 transition-colors text-sm text-foreground/55 hover:text-foreground hover:border-foreground/25 cursor-pointer"
                 >
-                  {isPlaying && !isPaused ? (
+                  {isPlaying && audioTitle === selectedWriting.title && !isPaused ? (
                     <>
                       <svg className="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
                         <rect x="6" y="4" width="3" height="16" />
@@ -191,7 +204,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                       </svg>
                       Pause
                     </>
-                  ) : isPlaying && isPaused ? (
+                  ) : isPlaying && audioTitle === selectedWriting.title && isPaused ? (
                     <>
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
@@ -291,6 +304,9 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                 key={writing.id}
                 href={`/writing/${encodeURIComponent(slugify(writing.title))}`}
                 onClick={() => playFeedback('tap')}
+                onMouseEnter={showArticleCursor}
+                onMouseMove={moveArticleCursor}
+                onMouseLeave={hideArticleCursor}
                 className="group grid w-full grid-cols-[88px_minmax(0,1fr)_20px] md:grid-cols-[112px_minmax(0,1fr)_24px] gap-4 md:gap-5 items-center py-3 text-left"
               >
                 {writing.cover_image ? (
@@ -308,6 +324,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
             )
           })}
         </div>
+        <div ref={articleCursorRef} className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm" aria-hidden="true">Read article</div>
         {writings.length > 4 && <Link href="/writing" className="mt-5 inline-flex min-h-9 items-center text-xs text-foreground/50 hover:text-foreground transition-colors">View all writing →</Link>}
       </section>
     )
@@ -333,6 +350,9 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                   <Link
                     href={`/writing/${encodeURIComponent(slugify(writing.title))}`}
                     onClick={() => playFeedback('tap')}
+                    onMouseEnter={showArticleCursor}
+                    onMouseMove={moveArticleCursor}
+                    onMouseLeave={hideArticleCursor}
                     className="group text-left grid grid-cols-[88px_1fr] md:grid-cols-[112px_1fr] grid-rows-[auto_auto] gap-x-4 md:gap-x-5 w-full py-5 border-b border-foreground/8 hover:border-foreground/20 transition-colors"
                   >
               {/* Cover Image */}
@@ -366,6 +386,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
               ))}
             </div>
           </StaggerContainer>
+          <div ref={articleCursorRef} className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm" aria-hidden="true">Read article</div>
         </div>
       </div>
     </div>
