@@ -7,6 +7,7 @@ import ProgressiveImage from '@/components/progressive-image'
 import { playFeedback } from '@/lib/interaction-feedback'
 import { slugify } from '@/lib/slugify'
 import { track } from '@vercel/analytics'
+import { cleanInlineText, normalizeExternalUrl } from '@/lib/content-utils'
 
 export interface Profile {
   id: string
@@ -201,15 +202,18 @@ export default function ProfileSection({
       {profile.bio_references && profile.bio_references.length > 0 && (
         <div className="flex flex-wrap items-start gap-2 mb-8">
           {profile.bio_references.filter((reference) => reference.label.trim()).map((reference) => {
+            const label = cleanInlineText(reference.label)
+            const description = cleanInlineText(reference.description)
+            const url = normalizeExternalUrl(reference.url)
             const content = (
               <>
-                {reference.description && <span className="text-foreground/55">{reference.description}</span>}
-                <span className="font-medium text-foreground/75">{reference.label}</span>
-                {reference.url && <span className="text-foreground/40 group-hover:text-foreground/65 transition-colors">↗</span>}
+                {description && <span className="text-foreground/55">{description}</span>}
+                <span className="font-medium text-foreground/75">{label}</span>
+                {url && <span className="text-foreground/40 group-hover:text-foreground/65 transition-colors">↗</span>}
               </>
             )
             const classes = 'group inline-flex max-w-full flex-wrap items-baseline gap-x-1.5 gap-y-0.5 px-2.5 py-1.5 rounded-full bg-foreground/[0.045] text-xs leading-relaxed text-foreground/70 hover:bg-foreground/[0.075] transition-colors whitespace-normal'
-            return reference.url ? <a key={reference.id} href={reference.url} target="_blank" rel="noopener noreferrer" className={classes}>{content}</a> : <span key={reference.id} className={classes}>{content}</span>
+            return url ? <a key={reference.id} href={url} target="_blank" rel="noopener noreferrer" className={classes}>{content}</a> : <span key={reference.id} className={classes}>{content}</span>
           })}
         </div>
       )}

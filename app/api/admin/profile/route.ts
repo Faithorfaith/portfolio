@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
+import { cleanInlineText, normalizeExternalUrl } from '@/lib/content-utils'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,6 +18,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     console.log('[v0] Profile save request - user:', user.id, 'body:', body)
 
+    const bioReferences = Array.isArray(body.bio_references)
+      ? body.bio_references.map((reference: { id?: string; label?: string; description?: string; url?: string }) => ({
+          ...reference,
+          label: cleanInlineText(reference.label),
+          description: cleanInlineText(reference.description),
+          url: normalizeExternalUrl(reference.url),
+        }))
+      : []
+
     // Upsert profile with server-side auth context
     const { data, error: upsertError } = await supabase
       .from('profiles')
@@ -30,7 +40,7 @@ export async function POST(request: NextRequest) {
         hero_image_2: body.hero_image_2 || null,
         hero_image_3: body.hero_image_3 || null,
         gallery_images: Array.isArray(body.gallery_images) ? body.gallery_images : [],
-        bio_references: Array.isArray(body.bio_references) ? body.bio_references : [],
+        bio_references: bioReferences,
         positioning_headline: body.positioning_headline || null,
         supporting_statement: body.supporting_statement || null,
         availability_status: body.availability_status || null,
