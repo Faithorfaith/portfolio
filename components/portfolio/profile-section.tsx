@@ -138,7 +138,14 @@ export default function ProfileSection({
               aria-label={galleryOpen ? 'Hide profile photos' : 'Show profile photos'}
               aria-expanded={galleryOpen}
             >
-              <Image src={galleryImages[0]} alt="Profile gallery cover" fill sizes="128px" className="object-cover" priority />
+              <Image
+                src={galleryImages[0]}
+                alt="Profile gallery cover"
+                fill
+                sizes="128px"
+                className={`object-cover transition-[filter] duration-300 ${galleryOpen ? 'grayscale-0' : 'grayscale'}`}
+                priority
+              />
             </button>
 
             {galleryOpen && (

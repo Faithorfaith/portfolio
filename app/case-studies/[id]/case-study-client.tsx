@@ -182,7 +182,7 @@ export default function CaseStudyClient() {
         </div>
       </header>
 
-      <div className={`pt-[72px] w-full max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12 ${navItems.length > 0 ? 'lg:grid lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-14 xl:gap-20' : ''}`}>
+      <div className={`pt-[72px] w-full max-w-[1120px] mx-auto px-6 md:px-10 lg:px-12 ${navItems.length > 0 ? 'lg:grid lg:grid-cols-[200px_minmax(0,800px)] lg:gap-12 xl:gap-16' : ''}`}>
         {navItems.length > 0 && (
           <aside className="hidden lg:block min-w-0 py-14 md:py-20">
             <div className="sticky top-[112px] max-h-[calc(100vh-144px)] overflow-y-auto pr-5">
@@ -207,7 +207,7 @@ export default function CaseStudyClient() {
         )}
 
         <div className="min-w-0 py-14 md:py-20">
-          <div className="w-full max-w-[1100px]">
+          <div className="w-full max-w-[800px] mx-auto">
           {navItems.length > 0 && (
             <label className="lg:hidden block mb-10">
               <span className="block text-[11px] text-foreground/40 mb-2">Jump to section</span>
@@ -221,7 +221,7 @@ export default function CaseStudyClient() {
               </select>
             </label>
           )}
-          <header className="mb-14 md:mb-20 max-w-3xl">
+          <header className="mb-14 md:mb-20 w-full max-w-[800px]">
             <h1 className="text-[18px] font-medium tracking-[-0.01em] leading-snug text-foreground">{caseStudy.title}</h1>
             {caseStudy.excerpt && <p className="mt-6 text-sm text-foreground/65 leading-relaxed max-w-2xl">{caseStudy.excerpt}</p>}
           </header>
@@ -262,7 +262,7 @@ export default function CaseStudyClient() {
           )}
 
           {/* Sections */}
-          <div className="max-w-3xl space-y-24">
+          <div className="w-full max-w-[800px] space-y-24">
             {sections.map((section) => (
               <section key={section.id} id={section.id} className="scroll-mt-24">
                 {section.label && (
@@ -278,7 +278,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.image && (
-                  <div className={`mb-10 overflow-hidden bg-foreground/4 ${section.media_width === 'reading' ? '' : section.media_width === 'full' ? 'lg:w-[calc(100%+14rem)]' : 'lg:w-[calc(100%+8rem)]'}`}>
+                  <div className="w-full max-w-[800px] mb-10 overflow-hidden bg-foreground/4">
                     <ProgressiveImage
                       src={section.image}
                       alt={section.title || section.label || 'Section image'}
@@ -288,7 +288,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.video_url && (
-                  <div className={`mb-10 overflow-hidden bg-black ${section.media_width === 'reading' ? '' : section.media_width === 'full' ? 'lg:w-[calc(100%+14rem)]' : 'lg:w-[calc(100%+8rem)]'}`}>
+                  <div className="w-full max-w-[800px] mb-10 overflow-hidden bg-black">
                     <ViewportVideo
                       src={section.video_url}
                       decorative
@@ -297,7 +297,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.embed_url && (
-                  <div className={`mb-10 ${section.media_width === 'reading' ? '' : section.media_width === 'full' ? 'lg:w-[calc(100%+14rem)]' : 'lg:w-[calc(100%+8rem)]'}`}>
+                  <div className="w-full max-w-[800px] mb-10">
                     <SafeEmbed url={section.embed_url} title={section.title || section.label || 'Embedded content'} />
                   </div>
                 )}
@@ -314,7 +314,7 @@ export default function CaseStudyClient() {
             const content = typeof relatedArticle.content === 'string' ? JSON.parse(relatedArticle.content) : (relatedArticle.content || [])
             const words = content.reduce((total: number, block: { content?: string }) => total + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0)
             return (
-              <section className="max-w-3xl mt-24 pt-12 border-t border-foreground/8">
+              <section className="w-full max-w-[800px] mt-24 pt-12 border-t border-foreground/8">
                 <h2 className="text-[11px] text-foreground/45 font-normal mb-8">Related writing</h2>
                 <a href={`/?article=${encodeURIComponent(relatedArticle.slug)}`} className="group grid grid-cols-[112px_1fr_auto] gap-5 items-center">
                   {relatedArticle.cover_image ? <img src={relatedArticle.cover_image} alt="" className="w-28 aspect-[4/3] object-cover" /> : <div className="w-28 aspect-[4/3] bg-foreground/5" />}
