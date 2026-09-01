@@ -328,7 +328,7 @@ export default function CaseStudyClient() {
             return (
               <section className="w-full max-w-[600px] mt-20 pt-10 border-t border-foreground/8">
                 <h2 className="text-[11px] text-foreground/45 font-normal mb-8">Related writing</h2>
-                <a href={`/?article=${encodeURIComponent(relatedArticle.slug)}`} className="group grid grid-cols-[112px_1fr_auto] gap-5 items-center">
+                <a href={`/writing/${encodeURIComponent(slugify(relatedArticle.title))}`} className="group grid grid-cols-[112px_1fr_auto] gap-5 items-center">
                   {relatedArticle.cover_image ? <img src={relatedArticle.cover_image} alt="" className="w-28 aspect-[4/3] object-cover" /> : <div className="w-28 aspect-[4/3] bg-foreground/5" />}
                   <div className="min-w-0">
                     <h3 className="text-base font-medium text-foreground group-hover:text-foreground/65 transition-colors">{relatedArticle.title}</h3>

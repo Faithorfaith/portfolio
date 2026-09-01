@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import dynamic from 'next/dynamic'
+import { slugify } from '@/lib/slugify'
 
 const RTFEditor = dynamic(() => import('./rtf-editor'), { ssr: false })
 
@@ -107,7 +108,7 @@ export default function WritingsManager() {
     setIsSaving(true)
     setError(null)
     try {
-      const slug = editing.slug || `${editing.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}-${Date.now()}`
+      const slug = slugify(editing.title)
       const res = await fetch('/api/writings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

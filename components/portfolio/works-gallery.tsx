@@ -145,7 +145,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
     return (
       <section id="playground" className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 scroll-mt-20" aria-labelledby="playground-preview-title">
         <div className="flex items-baseline justify-between gap-4 mb-8">
-          <h2 id="playground-preview-title" className="text-[18px] font-medium tracking-[-0.01em] text-foreground">Playground</h2>
+          <h2 id="playground-preview-title" className="text-foreground">Playground</h2>
           <Link href="/playground" className="text-[11px] text-foreground/45 hover:text-foreground transition-colors">View all projects →</Link>
         </div>
         <div className="columns-2 sm:columns-3 gap-3" aria-label="Playground preview">

@@ -10,6 +10,7 @@ import SafeHtml from '@/components/safe-html'
 import ProgressiveImage from '@/components/progressive-image'
 import { playFeedback } from '@/lib/interaction-feedback'
 import Link from 'next/link'
+import { slugify } from '@/lib/slugify'
 
 interface ContentBlock {
   id: string
@@ -32,7 +33,7 @@ export interface Writing {
 export default function WritingSection({ onSubPageChange, variant = 'full', initialSlug, initialWritings }: { onSubPageChange?: (v: boolean) => void; variant?: 'home' | 'full'; initialSlug?: string; initialWritings?: Writing[] }) {
   const [writings, setWritings] = useState<Writing[]>(initialWritings || [])
   const [isLoading, setIsLoading] = useState(!initialWritings)
-  const [selectedWriting, setSelectedWriting] = useState<Writing | null>(() => initialSlug ? initialWritings?.find((writing) => writing.slug === initialSlug) || null : null)
+  const [selectedWriting, setSelectedWriting] = useState<Writing | null>(() => initialSlug ? initialWritings?.find((writing) => writing.slug === initialSlug || slugify(writing.title) === initialSlug) || null : null)
   const [userProfile, setUserProfile] = useState<{ full_name: string | null; avatar_url: string | null }>({ full_name: null, avatar_url: null })
   
   const { isPlaying, isPaused, speak, pause, resume, stop } = useTextToSpeech()
@@ -43,7 +44,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
   useEffect(() => {
     if (initialWritings) {
       if (initialSlug) {
-        const requested = initialWritings.find((writing) => writing.slug === initialSlug)
+        const requested = initialWritings.find((writing) => writing.slug === initialSlug || slugify(writing.title) === initialSlug)
         if (requested) setSelectedWriting(requested)
       }
       return
@@ -78,7 +79,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
           )
           setWritings(published)
           const requestedSlug = initialSlug || new URLSearchParams(window.location.search).get('article')
-          const requestedArticle = requestedSlug ? published.find((writing: Writing) => writing.slug === requestedSlug) : null
+          const requestedArticle = requestedSlug ? published.find((writing: Writing) => writing.slug === requestedSlug || slugify(writing.title) === requestedSlug) : null
           if (requestedArticle) {
             setSelectedWriting(requestedArticle)
             onSubPageChange?.(true)
@@ -124,7 +125,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
   // Article View - Medium-style clean layout
   if (selectedWriting) {
     return (
-      <div className="w-full max-w-2xl mx-auto px-8 py-12 md:py-20" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
+      <div className="w-full max-w-[600px] mx-auto px-5 sm:px-8 py-12 md:py-20" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
         {/* Back Button */}
         <button
           onClick={() => initialSlug ? window.location.assign('/#writing') : closeWriting()}
@@ -143,7 +144,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                 {selectedWriting.title}
               </h1>
               {selectedWriting.excerpt && (
-                <p className="text-foreground/55 leading-7 mb-7 text-sm font-normal">
+                <p className="text-foreground/60 leading-relaxed mb-7 text-sm font-normal">
                   {selectedWriting.excerpt}
                 </p>
               )}
@@ -218,18 +219,18 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
 
               {/* Thumbnail Image - After metadata */}
               {selectedWriting.cover_image && (
-                <div className="rounded-lg overflow-hidden">
+                <div className="w-full max-w-[600px] overflow-hidden">
                   <ProgressiveImage
                     src={selectedWriting.cover_image}
                     alt={selectedWriting.title}
-                    className="w-full h-48 md:h-72 object-cover"
-                    containerClassName="rounded-lg overflow-hidden"
+                    className="w-full aspect-video object-cover"
+                    containerClassName="w-full overflow-hidden"
                   />
                 </div>
               )}
             </header>
 
-            <div className="prose prose-invert max-w-2xl mx-auto">
+            <div className="w-full max-w-[600px] mx-auto">
               {selectedWriting.content.map((block) => {
                 switch (block.type) {
                   case 'heading':
@@ -251,17 +252,17 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                       <SafeHtml
                         key={block.id}
                         html={block.content}
-                        className="text-foreground/65 leading-7 mb-6 text-sm font-normal [&>p]:mb-5 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-5 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-5 [&>li]:mb-2 [&>strong]:font-medium [&>strong]:text-foreground [&>em]:italic [&_strong]:font-medium [&_strong]:text-foreground"
+                        className="text-foreground/70 leading-relaxed mb-6 text-sm font-normal [&>p]:mb-5 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-5 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-5 [&>li]:mb-2 [&>strong]:font-medium [&>strong]:text-foreground [&>em]:italic [&_strong]:font-medium [&_strong]:text-foreground"
                       />
                     )
                   case 'image':
                     return block.content ? (
-                      <figure key={block.id} className="my-14 -mx-4 md:-mx-16">
+                      <figure key={block.id} className="w-full max-w-[600px] my-12">
                         <ProgressiveImage
                           src={block.content}
                           alt=""
-                          className="w-full rounded-lg"
-                          containerClassName="w-full rounded-lg overflow-hidden"
+                          className="w-full"
+                          containerClassName="w-full overflow-hidden"
                         />
                       </figure>
                     ) : null
@@ -271,7 +272,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                         key={block.id}
                         as="blockquote"
                         html={block.content}
-                        className="pl-6 border-l border-foreground/25 text-foreground/60 my-12 text-lg leading-8 font-normal [&>p]:mb-0"
+                        className="pl-5 border-l border-foreground/20 text-foreground/70 my-10 text-sm leading-relaxed font-normal [&>p]:mb-0"
                       />
                     )
                   case 'divider':
@@ -289,14 +290,14 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
   if (variant === 'home') {
     return (
       <section id="writing" className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 scroll-mt-20" aria-labelledby="home-writing-title">
-        <h2 id="home-writing-title" className="text-[18px] font-normal text-foreground/58 mb-8">my articles</h2>
+        <h2 id="home-writing-title" className="text-foreground mb-8">My articles</h2>
         <div className="space-y-2">
           {writings.slice(0, 4).map((writing) => {
             const wordCount = writing.content.reduce((total, block) => total + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0)
             return (
               <Link
                 key={writing.id}
-                href={`/writing/${encodeURIComponent(writing.slug)}`}
+                href={`/writing/${encodeURIComponent(slugify(writing.title))}`}
                 onClick={() => playFeedback('tap')}
                 className="group grid w-full grid-cols-[88px_minmax(0,1fr)_20px] md:grid-cols-[112px_minmax(0,1fr)_24px] gap-4 md:gap-5 items-center py-3 text-left"
               >
@@ -306,7 +307,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                   </div>
                 ) : <div className="aspect-[4/3] bg-foreground/5" />}
                 <div className="min-w-0">
-                  <h3 className="text-sm md:text-base font-medium leading-snug text-foreground group-hover:text-foreground/65 transition-colors">{writing.title}</h3>
+                  <h3 className="text-sm font-normal leading-snug text-foreground/70 group-hover:text-foreground transition-colors">{writing.title}</h3>
                   {writing.excerpt && <p className="mt-1.5 text-sm leading-relaxed text-foreground/50 line-clamp-1">{writing.excerpt}</p>}
                   <p className="mt-2 text-[11px] text-foreground/45">{Math.max(1, Math.ceil(wordCount / 200))} min · {new Date(writing.created_at).getFullYear()}</p>
                 </div>
@@ -322,13 +323,13 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
 
   // Writings List - Medium-style card grid
   return (
-    <div className="w-full max-w-6xl mx-auto px-8 py-12 md:py-20">
+    <div className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 md:py-20">
       {/* Centered Content Container */}
       <div className="flex justify-center">
         <div className="max-w-4xl w-full">
           {/* Section Header */}
           <div className="mb-10 max-w-xl">
-            <h2 className="text-[18px] tracking-[-0.01em] font-medium text-foreground">Writing</h2>
+            <h2 className="text-foreground">Writing</h2>
           </div>
 
           {/* Cards Grid - 2 columns on desktop */}
@@ -337,9 +338,9 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
               {writings.map((writing) => (
                 <StaggerItem key={writing.id}>
                   <Link
-                    href={`/writing/${encodeURIComponent(writing.slug)}`}
+                    href={`/writing/${encodeURIComponent(slugify(writing.title))}`}
                     onClick={() => playFeedback('tap')}
-                    className="group text-left grid grid-cols-[96px_1fr] md:grid-cols-[160px_1fr] grid-rows-[auto_auto] gap-x-5 md:gap-x-7 w-full py-6 border-b border-foreground/8 hover:border-foreground/20 transition-colors"
+                    className="group text-left grid grid-cols-[88px_1fr] md:grid-cols-[112px_1fr] grid-rows-[auto_auto] gap-x-4 md:gap-x-5 w-full py-5 border-b border-foreground/8 hover:border-foreground/20 transition-colors"
                   >
               {/* Cover Image */}
               {writing.cover_image && (
@@ -355,7 +356,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
               )}
 
               {/* Title */}
-              <h3 className="col-start-2 self-end text-lg font-medium tracking-[-0.015em] text-foreground mb-2 leading-snug group-hover:text-foreground/70 transition-colors">
+              <h3 className="col-start-2 self-end text-sm font-normal text-foreground/70 mb-2 leading-snug group-hover:text-foreground transition-colors">
                 {writing.title}
               </h3>
 

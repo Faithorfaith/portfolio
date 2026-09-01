@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ProfileManager from '@/components/admin/profile-manager'
 import ProjectsManager from '@/components/admin/projects-manager'
@@ -62,6 +62,8 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('profile')
   const [userId, setUserId] = useState<string | null>(null)
+  const [isCaseStudyEditorOpen, setIsCaseStudyEditorOpen] = useState(false)
+  const [isSidebarManuallyOpen, setIsSidebarManuallyOpen] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -93,6 +95,11 @@ export default function AdminPage() {
     router.push('/')
   }
 
+  const handleCaseStudyEditorOpenChange = useCallback((open: boolean) => {
+    setIsCaseStudyEditorOpen(open)
+    if (!open) setIsSidebarManuallyOpen(false)
+  }, [])
+
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', background: 'oklch(0.985 0 0)' }}>
@@ -105,11 +112,26 @@ export default function AdminPage() {
   }
 
   const activeNav = NAV_ITEMS.find(n => n.id === activeTab)
+  const isSidebarCollapsed = isCaseStudyEditorOpen && !isSidebarManuallyOpen
 
   return (
     <div className="admin-surface admin-shell" style={{ display: 'flex', width: '100%', height: '100%', background: 'oklch(0.985 0 0)' }}>
       {/* Sidebar */}
-      <aside className="admin-sidebar" style={{ width: '216px', minWidth: '216px', display: 'flex', flexDirection: 'column', borderRight: '1px solid oklch(0.91 0 0)', background: 'oklch(0.985 0 0)', overflow: 'hidden' }}>
+      <aside
+        className="admin-sidebar"
+        style={{
+          width: isSidebarCollapsed ? '0px' : '216px',
+          minWidth: isSidebarCollapsed ? '0px' : '216px',
+          opacity: isSidebarCollapsed ? 0 : 1,
+          pointerEvents: isSidebarCollapsed ? 'none' : 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          borderRight: isSidebarCollapsed ? '0' : '1px solid oklch(0.91 0 0)',
+          background: 'oklch(0.985 0 0)',
+          overflow: 'hidden',
+          transition: 'width 180ms ease, min-width 180ms ease, opacity 140ms ease',
+        }}
+      >
         {/* Brand */}
         <div style={{ padding: '22px 18px 18px', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -185,6 +207,19 @@ export default function AdminPage() {
 
       {/* Main Area */}
       <div className="admin-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflowY: 'auto', background: 'oklch(1 0 0)' }}>
+        {isCaseStudyEditorOpen && (
+          <button
+            type="button"
+            onClick={() => setIsSidebarManuallyOpen((open) => !open)}
+            aria-label={isSidebarCollapsed ? 'Show admin sidebar' : 'Hide admin sidebar'}
+            title={isSidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+            className="fixed left-3 bottom-3 z-50 size-9 rounded-full border border-border bg-background/95 shadow-sm backdrop-blur flex items-center justify-center text-foreground/50 hover:text-foreground hover:shadow-md transition-all"
+          >
+            <svg className={`w-4 h-4 transition-transform ${isSidebarCollapsed ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
         {/* Top Bar */}
         <header style={{ height: '50px', flexShrink: 0, borderBottom: '1px solid oklch(0.93 0 0)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px', background: 'oklch(1 0 0)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', color: 'var(--foreground)' }}>
@@ -206,7 +241,12 @@ export default function AdminPage() {
               {activeTab === 'projects' && <ProjectsManager />}
               {activeTab === 'works' && <WorksManager userId={userId} />}
               {activeTab === 'writing' && <WritingsManager />}
-              {activeTab === 'case-studies' && <CaseStudiesManager userId={userId} />}
+              {activeTab === 'case-studies' && (
+                <CaseStudiesManager
+                  userId={userId}
+                  onEditorOpenChange={handleCaseStudyEditorOpenChange}
+                />
+              )}
             </>
           ) : (
             <div className="flex items-center justify-center h-full">

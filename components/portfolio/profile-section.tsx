@@ -199,21 +199,17 @@ export default function ProfileSection({
       )}
 
       {profile.bio_references && profile.bio_references.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="flex flex-wrap items-start gap-2 mb-8">
           {profile.bio_references.filter((reference) => reference.label.trim()).map((reference) => {
             const content = (
               <>
-                <span>{reference.label}</span>
-                <span className="text-foreground/30 group-hover:text-foreground/55 transition-colors">↗</span>
-                {reference.description && (
-                  <span className="absolute left-0 top-[calc(100%+8px)] z-40 w-64 p-3 rounded-lg bg-foreground text-background text-xs leading-relaxed opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 group-focus-visible:translate-y-0 transition-all shadow-xl">
-                    {reference.description}
-                  </span>
-                )}
+                {reference.description && <span className="text-foreground/55">{reference.description}</span>}
+                <span className="font-medium text-foreground/75">{reference.label}</span>
+                {reference.url && <span className="text-foreground/40 group-hover:text-foreground/65 transition-colors">↗</span>}
               </>
             )
-            const classes = 'group relative inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-foreground/[0.045] text-xs text-foreground/70 hover:bg-foreground/[0.075] hover:text-foreground transition-colors'
-            return reference.url ? <a key={reference.id} href={reference.url} target="_blank" rel="noopener noreferrer" className={classes}>{content}</a> : <button key={reference.id} type="button" className={classes}>{content}</button>
+            const classes = 'group inline-flex max-w-full flex-wrap items-baseline gap-x-1.5 gap-y-0.5 px-2.5 py-1.5 rounded-full bg-foreground/[0.045] text-xs leading-relaxed text-foreground/70 hover:bg-foreground/[0.075] transition-colors whitespace-normal'
+            return reference.url ? <a key={reference.id} href={reference.url} target="_blank" rel="noopener noreferrer" className={classes}>{content}</a> : <span key={reference.id} className={classes}>{content}</span>
           })}
         </div>
       )}

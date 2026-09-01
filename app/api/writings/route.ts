@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireUser } from '@/lib/auth'
+import { slugify } from '@/lib/slugify'
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     const payload = {
       title,
-      slug,
+      slug: slugify(title),
       content,
       excerpt: excerpt || null,
       cover_image: cover_image || null,

@@ -1,11 +1,13 @@
 import WritingSection from '@/components/portfolio/writing-section'
 import { getPublicPortfolioData } from '@/lib/public-portfolio-data'
 import type { Metadata } from 'next'
+import { slugify } from '@/lib/slugify'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const { writings } = await getPublicPortfolioData()
-  const article = writings.find((item) => item.slug === decodeURIComponent(slug))
+  const requestedSlug = decodeURIComponent(slug)
+  const article = writings.find((item) => item.slug === requestedSlug || slugify(item.title) === requestedSlug)
   if (!article) return { title: 'Writing — Faith Awokunle' }
   return {
     title: `${article.title} — Faith Awokunle`,

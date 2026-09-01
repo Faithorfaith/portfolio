@@ -67,6 +67,7 @@ interface RelatedArticleOption {
 
 interface CaseStudiesManagerProps {
   userId: string
+  onEditorOpenChange?: (open: boolean) => void
 }
 
 const refreshList = async () => {
@@ -81,7 +82,7 @@ const refreshList = async () => {
   })) as CaseStudy[]
 }
 
-export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) {
+export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseStudiesManagerProps) {
   const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([])
   const [editing, setEditing] = useState<CaseStudy | null>(null)
   const [isCreating, setIsCreating] = useState(false)
@@ -95,6 +96,11 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null)
   const [draggedSectionId, setDraggedSectionId] = useState<string | null>(null)
   const [articleOptions, setArticleOptions] = useState<RelatedArticleOption[]>([])
+
+  useEffect(() => {
+    onEditorOpenChange?.(Boolean(editing))
+    return () => onEditorOpenChange?.(false)
+  }, [editing, onEditorOpenChange])
 
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
@@ -436,8 +442,8 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
               </svg>
             </button>
             <div>
-              <h2 className="text-lg font-semibold text-foreground">{isCreating ? 'New Case Study' : 'Edit Case Study'}</h2>
-              <p className="text-xs text-foreground/40 mt-0.5">{editing.sections.length} section{editing.sections.length !== 1 ? 's' : ''}</p>
+              <h2 className="text-base font-semibold text-foreground">{isCreating ? 'New case study' : 'Edit case study'}</h2>
+              <p className="text-xs text-foreground/40 mt-0.5">Write, format and publish in one place</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -456,7 +462,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
               className="px-4 py-2 bg-foreground text-background text-sm font-medium rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center gap-2"
             >
               {isSaving && <div className="w-3.5 h-3.5 border-2 border-background/30 border-t-background rounded-full animate-spin" />}
-              {isSaving ? 'Saving...' : 'Save'}
+              {isSaving ? 'Saving...' : editing.published ? 'Save changes' : 'Save draft'}
             </button>
           </div>
         </div>
@@ -480,8 +486,8 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
 
         <UploadProgress />
 
-        <div className="grid grid-cols-1 xl:grid-cols-[210px_minmax(460px,680px)_minmax(280px,1fr)] gap-5 items-start">
-          <aside className="hidden xl:block sticky top-20 border border-border rounded-xl bg-background overflow-hidden">
+        <div className="w-full max-w-3xl mx-auto">
+          <aside className="hidden">
             <div className="px-3 py-3 border-b border-border flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium">Sections</p>
@@ -521,7 +527,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
             <p className="text-xs text-foreground/50 mt-0.5">Basic info and cover media</p>
           </div>
           <div className="px-6 py-5 space-y-4">
-            <div className="space-y-1.5">
+            <div className="hidden">
               <label className="text-xs font-medium text-foreground/60">Title</label>
               <input
                 type="text"
@@ -631,8 +637,12 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
               </div>
             </div>
 
-            {/* CTA */}
-            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border">
+            {/* Optional project link */}
+            <details className="group pt-2 border-t border-border">
+              <summary className="cursor-pointer list-none text-xs font-medium text-foreground/55 hover:text-foreground transition-colors">
+                Add an optional project link
+              </summary>
+            <div className="grid grid-cols-2 gap-3 pt-3">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-foreground/60">CTA Button Label</label>
                 <input
@@ -654,6 +664,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                 />
               </div>
             </div>
+            </details>
           </div>
         </div>
 
@@ -661,8 +672,8 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
         <div>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-sm font-medium text-foreground">Sections</p>
-              <p className="text-xs text-foreground/40 mt-0.5">Each section maps to a TOC entry</p>
+              <p className="text-sm font-medium text-foreground">Article content</p>
+              <p className="text-xs text-foreground/40 mt-0.5">Write naturally. Add a section for each chapter.</p>
             </div>
             <button
               onClick={addSection}
@@ -671,12 +682,12 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              Add Section
+              Add section
             </button>
           </div>
 
           <div className="space-y-3">
-            {editing.sections.filter((section) => section.id === selectedSection?.id).map((section) => {
+            {editing.sections.map((section) => {
               const index = editing.sections.findIndex((item) => item.id === section.id)
               return (
               <div key={section.id} className="border border-border rounded-xl overflow-hidden">
@@ -687,7 +698,13 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                     type="text"
                     placeholder="Section label (e.g., The Problem)"
                     value={section.label}
-                    onChange={(e) => updateSection(section.id, { label: e.target.value })}
+                    onChange={(e) => {
+                      const label = e.target.value
+                      updateSection(section.id, {
+                        label,
+                        toc: !section.toc || section.toc === section.label ? label : section.toc,
+                      })
+                    }}
                     className="flex-1 text-sm font-medium bg-transparent border-0 focus:outline-none text-foreground placeholder:text-foreground/30"
                   />
                   <div className="flex items-center gap-1 shrink-0">
@@ -728,9 +745,9 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                 </div>
 
                 {!collapsedSections.has(section.id) && <div className="px-5 py-5 space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-foreground/50">Section Title <span className="text-foreground/30">(optional)</span></label>
+                      <label className="text-xs font-medium text-foreground/50">Section heading <span className="text-foreground/30">(optional)</span></label>
                       <input
                         type="text"
                         placeholder="Displayed as heading"
@@ -739,8 +756,10 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                         className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-shadow"
                       />
                     </div>
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-foreground/50">TOC Entry <span className="text-foreground/30">(leave blank to hide)</span></label>
+                    <details className="group">
+                      <summary className="cursor-pointer list-none text-xs text-foreground/40 hover:text-foreground transition-colors">Navigation label</summary>
+                    <div className="space-y-1.5 pt-2">
+                      <label className="text-xs font-medium text-foreground/50">Table of contents label <span className="text-foreground/30">(leave blank to hide)</span></label>
                       <input
                         type="text"
                         placeholder="Table of contents label"
@@ -749,6 +768,17 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                         className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-shadow"
                       />
                     </div>
+                    </details>
+                  </div>
+
+                  {/* Body */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-foreground/50">Content</label>
+                    <RTFEditor
+                      value={section.body}
+                      onChange={(value) => updateSection(section.id, { body: value })}
+                      placeholder="Start writing..."
+                    />
                   </div>
 
                   {/* Media row */}
@@ -791,7 +821,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="hidden">
                     <label className="text-xs font-medium text-foreground/50">Media width</label>
                     <div className="grid grid-cols-3 gap-1 rounded-lg bg-muted/40 p-1">
                       {(['reading', 'wide', 'full'] as const).map((width) => (
@@ -808,8 +838,10 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                   </div>
 
                   {/* Safe external embed */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-foreground/50">Embed URL <span className="text-foreground/30">(YouTube, Vimeo or Figma)</span></label>
+                  <details className="group pt-3 border-t border-border">
+                    <summary className="cursor-pointer list-none text-xs font-medium text-foreground/55 hover:text-foreground transition-colors">Embed YouTube, Vimeo or Figma</summary>
+                  <div className="space-y-1.5 pt-3">
+                    <label className="text-xs font-medium text-foreground/50">Embed link</label>
                     <input
                       type="url"
                       placeholder="Paste a YouTube, Vimeo or Figma link"
@@ -817,22 +849,15 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                       onChange={(e) => updateSection(section.id, { embed_url: e.target.value || null })}
                       className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-shadow"
                     />
-                    <p className="text-xs text-foreground/35">The embed appears between the section media and body text.</p>
+                    <p className="text-xs text-foreground/35">Paste the link. The embedded content appears in this section.</p>
                     {section.embed_url && <SafeEmbed url={section.embed_url} title={`${section.label || 'Section'} embed preview`} />}
                   </div>
-
-                  {/* Body */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-foreground/50">Body Content</label>
-                    <RTFEditor
-                      value={section.body}
-                      onChange={(value) => updateSection(section.id, { body: value })}
-                      placeholder="Write your section content here..."
-                    />
-                  </div>
+                  </details>
 
                   {/* Buttons */}
-                  <div className="pt-3 border-t border-border">
+                  <details className="group pt-3 border-t border-border">
+                    <summary className="cursor-pointer list-none text-xs font-medium text-foreground/55 hover:text-foreground transition-colors">Add buttons</summary>
+                  <div className="pt-3">
                     <ButtonBlockBuilder
                       buttons={section.blocks?.filter(b => b.type === 'buttons')[0]?.buttons || []}
                       onChange={(updatedButtons) => {
@@ -842,6 +867,7 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
                       }}
                     />
                   </div>
+                  </details>
                 </div>}
               </div>
             )})}
@@ -876,9 +902,20 @@ export default function CaseStudiesManager({ userId }: CaseStudiesManagerProps) 
             })()}
           </div>
         </div>
+
+        <div className="rounded-xl bg-muted/30 px-5 py-4">
+          <p className="text-xs font-medium mb-2">Before publishing</p>
+          {validationIssues.length === 0 ? (
+            <p className="text-xs text-green-600">Everything looks ready.</p>
+          ) : (
+            <ul className="space-y-1.5">
+              {validationIssues.map((issue) => <li key={issue} className="text-xs text-amber-700">• {issue}</li>)}
+            </ul>
+          )}
+        </div>
           </div>
 
-          <aside className="hidden xl:block sticky top-20 rounded-xl border border-border bg-background overflow-hidden">
+          <aside className="hidden">
             <div className="px-4 py-3 border-b border-border flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium">Live preview</p>
