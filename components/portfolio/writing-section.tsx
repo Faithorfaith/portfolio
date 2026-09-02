@@ -26,6 +26,8 @@ export interface Writing {
   slug: string
   excerpt: string | null
   cover_image: string | null
+  audio_url?: string | null
+  audio_voice?: string | null
   content: ContentBlock[]
   published: boolean
   created_at: string
@@ -139,7 +141,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
   // Article View - Medium-style clean layout
   if (selectedWriting) {
     return (
-      <div id="top" className="w-full max-w-[600px] mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
+      <div id="top" className="w-full max-w-[664px] mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
         <DetailNavigation title={selectedWriting.title} backHref={initialSlug ? '/writing' : '/#writing'} />
 
         {/* Article Content */}
@@ -191,7 +193,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                         .map(block => stripHtml(block.content || ''))
                         .join(' ')
                       
-                      playArticle(selectedWriting.title, textToRead)
+                      playArticle(selectedWriting.title, textToRead, selectedWriting.audio_url, selectedWriting.cover_image)
                     }
                   }}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-foreground/12 transition-colors text-sm text-foreground/55 hover:text-foreground hover:border-foreground/25 cursor-pointer"

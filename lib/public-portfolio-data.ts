@@ -20,7 +20,7 @@ export const getPublicPortfolioData = unstable_cache(async (): Promise<Portfolio
     supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, created_at').eq('published', true).order('created_at', { ascending: false }),
     supabase.from('projects').select('id, title, year, type, link, description, created_at').order('created_at', { ascending: false }),
     supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type').order('created_at', { ascending: false }),
-    supabase.from('writings').select('id, title, slug, excerpt, cover_image, content, published, created_at').eq('published', true).order('created_at', { ascending: false }),
+    supabase.from('writings').select('*').eq('published', true).order('created_at', { ascending: false }),
   ])
 
   return {

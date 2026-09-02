@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const auth = await requireUser()
     if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { supabase, user } = auth
-    const { id, title, slug, content, excerpt, cover_image, published, isUpdate } = await request.json()
+    const { id, title, slug, content, excerpt, cover_image, audio_url, audio_voice, published, isUpdate } = await request.json()
 
     if (!title?.trim()) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 })
@@ -19,6 +19,8 @@ export async function POST(request: NextRequest) {
       content,
       excerpt: excerpt || null,
       cover_image: cover_image || null,
+      audio_url: audio_url || null,
+      audio_voice: audio_voice || null,
       published: published ?? false,
       updated_at: new Date().toISOString(),
     }

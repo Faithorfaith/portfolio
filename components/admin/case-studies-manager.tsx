@@ -527,8 +527,8 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
             <p className="text-xs text-foreground/50 mt-0.5">Basic info and cover media</p>
           </div>
           <div className="px-6 py-5 space-y-4">
-            <div className="hidden">
-              <label className="text-xs font-medium text-foreground/60">Title</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-foreground/60">Case study name</label>
               <input
                 type="text"
                 placeholder="Case study title"

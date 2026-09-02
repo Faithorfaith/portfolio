@@ -1,6 +1,8 @@
 'use client'
 
+import { useRef } from 'react'
 import { playFeedback } from '@/lib/interaction-feedback'
+import { normalizeExternalUrl } from '@/lib/content-utils'
 
 export interface Project {
   id: string
@@ -13,6 +15,7 @@ export interface Project {
 }
 
 export default function ProjectsSection({ projects }: { projects: Project[] }) {
+  const cursorLabelRef = useRef<HTMLDivElement>(null)
   if (projects.length === 0) {
     return null
   }
@@ -46,10 +49,22 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                     if (project.link) {
                       playFeedback('tap')
                       // Both mobile and desktop: open link directly
-                      window.open(project.link, '_blank')
+                      window.open(normalizeExternalUrl(project.link), '_blank', 'noopener,noreferrer')
                     }
                   }}
                   className={`interactive-row relative w-full text-left group pl-6 ${project.link ? 'cursor-pointer' : ''}`}
+                  onMouseEnter={(event) => {
+                    if (!project.link || !cursorLabelRef.current || window.matchMedia('(hover: none)').matches) return
+                    cursorLabelRef.current.style.opacity = '1'
+                    cursorLabelRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
+                  }}
+                  onMouseMove={(event) => {
+                    if (!project.link || !cursorLabelRef.current) return
+                    cursorLabelRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
+                  }}
+                  onMouseLeave={() => {
+                    if (cursorLabelRef.current) cursorLabelRef.current.style.opacity = '0'
+                  }}
                 >
                     <span className="absolute left-0 top-[21px] size-[7px] rounded-full bg-background border border-foreground/25 transition-colors group-hover:bg-foreground group-hover:border-foreground" aria-hidden="true" />
                     <div className="flex items-start justify-between gap-6 py-3">
@@ -78,6 +93,9 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
             </div>
           </section>
         ))}
+      </div>
+      <div ref={cursorLabelRef} className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm" aria-hidden="true">
+        <span className="mr-1" aria-hidden="true">↗</span> View project
       </div>
     </section>
   )

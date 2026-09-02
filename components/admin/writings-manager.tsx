@@ -21,7 +21,32 @@ interface Writing {
   content: ContentBlock[]
   excerpt: string | null
   cover_image: string | null
+  audio_url: string | null
+  audio_voice: string | null
   published: boolean
+}
+
+const KOKORO_VOICES = [
+  { id: 'bf_emma', label: 'Emma · British' },
+  { id: 'bf_isabella', label: 'Isabella · British' },
+  { id: 'bm_george', label: 'George · British' },
+  { id: 'af_heart', label: 'Heart · American' },
+  { id: 'af_bella', label: 'Bella · American' },
+  { id: 'af_nicole', label: 'Nicole · American' },
+] as const
+
+let kokoroModelPromise: Promise<any> | null = null
+
+function wavBlob(samples: Float32Array, sampleRate: number) {
+  const buffer = new ArrayBuffer(44 + samples.length * 2)
+  const view = new DataView(buffer)
+  const write = (offset: number, value: string) => [...value].forEach((char, index) => view.setUint8(offset + index, char.charCodeAt(0)))
+  write(0, 'RIFF'); view.setUint32(4, 36 + samples.length * 2, true); write(8, 'WAVE'); write(12, 'fmt ')
+  view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true)
+  view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true)
+  write(36, 'data'); view.setUint32(40, samples.length * 2, true)
+  samples.forEach((sample, index) => view.setInt16(44 + index * 2, Math.max(-1, Math.min(1, sample)) * 0x7fff, true))
+  return new Blob([buffer], { type: 'audio/wav' })
 }
 
 export default function WritingsManager() {
@@ -31,6 +56,8 @@ export default function WritingsManager() {
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
+  const [modelProgress, setModelProgress] = useState(0)
 
   const supabase = createClient()
 
@@ -59,6 +86,8 @@ export default function WritingsManager() {
       content: [{ id: crypto.randomUUID(), type: 'heading', content: '', level: 1 }],
       excerpt: null,
       cover_image: null,
+      audio_url: null,
+      audio_voice: 'bf_emma',
       published: false
     })
     setIsCreating(true)
@@ -119,6 +148,8 @@ export default function WritingsManager() {
           content: JSON.stringify(editing.content),
           excerpt: editing.excerpt,
           cover_image: editing.cover_image,
+          audio_url: editing.audio_url,
+          audio_voice: editing.audio_voice,
           published: editing.published,
           isUpdate: !isCreating,
         }),
@@ -158,6 +189,58 @@ export default function WritingsManager() {
     if (uploadError) { setError('Failed to upload cover'); return }
     const { data: { publicUrl } } = supabase.storage.from('portfolio-uploads').getPublicUrl(fileName)
     setEditing({ ...editing, cover_image: publicUrl })
+  }
+
+  const generateNarration = async () => {
+    if (!editing) return
+    const container = document.createElement('div')
+    const text = editing.content
+      .filter((block) => block.type !== 'image' && block.type !== 'divider')
+      .map((block) => { container.innerHTML = block.content || ''; return container.textContent?.trim() || '' })
+      .filter(Boolean)
+      .join('. ')
+    if (!text) { setError('Add article text before generating narration'); return }
+
+    setIsGeneratingAudio(true); setError(null); setModelProgress(0)
+    try {
+      const importBrowserModule = new Function('url', 'return import(url)') as (url: string) => Promise<{ KokoroTTS: any }>
+      const { KokoroTTS } = await importBrowserModule('https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js')
+      if (!kokoroModelPromise) {
+        kokoroModelPromise = KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
+          dtype: 'q8',
+          device: 'wasm',
+          progress_callback: (progress: any) => {
+            if (typeof progress.progress === 'number') setModelProgress(Math.round(progress.progress))
+          },
+        })
+      }
+      const model = await kokoroModelPromise
+      const chunks: Float32Array[] = []
+      let sampleRate = 24000
+      for await (const result of model.stream(text, {
+        voice: editing.audio_voice || 'bf_emma',
+        speed: 0.96,
+        // Keep long articles intact by narrating sentence-sized chunks.
+        split_pattern: /(?<=[.!?])\s+/,
+      })) {
+        chunks.push(result.audio.audio)
+        sampleRate = result.audio.sampling_rate
+      }
+      const length = chunks.reduce((total, chunk) => total + chunk.length, 0)
+      const samples = new Float32Array(length)
+      let offset = 0
+      chunks.forEach((chunk) => { samples.set(chunk, offset); offset += chunk.length })
+      const blob = wavBlob(samples, sampleRate)
+      const fileName = `writings/audio/${Date.now()}-${slugify(editing.title || 'article')}.wav`
+      const { error: uploadError } = await supabase.storage.from('portfolio-uploads').upload(fileName, blob, { contentType: 'audio/wav', upsert: true })
+      if (uploadError) throw uploadError
+      const { data: { publicUrl } } = supabase.storage.from('portfolio-uploads').getPublicUrl(fileName)
+      setEditing((current) => current ? { ...current, audio_url: publicUrl } : current)
+    } catch (generationError) {
+      setError(generationError instanceof Error ? generationError.message : 'Narration generation failed')
+    } finally {
+      setIsGeneratingAudio(false); setModelProgress(0)
+    }
   }
 
   // ── Editor View ──────────────────────────────────────────────────────────
@@ -288,6 +371,36 @@ export default function WritingsManager() {
                   <span className="text-xs text-foreground/40">Upload cover</span>
                   <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleCoverUpload(f) }} />
                 </label>
+              )}
+            </div>
+
+            <div className="space-y-3 pt-4 border-t border-border">
+              <div>
+                <p className="text-xs font-medium text-foreground/60">Article narration</p>
+                <p className="mt-0.5 text-[11px] text-foreground/40">Free local generation with Kokoro. The first model download may take a few minutes.</p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <select
+                  value={editing.audio_voice || 'bf_emma'}
+                  onChange={(event) => setEditing({ ...editing, audio_voice: event.target.value })}
+                  className="h-9 flex-1 rounded-lg border border-border bg-background px-3 text-xs focus:outline-none focus:ring-2 focus:ring-foreground/15"
+                >
+                  {KOKORO_VOICES.map((voice) => <option key={voice.id} value={voice.id}>{voice.label}</option>)}
+                </select>
+                <button
+                  type="button"
+                  onClick={generateNarration}
+                  disabled={isGeneratingAudio}
+                  className="h-9 rounded-lg bg-foreground px-4 text-xs font-medium text-background disabled:opacity-50"
+                >
+                  {isGeneratingAudio ? (modelProgress ? `Loading model ${modelProgress}%` : 'Generating…') : editing.audio_url ? 'Regenerate narration' : 'Generate narration'}
+                </button>
+              </div>
+              {editing.audio_url && (
+                <div className="flex items-center gap-3 rounded-lg bg-muted/30 p-3">
+                  <audio src={editing.audio_url} controls className="h-8 min-w-0 flex-1" />
+                  <button type="button" onClick={() => setEditing({ ...editing, audio_url: null })} className="text-[11px] text-red-600">Remove</button>
+                </div>
               )}
             </div>
           </div>

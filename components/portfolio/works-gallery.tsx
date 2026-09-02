@@ -214,8 +214,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           <h2 id="playground-preview-title" className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Playground</h2>
         </div>
         {renderMasonry(2, 'grid sm:hidden')}
-        {renderMasonry(3, 'hidden sm:grid md:hidden')}
-        {renderMasonry(4, 'hidden md:grid')}
+        {renderMasonry(3, 'hidden sm:grid')}
         <div
           ref={viewAllCursorRef}
           className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm"
