@@ -51,7 +51,7 @@ export default function ProjectClient() {
   if (!project) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-foreground/50">Project not found</div>
+        <div className="text-center"><h1 className="text-[18px] mb-3">Project unavailable</h1><a href="/#projects" className="text-sm underline">Back to projects</a><button type="button" className="ml-5 text-sm underline" onClick={() => window.location.reload()}>Retry</button></div>
       </div>
     )
   }

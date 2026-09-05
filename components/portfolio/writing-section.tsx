@@ -8,6 +8,7 @@ import { StaggerContainer, StaggerItem } from '@/components/animations/scroll-an
 import EmptyState from './empty-state'
 import { DetailNavigation } from '@/components/detail-page-header'
 import SafeHtml from '@/components/safe-html'
+import ArticleBody from '@/components/article-body'
 import ProgressiveImage from '@/components/progressive-image'
 import { playFeedback } from '@/lib/interaction-feedback'
 import Link from 'next/link'
@@ -40,6 +41,9 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
   const [userProfile, setUserProfile] = useState<{ full_name: string | null; avatar_url: string | null }>({ full_name: null, avatar_url: null })
   
   const articleCursorRef = useRef<HTMLDivElement>(null)
+  const [search, setSearch] = useState('')
+  const [year, setYear] = useState('all')
+  const filteredWritings = writings.filter((item) => (year === 'all' || String(new Date(item.created_at).getFullYear()) === year) && `${item.title} ${item.excerpt || ''}`.toLowerCase().includes(search.toLowerCase()))
   const { isPlaying, isPaused, title: audioTitle, playArticle, pause, resume } = useArticleAudio()
 
   const openWriting = (w: Writing) => { playFeedback('tap'); setSelectedWriting(w); onSubPageChange?.(true) }
@@ -238,56 +242,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
             </header>
 
             <div className="w-full max-w-[600px] mx-auto">
-              {selectedWriting.content.map((block) => {
-                switch (block.type) {
-                  case 'heading':
-                    const HeadingTag: 'h1' | 'h2' | 'h3' = block.level === 1 ? 'h1' : block.level === 3 ? 'h3' : 'h2'
-                    const headingText = block.content.replace(/<[^>]*>/g, '')
-                    return (
-                      <HeadingTag
-                        key={block.id}
-                        id={`block-${block.id}`}
-                        className={`scroll-mt-20 text-sm leading-relaxed tracking-[0.01em] ${
-                          block.level === 1 ? 'font-medium text-foreground mt-14 mb-5' :
-                          block.level === 2 ? 'font-normal text-foreground mt-12 mb-4' :
-                          'font-normal text-foreground/70 mt-9 mb-3'
-                        }`}
-                      >{headingText}</HeadingTag>
-                    )
-                  case 'paragraph':
-                    return (
-                      <SafeHtml
-                        key={block.id}
-                        html={block.content}
-                        className="text-foreground/70 leading-relaxed mb-6 text-sm font-normal [&>p]:mb-5 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-5 [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-5 [&>li]:mb-2 [&>strong]:font-medium [&>strong]:text-foreground [&>em]:italic [&_strong]:font-medium [&_strong]:text-foreground"
-                      />
-                    )
-                  case 'image':
-                    return block.content ? (
-                      <figure key={block.id} className="w-full max-w-[600px] my-12">
-                        <ProgressiveImage
-                          src={block.content}
-                          alt=""
-                          className="w-full"
-                          containerClassName="w-full overflow-hidden"
-                        />
-                      </figure>
-                    ) : null
-                  case 'quote':
-                    return (
-                      <SafeHtml
-                        key={block.id}
-                        as="blockquote"
-                        html={block.content}
-                        className="pl-5 border-l border-foreground/20 text-foreground/70 my-10 text-sm leading-relaxed font-normal [&>p]:mb-0"
-                      />
-                    )
-                  case 'divider':
-                    return <hr key={block.id} className="my-14 border-foreground/10" />
-                  default:
-                    return null
-                }
-              })}
+              <ArticleBody blocks={selectedWriting.content} />
             </div>
           </article>
       </div>
@@ -345,44 +300,49 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
           </div>
 
           {/* Cards Grid - 2 columns on desktop */}
+          <div className="flex gap-3 mb-6">
+            <input aria-label="Search articles" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search articles" className="min-w-0 flex-1 border rounded-lg px-3 min-h-11 bg-background text-sm" />
+            <select aria-label="Article year" value={year} onChange={(event) => setYear(event.target.value)} className="border rounded-lg px-3 bg-background text-xs"><option value="all">All years</option>{[...new Set(writings.map((item) => new Date(item.created_at).getFullYear()))].sort((a,b) => b-a).map((value) => <option key={value}>{value}</option>)}</select>
+          </div>
+          {!filteredWritings.length && <p role="status" className="py-8 text-sm text-foreground/60">No articles match. Try another search or year.</p>}
           <StaggerContainer delay={0.2}>
             <div className="border-t border-foreground/8">
-              {writings.map((writing) => (
+              {filteredWritings.map((writing, index) => (
                 <StaggerItem key={writing.id}>
+                  {(index === 0 || new Date(filteredWritings[index - 1].created_at).getFullYear() !== new Date(writing.created_at).getFullYear()) && <h3 className="text-[11px] text-foreground/60 pt-6 pb-3 tabular-nums">{new Date(writing.created_at).getFullYear()}</h3>}
                   <Link
                     href={`/writing/${encodeURIComponent(slugify(writing.title))}`}
                     onClick={() => playFeedback('tap')}
                     onMouseEnter={showArticleCursor}
                     onMouseMove={moveArticleCursor}
                     onMouseLeave={hideArticleCursor}
-                    className="group text-left grid grid-cols-[88px_1fr] md:grid-cols-[112px_1fr] grid-rows-[auto_auto] gap-x-4 md:gap-x-5 w-full py-5 border-b border-foreground/8 hover:border-foreground/20 transition-colors"
+                    className="group text-left grid grid-cols-[88px_minmax(0,1fr)] md:grid-cols-[112px_minmax(0,1fr)] gap-x-4 md:gap-x-5 w-full py-3 items-center"
                   >
               {/* Cover Image */}
-              {writing.cover_image && (
-                <div className="col-start-1 row-span-2 aspect-[4/3] rounded-md overflow-hidden bg-foreground/5 relative">
+              {writing.cover_image ? (
+                <div className="col-start-1 aspect-[4/3] overflow-hidden bg-foreground/5 relative">
                   <ProgressiveImage
                     src={writing.cover_image}
                     alt={writing.title}
                     fill
                     className="transition-opacity duration-500"
-                    containerClassName="w-full h-full rounded-md overflow-hidden"
+                    containerClassName="w-full h-full overflow-hidden"
                   />
                 </div>
-              )}
+              ) : <div className="aspect-[4/3] bg-foreground/5" />}
 
               {/* Title */}
-              <h3 className="col-start-2 self-end text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground/70 mb-2 group-hover:text-foreground transition-colors">
+              <div className="min-w-0">
+              <h3 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground/70 group-hover:text-foreground transition-colors">
                 {writing.title}
               </h3>
 
               {/* Date and Read Time */}
-              <p className="col-start-2 self-start text-xs text-foreground/40">
-                {new Date(writing.created_at).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric'
-                })} • {Math.ceil(writing.content.reduce((acc, block) => acc + (block.content?.split(' ').length || 0), 0) / 200)} min read
+              {writing.excerpt && <p className="mt-1.5 text-sm leading-relaxed text-foreground/60 line-clamp-2">{writing.excerpt}</p>}
+              <p className="mt-2 text-[11px] text-foreground/60 tabular-nums">
+                {Math.max(1, Math.ceil(writing.content.reduce((acc, block) => acc + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0) / 200))} min · {new Date(writing.created_at).getFullYear()}
               </p>
+              </div>
                 </Link>
                 </StaggerItem>
               ))}

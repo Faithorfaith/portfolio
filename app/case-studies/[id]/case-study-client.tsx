@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import ProgressiveImage from '@/components/progressive-image'
 import SafeHtml from '@/components/safe-html'
+import CaseSectionBody from '@/components/case-section-body'
 import CopyLinkButton from '@/components/copy-link-button'
 import SafeEmbed from '@/components/safe-embed'
 import { slugify } from '@/lib/slugify'
@@ -102,14 +103,12 @@ export default function CaseStudyClient() {
         const error = bySlug.error || byTitle?.error || fallback?.error
 
         if (error || !data) {
-          router.push('/404')
           return
         }
 
         setCaseStudy(data)
       } catch (error) {
         console.error('Error fetching case study:', error)
-        router.push('/404')
       } finally {
         setIsLoading(false)
       }
@@ -144,25 +143,34 @@ export default function CaseStudyClient() {
   useEffect(() => {
     if (!caseStudy) return
     const elements = navItems.map((item) => document.getElementById(item.id)).filter(Boolean) as HTMLElement[]
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]
-      if (visible) setActiveNavItem(visible.target.id)
-    }, { rootMargin: '-20% 0px -65% 0px' })
-    elements.forEach((element) => observer.observe(element))
-    return () => observer.disconnect()
+    let frame = 0
+    const update = () => {
+      frame = 0
+      let current = elements[0]
+      for (const element of elements) {
+        if (element.getBoundingClientRect().top <= 110) current = element
+      }
+      if (current) setActiveNavItem(current.id)
+    }
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update) }
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    update()
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('scroll', schedule); window.removeEventListener('resize', schedule) }
   }, [caseStudy, navItems.length])
 
   if (isLoading) {
-    return null
+    return <main className="max-w-[664px] mx-auto px-8 py-24" aria-busy="true"><p role="status" className="text-sm text-foreground/60">Loading case study…</p><div className="mt-8 aspect-video bg-muted rounded animate-pulse" /></main>
   }
 
-  if (!caseStudy) return null
+  if (!caseStudy) return <main className="max-w-[664px] mx-auto px-8 py-24"><h1 className="text-[18px]">Case study unavailable</h1><p className="text-sm text-foreground/60 my-4">It may have moved, or the connection failed.</p><a href="/" className="underline min-h-11 inline-flex items-center">Back to work</a><button type="button" onClick={() => window.location.reload()} className="ml-6 underline">Retry</button></main>
 
   const handleNavClick = (sectionId: string) => {
     playFeedback('tap')
     const element = document.getElementById(sectionId)
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+      element.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+      window.history.replaceState(null, '', `#${sectionId}`)
       setActiveNavItem(sectionId)
     }
   }
@@ -314,10 +322,7 @@ export default function CaseStudyClient() {
                   </div>
                 )}
 
-                <SafeHtml
-                  html={section.body}
-                  className="text-sm [&_p]:text-foreground/90 [&_p]:leading-[1.85] [&_p]:mb-7 [&_ul]:list-disc [&_ul]:pl-7 [&_ul]:my-7 [&_ol]:list-decimal [&_ol]:pl-7 [&_ol]:my-7 [&_li]:text-foreground/90 [&_li]:leading-[1.8] [&_li]:mb-3 [&_strong]:text-foreground [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 max-w-none"
-                />
+                <CaseSectionBody html={section.body} />
               </section>
             ))}
           </div>
@@ -331,9 +336,9 @@ export default function CaseStudyClient() {
                 <a href={`/writing/${encodeURIComponent(slugify(relatedArticle.title))}`} className="group grid grid-cols-[112px_1fr_auto] gap-5 items-center">
                   {relatedArticle.cover_image ? <img src={relatedArticle.cover_image} alt="" className="w-28 aspect-[4/3] object-cover" /> : <div className="w-28 aspect-[4/3] bg-foreground/5" />}
                   <div className="min-w-0">
-                    <h3 className="text-base font-medium text-foreground group-hover:text-foreground/65 transition-colors">{relatedArticle.title}</h3>
+                    <h3 className="text-sm font-normal leading-relaxed text-foreground/70 group-hover:text-foreground transition-colors">{relatedArticle.title}</h3>
                     {relatedArticle.excerpt && <p className="text-sm text-foreground/50 mt-1.5 line-clamp-1">{relatedArticle.excerpt}</p>}
-                    <p className="text-xs text-foreground/35 mt-2">{Math.max(1, Math.ceil(words / 200))} min · {new Date(relatedArticle.created_at).getFullYear()}</p>
+                    <p className="text-[11px] text-foreground/60 mt-2">{Math.max(1, Math.ceil(words / 200))} min · {new Date(relatedArticle.created_at).getFullYear()}</p>
                   </div>
                   <span className="text-xl text-foreground/35 group-hover:translate-x-1 group-hover:text-foreground transition-all" aria-hidden="true">→</span>
                 </a>

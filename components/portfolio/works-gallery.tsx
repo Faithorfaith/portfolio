@@ -28,8 +28,25 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
   const [selectedWork, setSelectedWork] = useState<Work | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
   const viewAllCursorRef = useRef<HTMLDivElement>(null)
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const triggerRef = useRef<HTMLElement | null>(null)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [videoError, setVideoError] = useState(false)
+  const [category, setCategory] = useState('all')
+  const categories = [...new Set(works.map((work) => work.type).filter(Boolean))] as string[]
+  const visibleCollection = category === 'all' ? works : works.filter((work) => work.type === category)
+  useEffect(() => {
+    if (variant !== 'full') return
+    try { const saved = Number(sessionStorage.getItem('playground-scroll')); if (saved && !window.location.search) requestAnimationFrame(() => window.scrollTo(0, saved)) } catch {}
+    const save = () => { try { sessionStorage.setItem('playground-scroll', String(window.scrollY)) } catch {} }
+    window.addEventListener('scroll', save, { passive: true })
+    return () => window.removeEventListener('scroll', save)
+  }, [variant])
 
   const openWork = (work: Work) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    triggerRef.current = document.activeElement as HTMLElement
+    setVideoError(false)
     playFeedback('tap')
     setSelectedWork(work)
     onSubPageChange?.(true)
@@ -38,10 +55,30 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
     requestAnimationFrame(() => requestAnimationFrame(() => setModalVisible(true)))
   }
   const closeWork = () => {
+    dialogRef.current?.querySelectorAll('video').forEach((video) => video.pause())
     setModalVisible(false)
     if (variant === 'full' && window.location.search) window.history.replaceState(null, '', '/playground')
-    setTimeout(() => { setSelectedWork(null); onSubPageChange?.(false) }, 200)
+    closeTimer.current = setTimeout(() => { setSelectedWork(null); onSubPageChange?.(false); triggerRef.current?.focus() }, 200)
   }
+
+  const stepWork = (direction: number) => {
+    const index = works.findIndex((work) => work.id === selectedWork?.id)
+    const next = works[index + direction]
+    if (!next) return
+    dialogRef.current?.querySelectorAll('video').forEach((video) => video.pause())
+    setVideoError(false)
+    setSelectedWork(next)
+    window.history.replaceState({ playgroundWork: next.id }, '', `/playground?work=${encodeURIComponent(next.id)}`)
+  }
+
+  useEffect(() => {
+    if (!selectedWork) return
+    dialogRef.current?.showModal()
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = previous }
+  }, [Boolean(selectedWork)])
+  useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current) }, [])
 
   // ESC key to close
   useEffect(() => {
@@ -237,9 +274,10 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           </div>
 
           {/* Grid Layout - 2 cols */}
+          {categories.length > 1 && <div className="flex flex-wrap gap-2 mb-6" aria-label="Filter Playground">{['all', ...categories].map((value) => <button key={value} type="button" aria-pressed={category === value} onClick={() => setCategory(value)} className={`min-h-11 px-3 rounded-full text-xs ${category === value ? 'bg-foreground text-background' : 'hover:bg-muted text-foreground/65'}`}>{value === 'all' ? 'All work' : value}</button>)}</div>}
           <StaggerContainer delay={0.1}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
-              {works.map((work) => {
+              {visibleCollection.map((work) => {
                 const coverImage = getCoverImage(work)
                 
                 return (
@@ -302,8 +340,15 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
 
       {/* Modal - Work Detail */}
       {selectedWork && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 backdrop-blur-md"
+        <dialog
+          ref={dialogRef}
+          aria-labelledby="playground-work-title"
+          onCancel={(event) => { event.preventDefault(); closeWork() }}
+          onKeyDown={(event) => {
+            if ((event.target as HTMLElement).closest('video, input, textarea, select')) return
+            if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); stepWork(event.key === 'ArrowRight' ? 1 : -1) }
+          }}
+          className="fixed inset-0 m-0 max-w-none max-h-none w-full h-full z-50 flex items-center justify-center p-4 md:p-8 backdrop-blur-md"
           style={{
             background: `rgba(0,0,0,${modalVisible ? 0.32 : 0})`,
             transition: 'background 0.2s ease',
@@ -311,7 +356,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           onClick={closeWork}
         >
           <div
-            className="bg-background rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden relative shadow-2xl shadow-black/10"
+            className="bg-background rounded-lg max-w-5xl w-full max-h-[90dvh] overflow-y-auto relative shadow-2xl shadow-black/10"
             onClick={(e) => e.stopPropagation()}
             style={{
               border: '0.5px solid rgba(0,0,0,0.1)',
@@ -342,9 +387,15 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                       className="max-w-full max-h-full object-contain rounded-lg"
                       containerClassName="max-w-full max-h-full rounded-lg"
                     />
+                  ) : videoError ? (
+                    <button type="button" onClick={() => setVideoError(false)} className="min-h-11 text-sm">Video unavailable · Retry</button>
                   ) : (
                     <video
+                      key={selectedWork.id}
                       src={selectedWork.media_url}
+                      onError={() => setVideoError(true)}
+                      playsInline
+                      preload="metadata"
                       controls
                       className="max-w-full max-h-full rounded-lg"
                     />
@@ -376,7 +427,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                 )}
 
                 {/* Title */}
-                <h2 className="text-[18px] font-medium tracking-[-0.01em] text-foreground mb-4">
+                <h2 id="playground-work-title" className="text-[18px] font-medium tracking-[-0.01em] text-foreground mb-4">
                   {selectedWork.title}
                 </h2>
 
@@ -388,6 +439,11 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                 )}
 
                 {/* Spacer */}
+                <div className="flex items-center gap-2 mb-4">
+                  <button type="button" className="rail-control" aria-label="Previous project" disabled={works[0]?.id === selectedWork.id} onClick={() => stepWork(-1)}>←</button>
+                  <span className="text-xs text-foreground/60 tabular-nums">{works.findIndex((work) => work.id === selectedWork.id) + 1} / {works.length}</span>
+                  <button type="button" className="rail-control" aria-label="Next project" disabled={works.at(-1)?.id === selectedWork.id} onClick={() => stepWork(1)}>→</button>
+                </div>
                 <div className="flex-1" />
 
                 {/* Date */}
@@ -402,7 +458,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
               </div>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
     </div>
   )

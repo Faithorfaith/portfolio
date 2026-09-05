@@ -8,6 +8,7 @@ import { playFeedback } from '@/lib/interaction-feedback'
 import { slugify } from '@/lib/slugify'
 import { track } from '@vercel/analytics'
 import { cleanInlineText, normalizeExternalUrl } from '@/lib/content-utils'
+import { imageFocus } from '@/lib/image-focus'
 
 export interface Profile {
   id: string
@@ -96,8 +97,8 @@ export default function ProfileSection({
   }
 
   const contactEmail = profile?.contact_email || 'faithawokunle1@gmail.com'
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText(contactEmail)
+  const handleCopyEmail = async () => {
+    try { await navigator.clipboard.writeText(contactEmail) } catch { window.location.href = `mailto:${contactEmail}`; return }
     track('contact_email_copied', { location: 'homepage' })
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
@@ -150,8 +151,9 @@ export default function ProfileSection({
               />
             </button>
 
-            {galleryOpen && (
-              <div id="profile-photos" tabIndex={0} className="gallery-linear-reveal flex gap-2.5 mt-3 overflow-x-auto snap-x snap-mandatory pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Profile photos">
+            <div className="grid transition-[grid-template-rows,opacity] duration-300" style={{ gridTemplateRows: galleryOpen ? '1fr' : '0fr', opacity: galleryOpen ? 1 : 0 }} inert={!galleryOpen} aria-hidden={!galleryOpen}>
+              <div className="min-h-0 overflow-hidden">
+              <div id="profile-photos" tabIndex={galleryOpen ? 0 : -1} className="flex gap-2.5 mt-3 overflow-x-auto snap-x snap-mandatory pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Profile photos">
                 {galleryImages.map((src, index) => (
                   <div
                     key={`${src}-${index}`}
@@ -168,7 +170,8 @@ export default function ProfileSection({
                   </div>
                 ))}
               </div>
-            )}
+              </div>
+            </div>
             <div
               ref={galleryCursorLabelRef}
               className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm"
@@ -257,12 +260,12 @@ export default function ProfileSection({
       )}
 
       {/* Contact CTA - Below Bio */}
-      <div className="mb-20 pt-2">
+      <div className="mb-12 pt-2">
         <p className="text-foreground/70 leading-relaxed flex items-center gap-2 flex-wrap">
           Got something in mind? Reach out at{' '}
           <button
             onClick={handleCopyEmail}
-            className="inline-flex min-h-9 items-center gap-1 px-2 py-1 rounded-md bg-foreground/[0.045] hover:bg-foreground/[0.075] transition-colors group cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-1 px-3 py-1 rounded-md bg-foreground/[0.045] hover:bg-foreground/[0.075] transition-colors group cursor-pointer"
             title="Click to copy email"
           >
             <span className="font-medium text-foreground/70">
@@ -274,7 +277,7 @@ export default function ProfileSection({
               </svg>
             )}
           </button>
-          {' '}— I&apos;d love to hear from you
+          <a href={`mailto:${contactEmail}`} className="inline-flex min-h-11 items-center underline underline-offset-4 px-2">Send an email ↗</a>
         </p>
       </div>
 
@@ -357,7 +360,8 @@ export default function ProfileSection({
                 {caseStudy.thumbnail_url && (
                   <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-foreground/5">
                     <Image
-                      src={caseStudy.thumbnail_url}
+                      src={imageFocus(caseStudy.thumbnail_url).src}
+                      style={{ objectPosition: imageFocus(caseStudy.thumbnail_url).position }}
                       alt={caseStudy.title}
                       fill
                       sizes="(max-width: 640px) 72vw, 36vw"

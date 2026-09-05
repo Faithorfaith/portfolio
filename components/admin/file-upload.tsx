@@ -21,14 +21,21 @@ export default function FileUpload({
   const [error, setError] = useState<string | null>(null)
   const [progress, setProgress] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
+  const [uploadedName, setUploadedName] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const uploadFile = async (file?: File) => {
-    if (!file) return
+    if (!file || isLoading) return
+    const allowed = accept.split(',').map((type) => type.trim())
+    if (accept !== '*' && !allowed.some((type) => type.startsWith('.') ? file.name.toLowerCase().endsWith(type.toLowerCase()) : type.endsWith('/*') ? file.type.startsWith(type.slice(0, -1)) : type === file.type)) {
+      setError(`Choose a supported file: ${accept}`)
+      return
+    }
 
     setIsLoading(true)
     setProgress(0)
     setError(null)
+    setUploadedName('')
 
     try {
       // Videos upload straight to Storage so they do not hit Vercel's request
@@ -45,6 +52,7 @@ export default function FileUpload({
         )
         if (!result.success || !result.publicUrl) throw new Error(result.error || 'Video upload failed')
         onUpload(result.publicUrl)
+        setUploadedName(file.name)
         if (fileInputRef.current) fileInputRef.current.value = ''
         return
       }
@@ -75,6 +83,7 @@ export default function FileUpload({
       const data = await response.json()
       if (data.url) {
         onUpload(data.url)
+        setUploadedName(file.name)
         setProgress(100)
       } else {
         throw new Error('No URL returned from upload')
@@ -124,12 +133,13 @@ export default function FileUpload({
         }}
         className={`relative w-full min-h-24 overflow-hidden rounded-lg border border-dashed px-4 py-5 text-center transition-colors ${isDragging ? 'border-foreground/55 bg-foreground/[0.045]' : 'border-foreground/15 bg-foreground/[0.018] hover:border-foreground/35 hover:bg-foreground/[0.03]'}`}
       >
-        <span className="block text-xs font-medium text-foreground/70">{isLoading ? `Uploading ${Math.round(progress)}%` : 'Drop a file or click to browse'}</span>
+        <span className="block text-xs font-medium text-foreground/70">{isLoading ? (progress ? `Uploading ${Math.round(progress)}%` : 'Uploading…') : 'Drop a file or click to browse'}</span>
         <span className="mt-1 block text-[11px] text-foreground/35">{accept === '*' ? 'Images and videos supported' : accept}</span>
         {isLoading && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-foreground/8"><span className="block h-full bg-foreground transition-[width]" style={{ width: `${progress}%` }} /></span>}
       </button>
 
       {error && <p role="alert" className="text-xs text-red-600">{error}</p>}
+      {uploadedName && <p role="status" className="text-xs text-foreground/65">Uploaded {uploadedName}. Save your changes to publish it.</p>}
     </div>
   )
 }

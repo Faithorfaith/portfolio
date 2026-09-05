@@ -200,6 +200,30 @@
 }
 
 @layer utilities {
+  .article-prose { font-size: 14px; line-height: 1.85; color: color-mix(in oklch, var(--foreground) 85%, transparent); }
+  .article-prose p { margin-bottom: 1.5rem; }
+  .article-prose ul { list-style: disc outside; padding-left: 1.5rem; margin: 1.5rem 0; }
+  .article-prose ol { list-style: decimal outside; padding-left: 1.5rem; margin: 1.5rem 0; }
+  .article-prose li { display: list-item; margin-bottom: 0.5rem; }
+  .article-prose li p { margin-bottom: 0.25rem; }
+  .article-prose a { color: var(--foreground); text-decoration: underline; text-underline-offset: 4px; }
+  .article-prose h1, .article-prose h2, .article-prose h3 { font-size: 14px; font-weight: 500; margin: 2rem 0 1rem; }
+  .article-prose pre { overflow-x: auto; padding: 1rem; background: var(--muted); }
+  .rich-text-editor { font-size: 14px; line-height: 1.8; }
+  .rich-text-editor p { margin-bottom: 0.75rem; }
+  .rich-text-editor ul { list-style: disc outside; padding-left: 1.5rem; margin: 1rem 0; }
+  .rich-text-editor ol { list-style: decimal outside; padding-left: 1.5rem; margin: 1rem 0; }
+  .rich-text-editor ul ul { list-style-type: circle; }
+  .rich-text-editor li { display: list-item; margin-bottom: 0.35rem; }
+  .rich-text-editor li::marker { color: currentColor; }
+  .rich-text-editor li p { margin-bottom: 0.25rem; }
+  .rich-text-editor h1, .rich-text-editor h2, .rich-text-editor h3 { font-weight: 600; margin: 1.25rem 0 0.75rem; }
+  .rich-text-editor h1 { font-size: 18px; }
+  .rich-text-editor h2 { font-size: 16px; }
+  .rich-text-editor h3 { font-size: 14px; }
+  .rich-text-editor a { text-decoration: underline; text-underline-offset: 3px; }
+  .rich-text-editor blockquote { border-left: 2px solid var(--border); padding-left: 1rem; }
+  .rich-text-editor pre { overflow-x: auto; padding: 1rem; background: var(--muted); border-radius: 6px; }
   @keyframes galleryLinearReveal {
     from { clip-path: inset(0 100% 0 0); }
     to { clip-path: inset(0 0 0 0); }
@@ -219,7 +243,7 @@
     animation: galleryPhotoReveal 360ms ease-out both;
   }
 
-  .gallery-photo-card { width: 72%; }
+  .gallery-photo-card { width: calc((100% - 0.625rem) / 2); }
   @media (min-width: 640px) {
     .gallery-photo-card { width: calc((100% - 1.875rem) / 4); }
   }

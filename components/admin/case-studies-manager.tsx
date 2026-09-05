@@ -8,6 +8,10 @@ import ProgressiveImage from '@/components/progressive-image'
 import ButtonBlockBuilder from './button-block-builder'
 import SafeEmbed from '@/components/safe-embed'
 import SafeHtml from '@/components/safe-html'
+import CaseSectionBody from '@/components/case-section-body'
+import { useEditorGuard } from '@/hooks/use-editor-guard'
+import DraftTools from './draft-tools'
+import MediaLibrary from './media-library'
 
 const RTFEditor = dynamic(() => import('./rtf-editor'), { ssr: false })
 
@@ -87,6 +91,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
   const [editing, setEditing] = useState<CaseStudy | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [listFilter, setListFilter] = useState('all')
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -96,6 +101,10 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null)
   const [draggedSectionId, setDraggedSectionId] = useState<string | null>(null)
   const [articleOptions, setArticleOptions] = useState<RelatedArticleOption[]>([])
+  const draftDirty = useEditorGuard(editing)
+  const [showPreview, setShowPreview] = useState(false)
+  const [previewMobile, setPreviewMobile] = useState(false)
+  useEffect(() => { setHasUnsavedChanges(draftDirty) }, [draftDirty])
 
   useEffect(() => {
     onEditorOpenChange?.(Boolean(editing))
@@ -425,6 +434,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
     ].filter(Boolean) as string[]
     return (
       <div className="max-w-none space-y-5" onInput={() => setHasUnsavedChanges(true)}>
+        <DraftTools key={editing.id || 'new'} kind="case-study" draft={editing} onRestore={setEditing} />
         {/* Header */}
         <div className="sticky top-0 z-20 flex items-center justify-between py-3 px-1 bg-background/95 backdrop-blur-md border-b border-border">
           <div className="flex items-center gap-3">
@@ -443,10 +453,11 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
             </button>
             <div>
               <h2 className="text-base font-semibold text-foreground">{isCreating ? 'New case study' : 'Edit case study'}</h2>
-              <p className="text-xs text-foreground/40 mt-0.5">Write, format and publish in one place</p>
+              <p role="status" className="text-xs text-foreground/60 mt-0.5">{isSaving ? 'Saving…' : hasUnsavedChanges ? 'Unsaved changes' : isCreating ? 'New draft' : 'No unsaved changes'}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <button type="button" className="min-h-9 px-3 text-xs rounded-lg hover:bg-muted" aria-expanded={showPreview} onClick={() => setShowPreview(!showPreview)}>{showPreview ? 'Hide preview' : 'Preview'}</button>
             <label className="flex items-center gap-2 text-sm text-foreground/60 cursor-pointer select-none">
               <div
                 onClick={() => setEditing({ ...editing, published: !editing.published })}
@@ -525,11 +536,15 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
           <div className="px-6 py-4 border-b border-border bg-muted/30">
             <p className="text-sm font-medium text-foreground">Details</p>
             <p className="text-xs text-foreground/50 mt-0.5">Basic info and cover media</p>
+            <MediaLibrary value={editing.thumbnail_url} onSelect={(url) => setEditing({ ...editing, thumbnail_url: url })} />
           </div>
           <div className="px-6 py-5 space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-foreground/60">Case study name</label>
+              <label htmlFor="case-study-name" className="text-xs font-medium text-foreground/60">Case study name</label>
               <input
+                id="case-study-name"
+                aria-invalid={error === 'Title is required'}
+                aria-describedby={error === 'Title is required' ? 'case-name-error' : undefined}
                 type="text"
                 placeholder="Case study title"
                 value={editing.title}
@@ -540,6 +555,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
                 }}
                 className="w-full px-3 py-2.5 text-base font-medium border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-shadow"
               />
+              {error === 'Title is required' && <p id="case-name-error" role="alert" className="text-xs text-red-600">Enter a case study name before saving.</p>}
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-foreground/60">Slug <span className="text-foreground/30">(auto-generated)</span></label>
@@ -915,23 +931,23 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
         </div>
           </div>
 
-          <aside className="hidden">
+          <aside style={{ maxWidth: previewMobile ? 375 : 600 }} className={showPreview ? 'w-full mx-auto rounded-lg border border-border' : 'hidden'}>
             <div className="px-4 py-3 border-b border-border flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium">Live preview</p>
                 <p className="text-[11px] text-foreground/40 mt-0.5">Selected section</p>
               </div>
-              <span className="text-[10px] text-foreground/35">Desktop</span>
+              <button type="button" className="text-xs underline" onClick={() => setPreviewMobile(!previewMobile)}>{previewMobile ? 'Mobile · switch' : 'Desktop · switch'}</button>
             </div>
             <div className="p-5 max-h-[calc(100vh-180px)] overflow-y-auto">
               {selectedSection ? (
                 <article>
                   {selectedSection.label && <p className="text-[11px] text-foreground/40 mb-2">{selectedSection.label}</p>}
-                  {selectedSection.title && <h3 className="text-xl font-medium tracking-[-0.01em] mb-4">{selectedSection.title}</h3>}
+                  {selectedSection.title && <h3 className="text-[18px] font-medium tracking-[-0.01em] mb-4">{selectedSection.title}</h3>}
                   {selectedSection.image && <img src={selectedSection.image} alt="" className="w-full h-auto mb-4" />}
                   {selectedSection.video_url && <video src={selectedSection.video_url} controls className="w-full h-auto mb-4 bg-black" />}
                   {selectedSection.embed_url && <div className="mb-4"><SafeEmbed url={selectedSection.embed_url} title="Embed preview" /></div>}
-                  <SafeHtml html={selectedSection.body} className="text-sm [&_p]:leading-6 [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_a]:underline" />
+                <CaseSectionBody html={selectedSection.body} />
                 </article>
               ) : <p className="text-xs text-foreground/40">Add a section to begin.</p>}
 
@@ -955,6 +971,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
   // ── List View ────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
+      <label className="flex gap-3 items-center text-xs">Show<select aria-label="Publication status" value={listFilter} onChange={(event) => setListFilter(event.target.value)} className="border rounded px-3 py-2 bg-background"><option value="all">All content</option><option value="draft">Drafts</option><option value="published">Published</option></select><span role="status">{caseStudies.filter((item) => listFilter === 'all' || item.published === (listFilter === 'published')).length} results</span></label>
       <div className="flex items-center justify-between pb-2">
         <div>
           <h2 className="text-lg font-semibold text-foreground">Case Studies</h2>
@@ -990,7 +1007,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {caseStudies.map((cs, index) => (
+          {caseStudies.filter((item) => listFilter === 'all' || item.published === (listFilter === 'published')).map((cs, index) => (
             <div key={cs.id} className="group border border-border rounded-xl overflow-hidden hover:border-foreground/20 transition-all bg-background">
               {/* Thumbnail */}
               <div className="aspect-[16/9] bg-muted/30 relative overflow-hidden">

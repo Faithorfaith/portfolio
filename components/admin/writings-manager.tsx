@@ -1,9 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import dynamic from 'next/dynamic'
 import { slugify } from '@/lib/slugify'
+import { useEditorGuard } from '@/hooks/use-editor-guard'
+import SafeHtml from '@/components/safe-html'
+import ArticleBody from '@/components/article-body'
+import DraftTools from './draft-tools'
+import MediaLibrary from './media-library'
+import { generateNarrationInWorker } from '@/lib/generate-narration'
 
 const RTFEditor = dynamic(() => import('./rtf-editor'), { ssr: false })
 
@@ -35,29 +41,35 @@ const KOKORO_VOICES = [
   { id: 'af_nicole', label: 'Nicole · American' },
 ] as const
 
-let kokoroModelPromise: Promise<any> | null = null
-
-function wavBlob(samples: Float32Array, sampleRate: number) {
-  const buffer = new ArrayBuffer(44 + samples.length * 2)
-  const view = new DataView(buffer)
-  const write = (offset: number, value: string) => [...value].forEach((char, index) => view.setUint8(offset + index, char.charCodeAt(0)))
-  write(0, 'RIFF'); view.setUint32(4, 36 + samples.length * 2, true); write(8, 'WAVE'); write(12, 'fmt ')
-  view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true)
-  view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true)
-  write(36, 'data'); view.setUint32(40, samples.length * 2, true)
-  samples.forEach((sample, index) => view.setInt16(44 + index * 2, Math.max(-1, Math.min(1, sample)) * 0x7fff, true))
-  return new Blob([buffer], { type: 'audio/wav' })
-}
-
 export default function WritingsManager() {
   const [writings, setWritings] = useState<Writing[]>([])
   const [editing, setEditing] = useState<Writing | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [listFilter, setListFilter] = useState('all')
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
-  const [modelProgress, setModelProgress] = useState(0)
+  const [narrationProgress, setNarrationProgress] = useState('')
+  const narrationController = useRef<AbortController | null>(null)
+  useEffect(() => () => { narrationController.current?.abort() }, [])
+  useEffect(() => { if (!editing) narrationController.current?.abort() }, [editing])
+  const dirty = useEditorGuard(editing)
+  const [showPreview, setShowPreview] = useState(false)
+  const [previewMobile, setPreviewMobile] = useState(false)
+  const [voiceSample, setVoiceSample] = useState<string | null>(null)
+  const previousContent = useRef<{ id: string; text: string } | null>(null)
+  const [narrationStale, setNarrationStale] = useState(false)
+  useEffect(() => {
+    if (!editing) { previousContent.current = null; setNarrationStale(false); return }
+    const text = JSON.stringify(editing.content)
+    if (previousContent.current?.id === editing.id && previousContent.current.text !== text && editing.audio_url) {
+      setNarrationStale(true)
+      setEditing((value) => value ? { ...value, audio_url: null } : value)
+    }
+    previousContent.current = { id: editing.id, text }
+  }, [editing])
+  useEffect(() => () => { if (voiceSample) URL.revokeObjectURL(voiceSample) }, [voiceSample])
 
   const supabase = createClient()
 
@@ -87,7 +99,7 @@ export default function WritingsManager() {
       excerpt: null,
       cover_image: null,
       audio_url: null,
-      audio_voice: 'bf_emma',
+      audio_voice: 'af_heart',
       published: false
     })
     setIsCreating(true)
@@ -191,55 +203,40 @@ export default function WritingsManager() {
     setEditing({ ...editing, cover_image: publicUrl })
   }
 
-  const generateNarration = async () => {
-    if (!editing) return
+  const generateNarration = async (sampleOnly = false) => {
+    if (!editing || narrationController.current) return
     const container = document.createElement('div')
     const text = editing.content
       .filter((block) => block.type !== 'image' && block.type !== 'divider')
-      .map((block) => { container.innerHTML = block.content || ''; return container.textContent?.trim() || '' })
+      .map((block) => {
+        container.innerHTML = block.content || ''
+        container.querySelectorAll('p, li, h1, h2, h3, blockquote, br').forEach((node) => node.append(document.createTextNode('\n')))
+        return container.textContent?.trim() || ''
+      })
       .filter(Boolean)
-      .join('. ')
+      .join('\n\n')
     if (!text) { setError('Add article text before generating narration'); return }
 
-    setIsGeneratingAudio(true); setError(null); setModelProgress(0)
+    const controller = new AbortController()
+    narrationController.current = controller
+    setIsGeneratingAudio(true); setError(null); setNarrationProgress('Starting voice engine…')
     try {
-      const importBrowserModule = new Function('url', 'return import(url)') as (url: string) => Promise<{ KokoroTTS: any }>
-      const { KokoroTTS } = await importBrowserModule('https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js')
-      if (!kokoroModelPromise) {
-        kokoroModelPromise = KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
-          dtype: 'q8',
-          device: 'wasm',
-          progress_callback: (progress: any) => {
-            if (typeof progress.progress === 'number') setModelProgress(Math.round(progress.progress))
-          },
-        })
-      }
-      const model = await kokoroModelPromise
-      const chunks: Float32Array[] = []
-      let sampleRate = 24000
-      for await (const result of model.stream(text, {
-        voice: editing.audio_voice || 'bf_emma',
-        speed: 0.96,
-        // Keep long articles intact by narrating sentence-sized chunks.
-        split_pattern: /(?<=[.!?])\s+/,
-      })) {
-        chunks.push(result.audio.audio)
-        sampleRate = result.audio.sampling_rate
-      }
-      const length = chunks.reduce((total, chunk) => total + chunk.length, 0)
-      const samples = new Float32Array(length)
-      let offset = 0
-      chunks.forEach((chunk) => { samples.set(chunk, offset); offset += chunk.length })
-      const blob = wavBlob(samples, sampleRate)
+      const blob = await generateNarrationInWorker(sampleOnly ? text.split(/\s+/).slice(0, 40).join(' ') : text, editing.audio_voice || 'af_heart', controller.signal, setNarrationProgress)
+      if (controller.signal.aborted) return
+      if (sampleOnly) { setVoiceSample(URL.createObjectURL(blob)); return }
+      setNarrationProgress('Uploading narration…')
       const fileName = `writings/audio/${Date.now()}-${slugify(editing.title || 'article')}.wav`
       const { error: uploadError } = await supabase.storage.from('portfolio-uploads').upload(fileName, blob, { contentType: 'audio/wav', upsert: true })
       if (uploadError) throw uploadError
+      if (controller.signal.aborted) return
       const { data: { publicUrl } } = supabase.storage.from('portfolio-uploads').getPublicUrl(fileName)
-      setEditing((current) => current ? { ...current, audio_url: publicUrl } : current)
+      setEditing((current) => current && current.id === editing.id && JSON.stringify(current.content) === JSON.stringify(editing.content) ? { ...current, audio_url: publicUrl } : current)
+      setNarrationStale(false)
     } catch (generationError) {
       setError(generationError instanceof Error ? generationError.message : 'Narration generation failed')
     } finally {
-      setIsGeneratingAudio(false); setModelProgress(0)
+      narrationController.current = null
+      setIsGeneratingAudio(false); setNarrationProgress('')
     }
   }
 
@@ -251,7 +248,8 @@ export default function WritingsManager() {
         <div className="flex items-center justify-between pb-1">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => { setEditing(null); setIsCreating(false) }}
+              aria-label="Back to articles"
+              onClick={() => { if (dirty && !window.confirm('Discard unsaved changes?')) return; setEditing(null); setIsCreating(false) }}
               className="p-1.5 rounded-lg transition-colors"
               style={{ border: '1px solid oklch(0.91 0 0)', background: 'oklch(0.98 0 0)', color: 'var(--foreground)' }}
             >
@@ -261,10 +259,11 @@ export default function WritingsManager() {
             </button>
             <div>
               <h2 className="font-semibold text-foreground" style={{ fontSize: '16px', letterSpacing: '-0.02em' }}>{isCreating ? 'New Article' : 'Edit Article'}</h2>
-              <p className="text-xs mt-0.5" style={{ color: 'var(--foreground)', opacity: 0.4 }}>{editing.content.length} block{editing.content.length !== 1 ? 's' : ''}</p>
+              <p role="status" className="text-xs mt-0.5 text-foreground/60">{isSaving ? 'Saving…' : dirty ? 'Unsaved changes' : isCreating ? 'New draft' : 'No unsaved changes'}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <button type="button" onClick={() => setShowPreview(!showPreview)} aria-expanded={showPreview} className="px-3 min-h-9 rounded-lg text-xs hover:bg-muted">{showPreview ? 'Hide preview' : 'Preview'}</button>
             <div
               onClick={() => setEditing({ ...editing, published: !editing.published })}
               className="flex items-center gap-2 cursor-pointer select-none"
@@ -283,7 +282,7 @@ export default function WritingsManager() {
             </div>
             <button
               onClick={handleSave}
-              disabled={isSaving}
+              disabled={isSaving || isGeneratingAudio}
               className="flex items-center gap-2 text-background rounded-lg font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
               style={{ padding: '7px 14px', background: 'var(--foreground)', fontSize: '12.5px', letterSpacing: '-0.01em' }}
             >
@@ -310,6 +309,15 @@ export default function WritingsManager() {
           </div>
         )}
 
+        <DraftTools key={editing.id || 'new'} kind="writing" draft={editing} onRestore={setEditing} />
+        {showPreview && <button type="button" className="min-h-9 text-xs underline" onClick={() => setPreviewMobile(!previewMobile)}>{previewMobile ? 'Switch to desktop preview' : 'Switch to mobile preview'}</button>}
+        {showPreview && (
+          <article aria-label="Article preview" style={{ maxWidth: previewMobile ? 375 : 600 }} className="w-full mx-auto space-y-6 py-6 text-sm leading-[1.85]">
+            <h1 className="text-[18px] font-medium leading-snug">{editing.title || 'Untitled article'}</h1>
+            {editing.cover_image && <img src={editing.cover_image} alt="Article cover" className="w-full h-auto" />}
+            <ArticleBody blocks={editing.content} />
+          </article>
+        )}
         {/* Meta */}
         <div className="rounded-xl overflow-hidden" style={{ border: '1px solid oklch(0.91 0 0)', boxShadow: '0 1px 2px oklch(0 0 0 / 0.04)' }}>
           <div className="px-6 py-4 border-b" style={{ borderColor: 'oklch(0.93 0 0)', background: 'oklch(0.985 0 0)' }}>
@@ -317,8 +325,11 @@ export default function WritingsManager() {
           </div>
           <div className="px-6 py-5 space-y-4" style={{ background: 'oklch(1 0 0)' }}>
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium" style={{ color: 'var(--foreground)', opacity: 0.5 }}>Title</label>
+              <label htmlFor="article-title" className="block text-xs font-medium" style={{ color: 'var(--foreground)', opacity: 0.5 }}>Title</label>
               <input
+                id="article-title"
+                aria-invalid={error === 'Title is required'}
+                aria-describedby={error === 'Title is required' ? 'article-title-error' : undefined}
                 type="text"
                 placeholder="Article title"
                 value={editing.title}
@@ -326,6 +337,7 @@ export default function WritingsManager() {
                 className="w-full text-sm font-medium bg-background focus:outline-none focus:ring-2 focus:ring-foreground/15 transition-shadow rounded-lg"
                 style={{ padding: '8px 12px', border: '1px solid oklch(0.91 0 0)', fontSize: '15px' }}
               />
+              {error === 'Title is required' && <p id="article-title-error" role="alert" className="text-xs text-red-600">Enter an article title before saving.</p>}
             </div>
             <div className="space-y-1.5">
               <label className="block text-xs font-medium" style={{ color: 'var(--foreground)', opacity: 0.5 }}>Slug <span style={{ opacity: 0.6 }}>(auto-generated)</span></label>
@@ -374,9 +386,11 @@ export default function WritingsManager() {
               )}
             </div>
 
+            <MediaLibrary value={editing.cover_image} onSelect={(url) => setEditing({ ...editing, cover_image: url })} />
             <div className="space-y-3 pt-4 border-t border-border">
               <div>
                 <p className="text-xs font-medium text-foreground/60">Article narration</p>
+                {narrationStale && <p role="status" className="text-xs text-amber-700">The text changed. The old narration has been detached; regenerate it before saving if you want an audio version.</p>}
                 <p className="mt-0.5 text-[11px] text-foreground/40">Free local generation with Kokoro. The first model download may take a few minutes.</p>
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
@@ -389,13 +403,17 @@ export default function WritingsManager() {
                 </select>
                 <button
                   type="button"
-                  onClick={generateNarration}
+                  onClick={() => generateNarration()}
                   disabled={isGeneratingAudio}
                   className="h-9 rounded-lg bg-foreground px-4 text-xs font-medium text-background disabled:opacity-50"
                 >
-                  {isGeneratingAudio ? (modelProgress ? `Loading model ${modelProgress}%` : 'Generating…') : editing.audio_url ? 'Regenerate narration' : 'Generate narration'}
+                  {isGeneratingAudio ? 'Generating…' : editing.audio_url ? 'Regenerate narration' : 'Generate narration'}
                 </button>
               </div>
+              {isGeneratingAudio && <div className="flex items-center gap-3"><p role="status" className="text-xs text-foreground/65">{narrationProgress}</p><button type="button" onClick={() => narrationController.current?.abort()} className="text-xs underline min-h-9">Cancel generation</button></div>}
+              <button type="button" onClick={() => generateNarration(true)} disabled={isGeneratingAudio} className="text-xs underline min-h-9 disabled:opacity-50">Preview voice with the first 40 words</button>
+              {voiceSample && <audio src={voiceSample} controls aria-label="Voice sample" className="w-full h-9" />}
+              <p className="text-[11px] text-foreground/60">Preview voices before generating. After changing article text, regenerate narration and save the article.</p>
               {editing.audio_url && (
                 <div className="flex items-center gap-3 rounded-lg bg-muted/30 p-3">
                   <audio src={editing.audio_url} controls className="h-8 min-w-0 flex-1" />
@@ -523,6 +541,7 @@ export default function WritingsManager() {
   // ── List View ────────────────────────────────────────────────────────────
   return (
     <div className="max-w-2xl space-y-6">
+      <label className="flex gap-3 items-center text-xs">Show<select aria-label="Publication status" value={listFilter} onChange={(event) => setListFilter(event.target.value)} className="border rounded px-3 py-2 bg-background"><option value="all">All content</option><option value="draft">Drafts</option><option value="published">Published</option></select><span role="status">{writings.filter((item) => listFilter === 'all' || item.published === (listFilter === 'published')).length} results</span></label>
       <div className="flex items-center justify-between pb-1">
         <div>
           <h2 className="font-semibold text-foreground" style={{ fontSize: '16px', letterSpacing: '-0.02em' }}>Writing</h2>
@@ -567,7 +586,7 @@ export default function WritingsManager() {
         </div>
       ) : (
         <div className="rounded-xl overflow-hidden" style={{ border: '1px solid oklch(0.91 0 0)', boxShadow: '0 1px 2px oklch(0 0 0 / 0.03)' }}>
-          {writings.map((w, idx) => (
+          {writings.filter((item) => listFilter === 'all' || item.published === (listFilter === 'published')).map((w, idx) => (
             <div key={w.id} className="flex items-center gap-4 group transition-colors" style={{ padding: '13px 20px', background: 'oklch(1 0 0)', borderTop: idx > 0 ? '1px solid oklch(0.94 0 0)' : 'none' }}>
               {w.cover_image && (
                 <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0" style={{ border: '1px solid oklch(0.91 0 0)' }}>

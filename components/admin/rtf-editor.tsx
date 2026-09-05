@@ -20,6 +20,7 @@ export default function RTFEditor({ value, onChange, placeholder = 'Enter conten
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
+        link: false,
         bulletList: false,
         orderedList: false,
         listItem: false,
@@ -39,7 +40,7 @@ export default function RTFEditor({ value, onChange, placeholder = 'Enter conten
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[200px] p-4 border rounded-lg bg-background text-foreground',
+        class: 'rich-text-editor max-w-none focus:outline-none min-h-[200px] p-4 border rounded-lg bg-background text-foreground',
       },
     },
   })
