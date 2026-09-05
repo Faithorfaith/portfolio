@@ -146,7 +146,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
 
         {/* Article Content */}
         <article>
-            <header className="mb-14 pb-10 border-b border-foreground/8">
+            <header className="mb-8 pb-6 border-b border-foreground/8">
               <h1 className="text-[18px] font-medium tracking-[-0.01em] text-foreground mb-5 leading-snug">
                 {selectedWriting.title}
               </h1>
@@ -318,8 +318,8 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                 ) : <div className="aspect-[4/3] bg-foreground/5" />}
                 <div className="min-w-0">
                   <h3 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground/70 group-hover:text-foreground transition-colors">{writing.title}</h3>
-                  {writing.excerpt && <p className="mt-1.5 text-sm leading-relaxed text-foreground/50 line-clamp-1">{writing.excerpt}</p>}
-                  <p className="mt-2 text-[11px] text-foreground/45">{Math.max(1, Math.ceil(wordCount / 200))} min · {new Date(writing.created_at).getFullYear()}</p>
+                  {writing.excerpt && <p className="mt-1.5 text-sm leading-relaxed text-foreground/60 line-clamp-2">{writing.excerpt}</p>}
+                  <p className="mt-2 text-[11px] text-foreground/60 tabular-nums">{Math.max(1, Math.ceil(wordCount / 200))} min · {new Date(writing.created_at).getFullYear()}</p>
                 </div>
                 <span className="text-lg text-foreground/45 transition-transform group-hover:translate-x-1" aria-hidden="true">↗</span>
               </Link>

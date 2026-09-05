@@ -43,16 +43,17 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
               {[...items]
                 .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                 .map((project) => (
-                <button
+                <a
                   key={project.id}
+                  href={project.link ? normalizeExternalUrl(project.link) || undefined : undefined}
+                  target={project.link ? '_blank' : undefined}
+                  rel={project.link ? 'noopener noreferrer' : undefined}
                   onClick={() => {
                     if (project.link) {
                       playFeedback('tap')
-                      // Both mobile and desktop: open link directly
-                      window.open(normalizeExternalUrl(project.link), '_blank', 'noopener,noreferrer')
                     }
                   }}
-                  className={`interactive-row relative w-full text-left group pl-6 ${project.link ? 'cursor-pointer' : ''}`}
+                  className={`interactive-row relative block w-full text-left group pl-6 ${project.link ? 'cursor-pointer' : ''}`}
                   onMouseEnter={(event) => {
                     if (!project.link || !cursorLabelRef.current || window.matchMedia('(hover: none)').matches) return
                     cursorLabelRef.current.style.opacity = '1'
@@ -74,7 +75,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                         {project.title}
                       </h3>
                       {project.description && (
-                        <p className="text-sm text-foreground/45 leading-relaxed mt-1 line-clamp-1">
+                        <p className="text-sm text-foreground/60 leading-relaxed mt-1 line-clamp-2">
                           {project.description}
                         </p>
                       )}
@@ -82,13 +83,14 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
 
                     <div className="flex items-center gap-2 shrink-0">
                       {project.type && (
-                      <span className="text-foreground/40 text-[11px] whitespace-nowrap shrink-0 transition-colors duration-200 group-hover:text-foreground/60">
+                      <span className="hidden sm:inline text-foreground/60 text-[11px] whitespace-nowrap shrink-0 transition-colors duration-200 group-hover:text-foreground/80">
                         {project.type}
                       </span>
                       )}
+                      {project.link && <span aria-hidden="true" className="text-foreground/50 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5">↗</span>}
                     </div>
                   </div>
-                </button>
+                </a>
                 ))}
             </div>
           </section>

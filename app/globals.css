@@ -294,6 +294,26 @@
   .interactive-row { transition: color var(--motion-fast) ease, background-color var(--motion-fast) ease, transform var(--motion-fast) ease; }
   .interactive-row:hover { transform: translateX(2px); }
 
+  .rail-control {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: var(--foreground);
+    transition: background-color var(--motion-fast), opacity var(--motion-fast);
+  }
+  .rail-control:hover:not(:disabled) { background: var(--muted); }
+  .rail-control:disabled { opacity: 0.25; }
+  .case-study-rail { overscroll-behavior-x: contain; }
+  .case-study-rail-card img { transition: transform 240ms var(--ease-out); }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .case-study-rail-card:hover img { transform: scale(1.025); }
+  }
+  @media (hover: none) {
+    .interactive-row:hover { transform: none; }
+  }
+
   .admin-surface :where(input:not([type='checkbox']):not([type='radio']), textarea, select) {
     min-height: 38px;
     border-color: oklch(0.145 0 0 / 0.12);

@@ -4,18 +4,18 @@ import CopyLinkButton from '@/components/copy-link-button'
 export function DetailNavigation({ title, backHref = '/', showCopy = true }: { title: string; backHref?: string; showCopy?: boolean }) {
   return (
     <header className="fixed top-0 inset-x-0 z-50 h-[52px] border-b border-foreground/8 bg-background/95 backdrop-blur-xl">
-      <div className="h-full max-w-[1440px] mx-auto px-5 md:px-8 flex items-center justify-between">
-        <div className="flex items-center gap-4 md:gap-7 min-w-0">
-          <Link href={backHref} className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-foreground/[0.045] text-xs text-foreground/55 hover:text-foreground hover:bg-foreground/[0.075] transition-colors">
+      <nav aria-label="Page navigation" className="h-full max-w-[1440px] mx-auto px-4 md:px-8 flex items-center justify-between gap-3">
+        <div className="flex flex-1 items-center gap-4 md:gap-7 min-w-0">
+          <Link href={backHref} className="inline-flex shrink-0 items-center gap-1.5 min-h-11 px-3 rounded-lg text-xs text-foreground/65 hover:text-foreground hover:bg-foreground/[0.045] transition-colors">
             <span aria-hidden="true">‹</span>
             Back
           </Link>
-          <Link href="#top" className="hidden sm:block text-sm font-medium truncate hover:text-foreground/60 transition-colors">
+          <Link href="#top" title={title} className="block min-w-0 text-xs sm:text-sm font-medium truncate hover:text-foreground/60 transition-colors">
             {title}
           </Link>
         </div>
         {showCopy && <CopyLinkButton className="border-0 bg-foreground/[0.045] hover:bg-foreground/[0.075]" />}
-      </div>
+      </nav>
     </header>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import EmptyState from './empty-state'
 import ProgressiveImage from '@/components/progressive-image'
@@ -74,6 +74,26 @@ export default function ProfileSection({
   const cursorLabelRef = useRef<HTMLDivElement>(null)
   const galleryCursorLabelRef = useRef<HTMLDivElement>(null)
   const dragState = useRef({ active: false, moved: false, x: 0, scrollLeft: 0 })
+  const [railEdges, setRailEdges] = useState({ start: true, end: true })
+
+  useEffect(() => {
+    const rail = railRef.current
+    if (!rail) return
+    const update = () => setRailEdges({ start: rail.scrollLeft < 2, end: rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 2 })
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(rail)
+    rail.addEventListener('scroll', update, { passive: true })
+    return () => { observer.disconnect(); rail.removeEventListener('scroll', update) }
+  }, [caseStudies, profile])
+
+  const browseWork = (direction: number) => {
+    const rail = railRef.current
+    if (!rail) return
+    const card = rail.querySelector<HTMLElement>('.case-study-rail-card')
+    const gap = parseFloat(getComputedStyle(rail).columnGap) || 16
+    rail.scrollBy({ left: direction * ((card?.offsetWidth || 240) + gap), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+  }
 
   const contactEmail = profile?.contact_email || 'faithawokunle1@gmail.com'
   const handleCopyEmail = () => {
@@ -118,6 +138,7 @@ export default function ProfileSection({
               className="group relative block w-28 h-28 md:w-32 md:h-32 rounded-lg overflow-hidden border border-transparent hover:border-foreground/40 focus-visible:border-foreground/50 transition-[border-color,opacity] hover:opacity-95"
               aria-label={galleryOpen ? 'Hide profile photos' : 'Show profile photos'}
               aria-expanded={galleryOpen}
+              aria-controls="profile-photos"
             >
               <Image
                 src={galleryImages[0]}
@@ -130,7 +151,7 @@ export default function ProfileSection({
             </button>
 
             {galleryOpen && (
-              <div className="gallery-linear-reveal flex gap-2.5 mt-3 overflow-x-auto snap-x snap-mandatory pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Profile photos">
+              <div id="profile-photos" tabIndex={0} className="gallery-linear-reveal flex gap-2.5 mt-3 overflow-x-auto snap-x snap-mandatory pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Profile photos">
                 {galleryImages.map((src, index) => (
                   <div
                     key={`${src}-${index}`}
@@ -153,7 +174,7 @@ export default function ProfileSection({
               className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm"
               aria-hidden="true"
             >
-              View gallery
+              {galleryOpen ? 'Close gallery' : 'View gallery'}
             </div>
           </div>
         )}
@@ -264,16 +285,26 @@ export default function ProfileSection({
         <div id="work" className="mt-16 scroll-mt-20">
           <div className="flex items-baseline justify-between mb-8">
             <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">My work</h2>
-            {caseStudies.length > 1 && <span className="text-xs text-foreground/35">Scroll →</span>}
+            {caseStudies.length > 1 && (
+              <div className="flex items-center gap-1" aria-label="Browse work">
+                <button type="button" aria-label="Previous work" aria-controls="work-rail" disabled={railEdges.start} onClick={() => browseWork(-1)} className="rail-control">←</button>
+                <button type="button" aria-label="Next work" aria-controls="work-rail" disabled={railEdges.end} onClick={() => browseWork(1)} className="rail-control">→</button>
+              </div>
+            )}
           </div>
 
           <div
             ref={railRef}
+            id="work-rail"
+            role="region"
             tabIndex={0}
             aria-label="Case studies. Scroll horizontally to browse."
             onKeyDown={(event) => {
-              if (event.key === 'ArrowRight') railRef.current?.scrollBy({ left: 320, behavior: 'smooth' })
-              if (event.key === 'ArrowLeft') railRef.current?.scrollBy({ left: -320, behavior: 'smooth' })
+              if (event.target !== event.currentTarget) return
+              if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+                event.preventDefault()
+                browseWork(event.key === 'ArrowRight' ? 1 : -1)
+              }
             }}
             onPointerDown={(event) => {
               if (event.pointerType === 'touch') return
@@ -294,6 +325,7 @@ export default function ProfileSection({
                 event.currentTarget.releasePointerCapture(event.pointerId)
               }
             }}
+            onPointerCancel={() => { dragState.current.active = false; dragState.current.moved = false }}
             onClickCapture={(event) => {
               if (!dragState.current.moved) return
               event.preventDefault()
@@ -343,7 +375,7 @@ export default function ProfileSection({
 
                   {/* Excerpt */}
                   {caseStudy.excerpt && (
-                    <p className="text-foreground/45 text-sm leading-relaxed line-clamp-2">
+                    <p className="text-foreground/60 text-sm leading-relaxed line-clamp-2">
                       {caseStudy.excerpt}
                     </p>
                   )}

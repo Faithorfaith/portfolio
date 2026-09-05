@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ReactNode } from 'react'
 
 interface StaggerContainerProps {
@@ -9,17 +9,18 @@ interface StaggerContainerProps {
 }
 
 export function StaggerContainer({ children, delay = 0 }: StaggerContainerProps) {
+  const reduceMotion = useReducedMotion()
   return (
     <motion.div
-      initial="hidden"
+      initial={reduceMotion ? false : 'hidden'}
       whileInView="visible"
       viewport={{ once: true, amount: 0.1 }}
       variants={{
         hidden: {},
         visible: {
           transition: {
-            staggerChildren: 0.08,
-            delayChildren: delay,
+            staggerChildren: reduceMotion ? 0 : 0.05,
+            delayChildren: reduceMotion ? 0 : Math.min(delay, 0.1),
           },
         },
       }}
@@ -35,14 +36,15 @@ interface StaggerItemProps {
 }
 
 export function StaggerItem({ children, className = '' }: StaggerItemProps) {
+  const reduceMotion = useReducedMotion()
   return (
     <motion.div
       variants={{
-        hidden: { opacity: 0, y: 16 },
+        hidden: { opacity: reduceMotion ? 1 : 0, y: reduceMotion ? 0 : 6 },
         visible: { 
           opacity: 1, 
           y: 0, 
-          transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] } 
+          transition: { duration: reduceMotion ? 0 : 0.24, ease: [0.22, 1, 0.36, 1] }
         },
       }}
       className={className}
@@ -59,12 +61,13 @@ interface FadeInProps {
 }
 
 export function FadeIn({ children, delay = 0, className = '' }: FadeInProps) {
+  const reduceMotion = useReducedMotion()
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 6 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.4, delay, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: reduceMotion ? 0 : 0.24, delay: reduceMotion ? 0 : Math.min(delay, 0.1), ease: [0.22, 1, 0.36, 1] }}
       className={className}
     >
       {children}
