@@ -1,24 +1,45 @@
+// Keep the model warm between jobs. Loading it for every click was the largest delay.
+let modelPromise
+const loadModel = async () => {
+  if (!modelPromise) {
+    self.postMessage({ type: 'progress', message: 'Loading voice engine for the first time…' })
+    modelPromise = import('https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js').then(({ KokoroTTS }) =>
+      KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
+        dtype: 'q8', device: 'wasm',
+        progress_callback: (progress) => self.postMessage({ type: 'progress', message: typeof progress.progress === 'number' ? `Downloading voice model: ${Math.round(progress.progress)}%` : 'Preparing voice model…' }),
+      }),
+    ).catch(error => { modelPromise = undefined; throw error })
+  } else self.postMessage({ type: 'progress', message: 'Voice engine ready…' })
+  return modelPromise
+}
+
 // Runs model download, phonemization, inference and WAV encoding off the UI thread.
 self.onmessage = async ({ data }) => {
   try {
     const { text, voice } = data
     if (typeof text !== 'string' || !text.trim() || text.length > 30000) throw new Error('Use between 1 and 30,000 characters per narration.')
-    self.postMessage({ type: 'progress', message: 'Loading voice engine…' })
-    const { KokoroTTS, TextSplitterStream } = await import('https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js')
-    const model = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
-      dtype: 'q8', device: 'wasm',
-      progress_callback: (progress) => {
-        self.postMessage({ type: 'progress', message: typeof progress.progress === 'number' ? `Downloading voice model: ${Math.round(progress.progress)}%` : 'Preparing voice model…' })
-      },
-    })
+    const [{ TextSplitterStream }, model] = await Promise.all([
+      import('https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js'),
+      loadModel(),
+    ])
     const splitter = new TextSplitterStream()
     splitter.push(text)
     splitter.close()
-    const parts = []
+    const sentences = []
     for await (const sentence of splitter) {
-      const words = sentence.split(/\s+/)
-      for (let index = 0; index < words.length; index += 45) parts.push(words.slice(index, index + 45).join(' '))
+      if (sentence.trim()) sentences.push(sentence.trim())
     }
+    // Fewer, fuller inference calls are substantially faster while staying safely
+    // below Kokoro's context limit.
+    const parts = []
+    let current = []
+    for (const sentence of sentences) {
+      const words = sentence.split(/\s+/)
+      if (current.length && current.length + words.length > 100) { parts.push(current.join(' ')); current = [] }
+      while (words.length > 100) parts.push(words.splice(0, 100).join(' '))
+      current.push(...words)
+    }
+    if (current.length) parts.push(current.join(' '))
     const chunks = []
     let count = 0
     for (let index = 0; index < parts.length; index++) {

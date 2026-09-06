@@ -317,22 +317,6 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
         </div>
       </SectionCard>
 
-      <SectionCard title="Client proof" description="Add up to four concise, genuine testimonials.">
-        <div className="space-y-3">
-          {formData.testimonials.map((item, index) => (
-            <div key={item.id} className="rounded-lg border border-border p-3 space-y-2">
-              <textarea value={item.quote} onChange={e => setFormData(current => ({ ...current, testimonials: current.testimonials.map((entry, i) => i === index ? { ...entry, quote: e.target.value } : entry) }))} rows={3} placeholder="Short testimonial" className="w-full px-3 py-2 resize-none" />
-              <div className="grid sm:grid-cols-3 gap-2">
-                {(['name', 'role', 'company'] as const).map(field => <input key={field} value={item[field]} onChange={e => setFormData(current => ({ ...current, testimonials: current.testimonials.map((entry, i) => i === index ? { ...entry, [field]: e.target.value } : entry) }))} placeholder={field[0].toUpperCase() + field.slice(1)} className="w-full px-3 py-2" />)}
-              </div>
-              <input type="url" value={item.url} onChange={e => setFormData(current => ({ ...current, testimonials: current.testimonials.map((entry, i) => i === index ? { ...entry, url: e.target.value } : entry) }))} placeholder="Optional profile URL" className="w-full px-3 py-2" />
-              <button type="button" onClick={() => setFormData(current => ({ ...current, testimonials: current.testimonials.filter((_, i) => i !== index) }))} className="text-xs text-red-600">Remove</button>
-            </div>
-          ))}
-          {formData.testimonials.length < 4 && <button type="button" onClick={() => setFormData(current => ({ ...current, testimonials: [...current.testimonials, { id: crypto.randomUUID(), quote: '', name: '', role: '', company: '', url: '' }] }))} className="w-full py-2 text-xs font-medium border border-dashed border-border rounded-lg hover:border-foreground/30 transition-colors">+ Add testimonial</button>}
-        </div>
-      </SectionCard>
-
       <SectionCard title="Bio references" description="Add companies, roles, tools or tags with a short explanation.">
         <div className="space-y-3">
           {formData.bio_references.map((reference, index) => (

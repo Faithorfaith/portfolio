@@ -10,6 +10,7 @@ import { DetailNavigation } from '@/components/detail-page-header'
 import SafeHtml from '@/components/safe-html'
 import ArticleBody from '@/components/article-body'
 import ProgressiveImage from '@/components/progressive-image'
+import ArticleRowContent from '@/components/article-row-content'
 import { playFeedback } from '@/lib/interaction-feedback'
 import Link from 'next/link'
 import { slugify } from '@/lib/slugify'
@@ -266,17 +267,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                 onMouseLeave={hideArticleCursor}
                 className="group grid w-full grid-cols-[88px_minmax(0,1fr)_20px] md:grid-cols-[112px_minmax(0,1fr)_24px] gap-4 md:gap-5 items-center py-3 text-left"
               >
-                {writing.cover_image ? (
-                  <div className="relative aspect-[4/3] overflow-hidden bg-foreground/5">
-                    <ProgressiveImage src={writing.cover_image} alt="" fill containerClassName="w-full h-full" />
-                  </div>
-                ) : <div className="aspect-[4/3] bg-foreground/5" />}
-                <div className="min-w-0">
-                  <h3 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground/70 group-hover:text-foreground transition-colors">{writing.title}</h3>
-                  {writing.excerpt && <p className="mt-1.5 text-sm leading-relaxed text-foreground/60 line-clamp-2">{writing.excerpt}</p>}
-                  <p className="mt-2 text-[11px] text-foreground/60 tabular-nums">{Math.max(1, Math.ceil(wordCount / 200))} min · {new Date(writing.created_at).getFullYear()}</p>
-                </div>
-                <span className="text-lg text-foreground/45 transition-transform group-hover:translate-x-1" aria-hidden="true">↗</span>
+                <ArticleRowContent title={writing.title} excerpt={writing.excerpt} cover={writing.cover_image} minutes={Math.max(1, Math.ceil(wordCount / 200))} year={new Date(writing.created_at).getFullYear()} />
               </Link>
             )
           })}
@@ -316,33 +307,9 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                     onMouseEnter={showArticleCursor}
                     onMouseMove={moveArticleCursor}
                     onMouseLeave={hideArticleCursor}
-                    className="group text-left grid grid-cols-[88px_minmax(0,1fr)] md:grid-cols-[112px_minmax(0,1fr)] gap-x-4 md:gap-x-5 w-full py-3 items-center"
+                    className="group text-left grid grid-cols-[88px_minmax(0,1fr)_20px] md:grid-cols-[112px_minmax(0,1fr)_24px] gap-x-4 md:gap-x-5 w-full py-3 items-center"
                   >
-              {/* Cover Image */}
-              {writing.cover_image ? (
-                <div className="col-start-1 aspect-[4/3] overflow-hidden bg-foreground/5 relative">
-                  <ProgressiveImage
-                    src={writing.cover_image}
-                    alt={writing.title}
-                    fill
-                    className="transition-opacity duration-500"
-                    containerClassName="w-full h-full overflow-hidden"
-                  />
-                </div>
-              ) : <div className="aspect-[4/3] bg-foreground/5" />}
-
-              {/* Title */}
-              <div className="min-w-0">
-              <h3 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground/70 group-hover:text-foreground transition-colors">
-                {writing.title}
-              </h3>
-
-              {/* Date and Read Time */}
-              {writing.excerpt && <p className="mt-1.5 text-sm leading-relaxed text-foreground/60 line-clamp-2">{writing.excerpt}</p>}
-              <p className="mt-2 text-[11px] text-foreground/60 tabular-nums">
-                {Math.max(1, Math.ceil(writing.content.reduce((acc, block) => acc + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0) / 200))} min · {new Date(writing.created_at).getFullYear()}
-              </p>
-              </div>
+                    <ArticleRowContent title={writing.title} excerpt={writing.excerpt} cover={writing.cover_image} minutes={Math.max(1, Math.ceil(writing.content.reduce((acc, block) => acc + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0) / 200))} year={new Date(writing.created_at).getFullYear()} />
                 </Link>
                 </StaggerItem>
               ))}

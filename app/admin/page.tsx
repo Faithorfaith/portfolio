@@ -240,7 +240,7 @@ export default function AdminPage() {
               {activeTab === 'profile' && <ProfileManager userId={userId} />}
               {activeTab === 'projects' && <ProjectsManager />}
               {activeTab === 'works' && <WorksManager userId={userId} />}
-              {activeTab === 'writing' && <WritingsManager />}
+              {activeTab === 'writing' && <WritingsManager onEditorOpenChange={handleCaseStudyEditorOpenChange} />}
               {activeTab === 'case-studies' && (
                 <CaseStudiesManager
                   userId={userId}

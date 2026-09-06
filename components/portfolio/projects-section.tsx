@@ -39,7 +39,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
           .map(([year, items]) => (
           <section key={year} className="grid grid-cols-[52px_1fr] md:grid-cols-[72px_1fr] gap-4 md:gap-6">
             <h3 className="text-[11px] text-foreground/38 pt-3 tabular-nums sticky top-6 self-start">{year}</h3>
-            <div className="relative before:absolute before:left-[3px] before:top-5 before:bottom-5 before:w-px before:bg-foreground/10">
+            <div className="relative">
               {[...items]
                 .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                 .map((project) => (
@@ -71,7 +71,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                     <div className="flex items-start justify-between gap-6 py-3">
                     {/* Left - Title & Description */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm leading-relaxed tracking-[0.01em] text-foreground/70 font-normal group-hover:text-foreground transition-colors duration-200">
+                      <h3 className="text-sm leading-relaxed tracking-[0.01em] text-foreground/85 font-normal group-hover:text-foreground transition-colors duration-200">
                         {project.title}
                       </h3>
                       {project.description && (

@@ -28,10 +28,7 @@ export interface Profile {
   linkedin_url?: string | null
   resume_url?: string | null
   primary_cta_label?: string | null
-  testimonials?: Testimonial[] | null
 }
-
-interface Testimonial { id: string; quote: string; name: string; role: string; company: string; url: string }
 
 interface BioReference {
   id: string
@@ -69,7 +66,6 @@ export default function ProfileSection({
   profile: Profile | null
   caseStudies: CaseStudy[]
 }) {
-  const [copied, setCopied] = useState(false)
   const [galleryOpen, setGalleryOpen] = useState(false)
   const railRef = useRef<HTMLDivElement>(null)
   const cursorLabelRef = useRef<HTMLDivElement>(null)
@@ -94,14 +90,6 @@ export default function ProfileSection({
     const card = rail.querySelector<HTMLElement>('.case-study-rail-card')
     const gap = parseFloat(getComputedStyle(rail).columnGap) || 16
     rail.scrollBy({ left: direction * ((card?.offsetWidth || 240) + gap), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
-  }
-
-  const contactEmail = profile?.contact_email || 'faithawokunle1@gmail.com'
-  const handleCopyEmail = async () => {
-    try { await navigator.clipboard.writeText(contactEmail) } catch { window.location.href = `mailto:${contactEmail}`; return }
-    track('contact_email_copied', { location: 'homepage' })
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
   }
 
   const legacyImages = [profile?.hero_image_1, profile?.hero_image_2, profile?.hero_image_3].filter(Boolean) as string[]
@@ -153,7 +141,7 @@ export default function ProfileSection({
 
             <div className="grid transition-[grid-template-rows,opacity] duration-300" style={{ gridTemplateRows: galleryOpen ? '1fr' : '0fr', opacity: galleryOpen ? 1 : 0 }} inert={!galleryOpen} aria-hidden={!galleryOpen}>
               <div className="min-h-0 overflow-hidden">
-              <div id="profile-photos" tabIndex={galleryOpen ? 0 : -1} className="flex gap-2.5 mt-3 overflow-x-auto snap-x snap-mandatory pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Profile photos">
+              <div id="profile-photos" tabIndex={galleryOpen ? 0 : -1} className="flex gap-2.5 mt-3 overflow-x-auto snap-x snap-proximity pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Profile photos">
                 {galleryImages.map((src, index) => (
                   <div
                     key={`${src}-${index}`}
@@ -164,7 +152,7 @@ export default function ProfileSection({
                       src={src}
                       alt={`Profile photo ${index + 1}`}
                       fill
-                      sizes="(max-width: 640px) 72vw, 150px"
+                      sizes="(max-width: 640px) 45vw, 150px"
                       className="object-cover transition-[filter,opacity] duration-300 group-hover/photo:brightness-[0.96]"
                     />
                   </div>
@@ -183,33 +171,13 @@ export default function ProfileSection({
         )}
 
         {/* Name - Left Aligned */}
-        <h1 className="font-medium text-foreground">
+        <h1 className="font-medium text-foreground mb-1">
           {profile.full_name || profile.username}
         </h1>
 
-      {profile.positioning_headline && (
-        <p className="mt-2 max-w-xl text-[18px] leading-[1.45] tracking-[-0.01em] text-foreground">
-          {profile.positioning_headline}
-        </p>
-      )}
-      {profile.supporting_statement && <p className="mt-2 max-w-xl text-sm leading-relaxed text-foreground/55">{profile.supporting_statement}</p>}
-      {profile.availability_status && (
-        <p className="mt-5 inline-flex items-center gap-2 text-[11px] text-foreground/50">
-          <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
-          {profile.availability_status}
-        </p>
-      )}
-
-      {(profile.linkedin_url || profile.resume_url) && (
-        <div className="mt-3 mb-4 flex flex-wrap items-center gap-2">
-          {profile.linkedin_url && <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-9 items-center pr-3 text-xs text-foreground/55 hover:text-foreground transition-colors">LinkedIn ↗</a>}
-          {profile.resume_url && <a href={profile.resume_url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-9 items-center px-3 text-xs text-foreground/55 hover:text-foreground transition-colors">Résumé ↗</a>}
-        </div>
-      )}
-
       {/* Bio - Display as paragraphs */}
       {profile.bio && (
-        <div className="mt-2 mb-6">
+        <div className="mb-6">
           <div className="space-y-4">
             {profile.bio.split('\n\n').map((paragraph, index) => (
               <p
@@ -241,46 +209,6 @@ export default function ProfileSection({
           })}
         </div>
       )}
-
-      {profile.testimonials && profile.testimonials.filter((item) => item.quote.trim()).length > 0 && (
-        <section className="mb-16" aria-labelledby="client-proof-title">
-          <h2 id="client-proof-title" className="text-[11px] text-foreground/40 mb-6">What collaborators say</h2>
-          <div className="grid gap-8 sm:grid-cols-2">
-            {profile.testimonials.filter((item) => item.quote.trim()).slice(0, 4).map((item) => (
-              <figure key={item.id} className="space-y-3">
-                <blockquote className="text-sm leading-relaxed text-foreground/75">“{item.quote}”</blockquote>
-                <figcaption className="text-[11px] leading-relaxed text-foreground/42">
-                  {item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">{item.name} ↗</a> : item.name}
-                  {(item.role || item.company) && <span> · {[item.role, item.company].filter(Boolean).join(', ')}</span>}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Contact CTA - Below Bio */}
-      <div className="mb-12 pt-2">
-        <p className="text-foreground/70 leading-relaxed flex items-center gap-2 flex-wrap">
-          Got something in mind? Reach out at{' '}
-          <button
-            onClick={handleCopyEmail}
-            className="inline-flex min-h-11 items-center gap-1 px-3 py-1 rounded-md bg-foreground/[0.045] hover:bg-foreground/[0.075] transition-colors group cursor-pointer"
-            title="Click to copy email"
-          >
-            <span className="font-medium text-foreground/70">
-              {copied ? 'Email copied' : 'Copy email'}
-            </span>
-            {!copied && (
-              <svg className="w-4 h-4 text-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-            )}
-          </button>
-          <a href={`mailto:${contactEmail}`} className="inline-flex min-h-11 items-center underline underline-offset-4 px-2">Send an email ↗</a>
-        </p>
-      </div>
-
 
 
       {/* Case Studies Section */}
@@ -342,7 +270,7 @@ export default function ProfileSection({
                 key={caseStudy.id}
                 href={`/case-studies/${slugify(caseStudy.title) || caseStudy.slug || caseStudy.id}`}
                 onClick={() => { playFeedback('tap'); track('case_study_opened', { title: caseStudy.title }) }}
-                className="case-study-rail-card group block shrink-0 snap-start"
+                className="case-study-rail-card group relative block shrink-0 snap-start"
                 onMouseEnter={(event) => {
                   if (!cursorLabelRef.current || window.matchMedia('(hover: none)').matches) return
                   cursorLabelRef.current.style.opacity = '1'
@@ -358,7 +286,7 @@ export default function ProfileSection({
               >
                 {/* Thumbnail */}
                 {caseStudy.thumbnail_url && (
-                  <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-foreground/5">
+                  <div className="relative w-full aspect-[4/3] overflow-hidden bg-foreground/5">
                     <Image
                       src={imageFocus(caseStudy.thumbnail_url).src}
                       style={{ objectPosition: imageFocus(caseStudy.thumbnail_url).position }}
@@ -367,13 +295,14 @@ export default function ProfileSection({
                       sizes="(max-width: 640px) 72vw, 36vw"
                       className="object-cover"
                     />
+                    <span className="work-action-label absolute bottom-2 right-2 rounded-full bg-background/95 px-2.5 py-1.5 text-[11px]">View case study ↗</span>
                   </div>
                 )}
 
                 {/* Card Content */}
                 <div className="pt-3 pr-1">
                   {/* Title */}
-                  <h3 className="text-foreground text-sm font-medium mb-1.5 group-hover:text-foreground/70 transition-colors">
+                  <h3 className="text-foreground/85 text-sm font-normal leading-relaxed tracking-[0.01em] mb-1.5 group-hover:text-foreground transition-colors">
                     {caseStudy.title}
                   </h3>
 

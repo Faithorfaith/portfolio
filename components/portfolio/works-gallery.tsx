@@ -181,8 +181,8 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
   const isVideo = (work: Work) => work.media_type?.startsWith('video')
 
   if (variant === 'preview') {
-    const visibleWorks = works.slice(0, 8)
-    const hiddenWorks = works.slice(8)
+    const visibleWorks = works.slice(0, 14)
+    const hiddenWorks = works.slice(14)
     const stackWorks = hiddenWorks.slice(0, 4)
     const renderMasonry = (columnCount: number, className: string) => (
       <div className={`${className} w-full gap-2.5 items-start`} style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }} aria-label="Playground preview">
@@ -238,6 +238,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                 })}
                 <div className="absolute inset-0 z-10 rounded-md bg-black/35 flex flex-col items-center justify-center text-white transition-colors group-hover:bg-black/55">
                   <span className="text-sm font-medium">+{hiddenWorks.length}</span>
+                  <span className="work-action-label text-[11px] mt-1">View all ↗</span>
                 </div>
               </Link>
             )}

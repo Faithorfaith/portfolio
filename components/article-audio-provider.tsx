@@ -28,6 +28,7 @@ export function ArticleAudioProvider({ children }: { children: React.ReactNode }
   const [duration, setDuration] = useState(0)
   const [speed, setSpeed] = useState(1)
   const [audioError, setAudioError] = useState(false)
+  const [buffering, setBuffering] = useState(false)
   const formatTime = (value: number) => `${Math.floor(value / 60)}:${Math.floor(value % 60).toString().padStart(2, '0')}`
   const speech = useTextToSpeech({ onEnd: () => setTitle('') })
 
@@ -36,7 +37,7 @@ export function ArticleAudioProvider({ children }: { children: React.ReactNode }
 
   const stop = () => {
     speech.stop()
-    setElapsed(0); setDuration(0); setAudioError(false)
+    setElapsed(0); setDuration(0); setAudioError(false); setBuffering(false)
     if (audioRef.current) {
       audioRef.current.pause()
       audioRef.current.currentTime = 0
@@ -51,6 +52,10 @@ export function ArticleAudioProvider({ children }: { children: React.ReactNode }
     if (audioUrl) {
       const audio = new Audio(audioUrl)
       audioRef.current = audio
+      setBuffering(true)
+      audio.addEventListener('waiting', () => { if (audioRef.current === audio) setBuffering(true) })
+      audio.addEventListener('playing', () => { if (audioRef.current === audio) setBuffering(false) })
+      audio.addEventListener('canplay', () => { if (audioRef.current === audio) setBuffering(false) })
       audio.playbackRate = speed
       const positionKey = `article-position:${audioUrl}`
       let lastSaved = -1
@@ -96,12 +101,12 @@ export function ArticleAudioProvider({ children }: { children: React.ReactNode }
             {coverImage ? <img src={coverImage} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full grid place-items-center text-foreground/30">♪</div>}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] text-foreground/60" role="status">{audioError ? 'Playback failed · press play to retry' : isPaused ? 'Paused' : 'Now reading'}</p>
+            <p className="text-[11px] text-foreground/60" role="status">{audioError ? 'Playback failed · press play to retry' : isPaused ? 'Paused' : buffering ? 'Loading audio…' : 'Now reading'}</p>
             <p className="truncate text-xs font-medium text-foreground/75">{title}</p>
           </div>
           <div className="flex shrink-0 items-center gap-1">
-            <button type="button" onClick={isPaused ? resume : pause} className="size-8 rounded-full text-foreground/55 hover:bg-foreground/5 hover:text-foreground transition-colors" aria-label={isPaused ? 'Resume article' : 'Pause article'}>{isPaused ? <span className="ml-0.5 text-xs">▶</span> : <span className="text-xs">Ⅱ</span>}</button>
-            <button type="button" onClick={stop} className="size-8 rounded-full text-foreground/45 hover:bg-foreground/5 hover:text-foreground transition-colors" aria-label="Close audio player">×</button>
+            <button type="button" onClick={isPaused ? resume : pause} className="size-11 rounded-full text-foreground/65 hover:bg-foreground/5 hover:text-foreground transition-colors" aria-label={isPaused ? 'Resume article' : 'Pause article'}>{isPaused ? <span className="ml-0.5 text-xs">▶</span> : <span className="text-xs">Ⅱ</span>}</button>
+            <button type="button" onClick={stop} className="size-11 rounded-full text-foreground/65 hover:bg-foreground/5 hover:text-foreground transition-colors" aria-label="Close audio player">×</button>
           </div>
           {usesGeneratedAudio && (
             <div className="flex w-full items-center gap-2 text-[11px] text-foreground/65 tabular-nums">
