@@ -224,9 +224,10 @@ export default function ProfileSection({
         </div>
       )}
 
-      <div className="mb-20 pt-2">
-        <p className="flex flex-wrap items-center gap-2 text-sm leading-relaxed text-foreground/70">
-          <span>Got something in mind? Reach out at</span>
+      <div className="homepage-contact mb-20 pt-2">
+        <p className="homepage-contact-question">Got something in mind?</p>
+        <div className="homepage-contact-action">
+          <span>Reach out at</span>
           <button
             type="button"
             onClick={handleCopyEmail}
@@ -241,8 +242,8 @@ export default function ProfileSection({
               </svg>
             )}
           </button>
-          <span>— I&apos;d love to hear from you</span>
-        </p>
+          <span className="homepage-contact-closing">— I&apos;d love to hear from you</span>
+        </div>
       </div>
 
 

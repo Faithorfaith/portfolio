@@ -415,6 +415,15 @@
 .document-settings summary { cursor: pointer; font-size: 12px; padding: 12px 0; }
 .article-prose { overflow-wrap: anywhere; letter-spacing: .01em; }
 .work-action-label { opacity: 0; transition: opacity 150ms ease; }
+.homepage-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: color-mix(in oklch, var(--foreground) 70%, transparent); }
+.homepage-contact-question, .homepage-contact-action { font-size: 14px; line-height: 1.7; }
+.homepage-contact-action { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+@media (max-width: 639px) {
+  .homepage-contact { display: block; padding-top: 4px; }
+  .homepage-contact-question { color: var(--foreground); margin-bottom: 8px; }
+  .homepage-contact-action { align-items: center; gap: 8px; color: color-mix(in oklch, var(--foreground) 58%, transparent); }
+  .homepage-contact-closing { flex-basis: 100%; font-size: 11px; margin-top: -2px; }
+}
 .group:focus-visible .work-action-label, .group:focus-within .work-action-label { opacity: 1; }
 @media (hover: none) { .work-action-label { opacity: 1; } }
 .article-prose blockquote { border-left: 2px solid var(--border); padding-left: 16px; margin: 24px 0; }
