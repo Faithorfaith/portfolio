@@ -66,6 +66,7 @@ export default function ProfileSection({
   profile: Profile | null
   caseStudies: CaseStudy[]
 }) {
+  const [copied, setCopied] = useState(false)
   const [galleryOpen, setGalleryOpen] = useState(false)
   const railRef = useRef<HTMLDivElement>(null)
   const cursorLabelRef = useRef<HTMLDivElement>(null)
@@ -90,6 +91,19 @@ export default function ProfileSection({
     const card = rail.querySelector<HTMLElement>('.case-study-rail-card')
     const gap = parseFloat(getComputedStyle(rail).columnGap) || 16
     rail.scrollBy({ left: direction * ((card?.offsetWidth || 240) + gap), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+  }
+
+  const contactEmail = profile?.contact_email || 'faithawokunle1@gmail.com'
+  const handleCopyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(contactEmail)
+      track('contact_email_copied', { location: 'homepage' })
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Keep this a copy-only interaction; never redirect to an email app.
+      setCopied(false)
+    }
   }
 
   const legacyImages = [profile?.hero_image_1, profile?.hero_image_2, profile?.hero_image_3].filter(Boolean) as string[]
@@ -209,6 +223,27 @@ export default function ProfileSection({
           })}
         </div>
       )}
+
+      <div className="mb-20 pt-2">
+        <p className="flex flex-wrap items-center gap-2 text-sm leading-relaxed text-foreground/70">
+          <span>Got something in mind? Reach out at</span>
+          <button
+            type="button"
+            onClick={handleCopyEmail}
+            className="inline-flex h-9 min-h-9 items-center gap-1.5 rounded-lg border border-foreground/15 px-3 text-xs font-medium text-foreground/70 transition-colors hover:border-foreground/30 hover:bg-foreground/[0.035]"
+            aria-live="polite"
+            title="Copy email address"
+          >
+            {copied ? 'Email copied' : 'Copy email'}
+            {!copied && (
+              <svg className="size-3.5 text-foreground/45" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+            )}
+          </button>
+          <span>— I&apos;d love to hear from you</span>
+        </p>
+      </div>
 
 
       {/* Case Studies Section */}

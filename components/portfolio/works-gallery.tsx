@@ -32,9 +32,6 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
   const triggerRef = useRef<HTMLElement | null>(null)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [videoError, setVideoError] = useState(false)
-  const [category, setCategory] = useState('all')
-  const categories = [...new Set(works.map((work) => work.type).filter(Boolean))] as string[]
-  const visibleCollection = category === 'all' ? works : works.filter((work) => work.type === category)
   useEffect(() => {
     if (variant !== 'full') return
     try { const saved = Number(sessionStorage.getItem('playground-scroll')); if (saved && !window.location.search) requestAnimationFrame(() => window.scrollTo(0, saved)) } catch {}
@@ -275,10 +272,9 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           </div>
 
           {/* Grid Layout - 2 cols */}
-          {categories.length > 1 && <div className="flex flex-wrap gap-2 mb-6" aria-label="Filter Playground">{['all', ...categories].map((value) => <button key={value} type="button" aria-pressed={category === value} onClick={() => setCategory(value)} className={`min-h-11 px-3 rounded-full text-xs ${category === value ? 'bg-foreground text-background' : 'hover:bg-muted text-foreground/65'}`}>{value === 'all' ? 'All work' : value}</button>)}</div>}
           <StaggerContainer delay={0.1}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
-              {visibleCollection.map((work) => {
+              {works.map((work) => {
                 const coverImage = getCoverImage(work)
                 
                 return (

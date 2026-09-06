@@ -67,26 +67,26 @@ export default function RTFEditor({ value, onChange, placeholder = 'Start writin
     else editor.chain().focus().extendMarkRange('link').setLink({ href }).run()
     setPanel(null); setError('')
   }
-  const button = (label: string, action: () => void, active = false, disabled = false) => <button key={label} type="button" title={label} aria-label={label} aria-pressed={active} disabled={disabled} onClick={action}>{label}</button>
+  const button = (label: string, glyph: string, action: () => void, active = false, disabled = false) => <button key={label} type="button" title={label} aria-label={label} aria-pressed={active} disabled={disabled} onClick={action}>{glyph}</button>
   return <div className="document-editor">
     <div className="document-toolbar" role="toolbar" aria-label="Document formatting">
-      {button('Undo', () => { editor.chain().focus().undo().run() }, false, !editor.can().undo())}
-      {button('Redo', () => { editor.chain().focus().redo().run() }, false, !editor.can().redo())}
+      {button('Undo', '↶', () => { editor.chain().focus().undo().run() }, false, !editor.can().undo())}
+      {button('Redo', '↷', () => { editor.chain().focus().redo().run() }, false, !editor.can().redo())}
       <select aria-label="Text style" value={editor.isActive('heading') ? editor.getAttributes('heading').level : 'paragraph'} onChange={e => e.target.value === 'paragraph' ? editor.chain().focus().setParagraph().run() : editor.chain().focus().setHeading({ level: Number(e.target.value) as 1 | 2 | 3 }).run()}>
         <option value="paragraph">Text</option><option value="1">Heading 1</option><option value="2">Heading 2</option><option value="3">Heading 3</option>
       </select>
-      {button('Bold', () => { editor.chain().focus().toggleBold().run() }, editor.isActive('bold'))}
-      {button('Italic', () => { editor.chain().focus().toggleItalic().run() }, editor.isActive('italic'))}
-      {button('Bullets', () => { editor.chain().focus().toggleBulletList().run() }, editor.isActive('bulletList'))}
-      {button('Numbered', () => { editor.chain().focus().toggleOrderedList().run() }, editor.isActive('orderedList'))}
-      {button('Quote', () => { editor.chain().focus().toggleBlockquote().run() }, editor.isActive('blockquote'))}
-      {button('Link', () => { setUrl(editor.getAttributes('link').href || ''); setPanel(panel === 'link' ? null : 'link') }, editor.isActive('link'))}
-      {editor.isActive('link') && button('Unlink', () => { editor.chain().focus().unsetLink().run() })}
-      {button('Media', () => setPanel(panel === 'media' ? null : 'media'))}
-      {button('Embed', () => { setUrl(''); setPanel(panel === 'embed' ? null : 'embed') })}
-      {button('Code', () => { editor.chain().focus().toggleCodeBlock().run() }, editor.isActive('codeBlock'))}
-      {button('Divider', () => { editor.chain().focus().setHorizontalRule().run() })}
-      {toc && editor.isActive('heading') && <label className="flex items-center gap-2 px-2 text-xs"><input type="checkbox" checked={Boolean(editor.getAttributes('heading').toc)} onChange={e => editor.chain().focus().updateAttributes('heading', { toc: e.target.checked, id: editor.getAttributes('heading').id || 'heading-' + crypto.randomUUID() }).run()} />Include in TOC</label>}
+      {button('Bold', 'B', () => { editor.chain().focus().toggleBold().run() }, editor.isActive('bold'))}
+      {button('Italic', 'I', () => { editor.chain().focus().toggleItalic().run() }, editor.isActive('italic'))}
+      {button('Bulleted list', '•', () => { editor.chain().focus().toggleBulletList().run() }, editor.isActive('bulletList'))}
+      {button('Numbered list', '1.', () => { editor.chain().focus().toggleOrderedList().run() }, editor.isActive('orderedList'))}
+      {button('Quote', '“', () => { editor.chain().focus().toggleBlockquote().run() }, editor.isActive('blockquote'))}
+      {button('Link', '↗', () => { setUrl(editor.getAttributes('link').href || ''); setPanel(panel === 'link' ? null : 'link') }, editor.isActive('link'))}
+      {editor.isActive('link') && button('Remove link', '×↗', () => { editor.chain().focus().unsetLink().run() })}
+      {button('Insert media', '▧', () => setPanel(panel === 'media' ? null : 'media'))}
+      {button('Embed', '<>', () => { setUrl(''); setPanel(panel === 'embed' ? null : 'embed') })}
+      {button('Code block', '{}', () => { editor.chain().focus().toggleCodeBlock().run() }, editor.isActive('codeBlock'))}
+      {button('Divider', '—', () => { editor.chain().focus().setHorizontalRule().run() })}
+      {toc && editor.isActive('heading') && <label className="document-toc-control"><input type="checkbox" checked={Boolean(editor.getAttributes('heading').toc)} onChange={e => editor.chain().focus().updateAttributes('heading', { toc: e.target.checked, id: editor.getAttributes('heading').id || 'heading-' + crypto.randomUUID() }).run()} />Add to TOC</label>}
     </div>
     {panel && <div className="document-insert-panel">
       <div className="flex items-center justify-between mb-3"><span className="text-xs">{panel === 'media' ? 'Insert image or video' : panel === 'embed' ? 'Embed a supported video or design URL' : 'Add a link'}</span><button type="button" onClick={() => setPanel(null)}>Close</button></div>

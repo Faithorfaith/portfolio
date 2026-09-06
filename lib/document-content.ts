@@ -1,10 +1,11 @@
 // Legacy records stay untouched until the document is edited.
 export const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 type LegacySection = { id: string; label: string; title: string | null; toc: string | null; body: string; image: string | null; video_url?: string | null; embed_url?: string | null; blocks?: { type: string; content?: string; imageUrl?: string; buttons?: { text: string; link: string }[] }[] }
+const cleanLegacyLists = (html: string) => html.replace(/(<li(?:\s[^>]*)?>\s*(?:<p>)?)\s*[-–—•]\s+/gi, '$1')
 export function sectionsToDocument(sections: LegacySection[]) {
   return sections.map(s => {
     const heading = s.title || s.label || s.toc
-    return `${heading ? `<h2 id="${escapeHtml(s.id)}" data-toc="${Boolean(s.toc)}">${escapeHtml(heading)}</h2>` : ''}${s.title && s.label && s.label !== s.title ? `<p>${escapeHtml(s.label)}</p>` : ''}${s.image ? `<img src="${escapeHtml(s.image)}" alt="">` : ''}${s.video_url ? `<video src="${escapeHtml(s.video_url)}" controls></video>` : ''}${s.embed_url ? `<div data-embed="${escapeHtml(s.embed_url)}"></div>` : ''}${s.body}${(s.blocks || []).map(b => b.type === 'buttons' ? (b.buttons || []).map(button => `<p><a href="${escapeHtml(button.link)}">${escapeHtml(button.text)}</a></p>`).join('') : b.type === 'image' && b.imageUrl ? `<img src="${escapeHtml(b.imageUrl)}" alt="">` : b.type === 'divider' ? '<hr>' : b.content || '').join('')}`
+    return cleanLegacyLists(`${heading ? `<h2 id="${escapeHtml(s.id)}" data-toc="${Boolean(s.toc)}">${escapeHtml(heading)}</h2>` : ''}${s.title && s.label && s.label !== s.title ? `<p>${escapeHtml(s.label)}</p>` : ''}${s.image ? `<img src="${escapeHtml(s.image)}" alt="">` : ''}${s.video_url ? `<video src="${escapeHtml(s.video_url)}" controls></video>` : ''}${s.embed_url ? `<div data-embed="${escapeHtml(s.embed_url)}"></div>` : ''}${s.body}${(s.blocks || []).map(b => b.type === 'buttons' ? (b.buttons || []).map(button => `<p><a href="${escapeHtml(button.link)}">${escapeHtml(button.text)}</a></p>`).join('') : b.type === 'image' && b.imageUrl ? `<img src="${escapeHtml(b.imageUrl)}" alt="">` : b.type === 'divider' ? '<hr>' : b.content || '').join('')}`)
   }).join('')
 }
 export function blocksToDocument(blocks: { id: string; type: string; content: string; level?: number }[]) {

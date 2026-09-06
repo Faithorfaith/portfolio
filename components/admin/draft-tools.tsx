@@ -114,25 +114,44 @@ export default function DraftTools<T extends Draft>({ kind, draft, onRestore }: 
     setMessage(found.length ? 'Review the checks below before publishing' : 'Checks passed for the URLs inspected')
   }
 
-  return <section className="rounded-lg border border-border p-3 space-y-3 text-xs" aria-label="Draft tools">
-    <div className="flex flex-wrap items-center gap-2">
-      <p role="status" className="flex-1 min-w-40 text-foreground/65">{message}</p>
-      <button type="button" onClick={checkpoint} disabled={!key} className="px-2 min-h-9 hover:bg-muted rounded">Save revision</button>
-      <button type="button" onClick={() => setHistoryOpen(!historyOpen)} aria-expanded={historyOpen} className="px-2 min-h-9 hover:bg-muted rounded">History ({history.length})</button>
-      <button type="button" onClick={check} disabled={checking} className="px-2 min-h-9 hover:bg-muted rounded">{checking ? 'Checking…' : 'Check before publishing'}</button>
+  return <section className="draft-tools space-y-3 text-xs" aria-label="Draft recovery and publishing tools">
+    <div className="flex items-center gap-2 rounded-lg bg-foreground/[0.035] px-3 py-2.5">
+      <span className="size-1.5 shrink-0 rounded-full bg-emerald-500" aria-hidden="true" />
+      <p role="status" className="min-w-0 flex-1 truncate text-[11px] text-foreground/55">{message}</p>
     </div>
-    {recovery && <div className="flex flex-wrap items-center gap-3 p-3 bg-muted rounded">
-      <span>A different local draft is available.</span>
-      <button type="button" onClick={() => { onRestore(recovery); setRecovery(null) }} className="underline">Recover draft</button>
-      <button type="button" onClick={() => setRecovery(null)} className="underline">Keep current version</button>
+
+    {recovery && <div className="rounded-lg border border-amber-500/20 bg-amber-500/[0.055] p-3">
+      <div className="flex items-start gap-3">
+        <span className="grid size-7 shrink-0 place-items-center rounded-full bg-amber-500/10 text-amber-700" aria-hidden="true">↺</span>
+        <div className="min-w-0 flex-1">
+          <p className="font-medium text-foreground/80">Unsaved work found</p>
+          <p className="mt-1 text-[11px] leading-relaxed text-foreground/50">A different draft was saved in this browser.</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" onClick={() => { onRestore(recovery); setRecovery(null) }} className="draft-primary">Recover draft</button>
+            <button type="button" onClick={() => setRecovery(null)} className="draft-secondary">Keep current</button>
+          </div>
+        </div>
+      </div>
     </div>}
-    {historyOpen && <div className="space-y-2 max-h-48 overflow-auto">
-      <p className="text-foreground/60">{cloudMessage}</p>
-      {cloudHistory.map((revision, index) => <div key={`cloud-${index}`} className="flex gap-3 items-center"><span className="flex-1">{new Date(revision.at).toLocaleString()}</span><button type="button" onClick={() => setCompare(revision.draft)}>Compare</button><button type="button" onClick={() => restore(revision.draft)}>Restore</button></div>)}
-      <p className="text-foreground/60">Up to 20 manually saved revisions, stored in this browser.</p>
-      {history.map((revision, index) => <button type="button" key={`${revision.at}-${index}`} className="block w-full text-left p-2 rounded hover:bg-muted" onClick={() => { checkpoint(); onRestore(revision.draft); setRecovery(null); setMessage('Revision restored as an unsaved draft') }}>{revision.draft.title || 'Untitled'} · {new Date(revision.at).toLocaleString()} · Restore</button>)}
+
+    <div className="grid grid-cols-3 gap-1 rounded-lg border border-border p-1">
+      <button type="button" onClick={checkpoint} disabled={!key} className="draft-action"><span aria-hidden="true">＋</span><span>Snapshot</span></button>
+      <button type="button" onClick={() => setHistoryOpen(!historyOpen)} aria-expanded={historyOpen} className="draft-action"><span aria-hidden="true">↺</span><span>History</span><span className="text-foreground/35">{history.length + cloudHistory.length}</span></button>
+      <button type="button" onClick={check} disabled={checking} className="draft-action"><span aria-hidden="true">{checking ? '…' : '✓'}</span><span>{checking ? 'Checking' : 'Preflight'}</span></button>
+    </div>
+
+    {historyOpen && <div className="rounded-lg border border-border p-3">
+      <div className="mb-3 flex items-center justify-between"><p className="font-medium text-foreground/75">Revision history</p><span className="text-[10px] text-foreground/40">Newest first</span></div>
+      <div className="max-h-56 space-y-1 overflow-auto">
+        {cloudMessage && <p className="mb-2 text-[11px] leading-relaxed text-foreground/45">{cloudMessage}</p>}
+        {cloudHistory.map((revision, index) => <div key={`cloud-${index}`} className="draft-history-row"><span className="min-w-0 flex-1 truncate">{new Date(revision.at).toLocaleString()}</span><button type="button" onClick={() => setCompare(revision.draft)}>Compare</button><button type="button" onClick={() => restore(revision.draft)}>Restore</button></div>)}
+        {history.map((revision, index) => <div key={`${revision.at}-${index}`} className="draft-history-row"><span className="min-w-0 flex-1 truncate">{revision.draft.title || 'Untitled'} · {new Date(revision.at).toLocaleString()}</span><button type="button" onClick={() => { checkpoint(); onRestore(revision.draft); setRecovery(null); setMessage('Revision restored as an unsaved draft') }}>Restore</button></div>)}
+        {!history.length && !cloudHistory.length && <p className="py-4 text-center text-[11px] text-foreground/40">No saved revisions yet.</p>}
+      </div>
     </div>}
-    {compare && <div className="rounded border p-3 space-y-2"><p className="font-medium">Changes from selected revision to current draft</p>{Object.keys(draft).filter((field) => !['id', 'user_id', 'created_at', 'updated_at'].includes(field) && JSON.stringify((draft as Record<string, unknown>)[field]) !== JSON.stringify((compare as Record<string, unknown>)[field])).map((field) => <details key={field}><summary className="cursor-pointer py-1">{field.replaceAll('_', ' ')} changed</summary><div className="grid sm:grid-cols-2 gap-3"><pre className="whitespace-pre-wrap break-all max-h-48 overflow-auto">Before: {JSON.stringify((compare as Record<string, unknown>)[field], null, 2)}</pre><pre className="whitespace-pre-wrap break-all max-h-48 overflow-auto">Current: {JSON.stringify((draft as Record<string, unknown>)[field], null, 2)}</pre></div></details>)}<button type="button" onClick={() => setCompare(null)} className="underline">Close comparison</button></div>}
-    {issues.length > 0 && <ul className="list-disc pl-5 space-y-1 break-words text-amber-700">{issues.map((issue) => <li key={issue}>{issue}</li>)}</ul>}
+
+    {compare && <div className="rounded-lg border border-border p-3 space-y-2"><div className="flex items-center justify-between"><p className="font-medium">Version comparison</p><button type="button" onClick={() => setCompare(null)}>Close</button></div>{Object.keys(draft).filter((field) => !['id', 'user_id', 'created_at', 'updated_at'].includes(field) && JSON.stringify((draft as Record<string, unknown>)[field]) !== JSON.stringify((compare as Record<string, unknown>)[field])).map((field) => <details key={field}><summary className="cursor-pointer py-1">{field.replaceAll('_', ' ')} changed</summary><div className="grid gap-3 sm:grid-cols-2"><pre className="max-h-48 overflow-auto whitespace-pre-wrap break-all rounded bg-muted p-2">Before: {JSON.stringify((compare as Record<string, unknown>)[field], null, 2)}</pre><pre className="max-h-48 overflow-auto whitespace-pre-wrap break-all rounded bg-muted p-2">Current: {JSON.stringify((draft as Record<string, unknown>)[field], null, 2)}</pre></div></details>)}</div>}
+    {issues.length > 0 && <div className="rounded-lg border border-amber-500/20 bg-amber-500/[0.05] p-3"><p className="mb-2 font-medium text-amber-800">Review before publishing</p><ul className="list-disc space-y-1 pl-4 break-words text-[11px] leading-relaxed text-amber-800/80">{issues.map((issue) => <li key={issue}>{issue}</li>)}</ul></div>}
+    {!checking && issues.length === 0 && message.startsWith('Checks passed') && <div className="rounded-lg bg-emerald-500/[0.06] px-3 py-2.5 text-[11px] text-emerald-700">✓ Publishing checks passed</div>}
   </section>
 }
