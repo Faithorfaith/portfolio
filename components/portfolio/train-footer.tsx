@@ -19,7 +19,7 @@ const carriages: Carriage[] = [
   { id: 'workflow', number: '04', label: 'Workflow files', title: 'Tools for better work', description: 'A small library of personal agents and workflow files that make complex work feel lighter.', href: '/workflows' },
 ]
 
-type PreviewItem = { title: string; description?: string | null; href?: string }
+type PreviewItem = { title: string; description?: string | null; href?: string; image?: string | null }
 
 export default function TrainFooter({ contactEmail, musicUrl, previews = {} }: { contactEmail?: string | null; musicUrl?: string | null; previews?: Partial<Record<Carriage['id'], PreviewItem[]>> }) {
   const [active, setActive] = useState<Carriage | null>(null)
@@ -109,8 +109,8 @@ export default function TrainFooter({ contactEmail, musicUrl, previews = {} }: {
             <p>{active.number} / 04</p>
             <h2 id="carriage-title">{active.title}</h2>
             <p>{active.description}</p>
-            {previews[active.id]?.length ? <div className="carriage-preview-list" aria-label={`${active.label} highlights`}>
-              {previews[active.id]!.slice(0, 4).map((item) => <div key={item.title} className="carriage-preview-item"><strong>{item.title}</strong>{item.description && <span>{item.description}</span>}</div>)}
+            {previews[active.id]?.length ? <div className="carriage-preview-grid" aria-label={`${active.label} highlights`}>
+              {previews[active.id]!.slice(0, 4).map((item) => <Link href={item.href || '#'} onClick={() => setActive(null)} key={item.title} className="carriage-preview-item">{item.image ? <img src={item.image} alt="" /> : <span className="carriage-preview-icon">{active.id === 'workflow' ? 'MD' : active.number}</span>}<strong>{item.title}</strong>{item.description && <span>{item.description}</span>}</Link>)}
             </div> : null}
             {active.href && <Link href={active.href} onClick={() => setActive(null)}>Explore {active.label.toLowerCase()} <span aria-hidden="true">↗</span></Link>}
           </div>

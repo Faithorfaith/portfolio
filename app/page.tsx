@@ -17,9 +17,9 @@ export default async function PortfolioPage() {
     <WorkflowFilesSection files={data.workflowFiles} compact />
     <HomePlaygroundPreview works={data.works} hiddenCount={data.hiddenWorkCount} />
     <TrainFooter musicUrl={data.profile?.train_music_url} previews={{
-      work: data.caseStudies.slice(0, 4).map(item => ({ title: item.title, description: item.excerpt, href: `/case-studies/${item.slug || item.id}` })),
-      playground: data.works.slice(0, 4).map(item => ({ title: item.title, description: item.description })),
-      writing: data.writings.slice(0, 4).map(item => ({ title: item.title, description: item.excerpt, href: `/writing/${item.slug}` })),
+      work: data.caseStudies.slice(0, 4).map(item => ({ title: item.title, description: item.excerpt, image: item.thumbnail_url, href: `/case-studies/${item.slug || item.id}` })),
+      playground: data.works.slice(0, 4).map(item => ({ title: item.title, description: item.description, image: item.thumbnail_url || item.media_url, href: `/playground?work=${item.id}` })),
+      writing: data.writings.slice(0, 4).map(item => ({ title: item.title, description: item.excerpt, image: item.cover_image, href: `/writing/${item.slug}` })),
       workflow: data.workflowFiles.slice(0, 4).map(item => ({ title: item.name, description: item.description })),
     }} />
   </main>
