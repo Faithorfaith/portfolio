@@ -51,7 +51,7 @@ export const getHomepagePortfolioData = unstable_cache(async (): Promise<Homepag
   if (!url || !key) return { profile: null, caseStudies: [], projects: [], works: [], hiddenWorkCount: 0, writings: [], workflowFiles: [] }
   const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
   const [profileResult, caseStudiesResult, projectsResult, worksResult, writingsResult, workflowResult] = await Promise.all([
-    supabase.from('profiles').select('id, username, full_name, bio, avatar_url, hero_image_1, hero_image_2, hero_image_3, gallery_images, bio_references, contact_email').limit(1).maybeSingle(),
+    supabase.from('profiles').select('id, username, full_name, bio, avatar_url, hero_image_1, hero_image_2, hero_image_3, gallery_images, bio_references, contact_email, train_music_url').limit(1).maybeSingle(),
     supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, created_at').eq('published', true).order('created_at', { ascending: false }).limit(8),
     supabase.from('projects').select('id, title, year, type, link, description, created_at').order('created_at', { ascending: false }).limit(30),
     supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type', { count: 'exact' }).order('created_at', { ascending: false }).limit(18),

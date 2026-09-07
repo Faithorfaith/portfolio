@@ -107,6 +107,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
     resume_url: '',
     primary_cta_label: 'Start a project',
     testimonials: [] as Testimonial[],
+    train_music_url: '',
   })
   const supabase = createClient()
 
@@ -140,7 +141,8 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
             linkedin_url: data.linkedin_url || '',
             resume_url: data.resume_url || '',
             primary_cta_label: data.primary_cta_label || 'Start a project',
-            testimonials: Array.isArray(data.testimonials) ? data.testimonials : [],
+          testimonials: Array.isArray(data.testimonials) ? data.testimonials : [],
+            train_music_url: data.train_music_url || '',
           })
         } else {
           const { data: newProfile, error: createError } = await supabase
@@ -166,7 +168,8 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
               linkedin_url: newProfile.linkedin_url || '',
               resume_url: newProfile.resume_url || '',
               primary_cta_label: newProfile.primary_cta_label || 'Start a project',
-              testimonials: newProfile.testimonials || [],
+          testimonials: newProfile.testimonials || [],
+              train_music_url: newProfile.train_music_url || '',
             })
           }
         }
@@ -210,6 +213,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
           resume_url: formData.resume_url || null,
           primary_cta_label: formData.primary_cta_label || 'Start a project',
           testimonials: formData.testimonials,
+          train_music_url: formData.train_music_url || null,
         }),
       })
       const result = await response.json()
@@ -311,6 +315,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5"><label className="block">Contact email</label><input type="email" value={formData.contact_email} onChange={e => set('contact_email', e.target.value)} placeholder="you@example.com" className="w-full px-3 py-2" /></div>
+            <div className="space-y-1.5"><label className="block">Train music URL</label><input type="url" value={formData.train_music_url} onChange={e => set('train_music_url', e.target.value)} placeholder="Upload audio in Media Library, then paste its URL" className="w-full px-3 py-2" /><p className="text-[11px] text-foreground/45">MP3, WAV or OGG. Leave blank to use the built-in ambient Japanese-inspired tone.</p></div>
             <div className="space-y-1.5"><label className="block">LinkedIn URL</label><input type="url" value={formData.linkedin_url} onChange={e => set('linkedin_url', e.target.value)} placeholder="https://linkedin.com/in/..." className="w-full px-3 py-2" /></div>
           </div>
           <div className="space-y-1.5"><label className="block">Résumé URL</label><input type="url" value={formData.resume_url} onChange={e => set('resume_url', e.target.value)} placeholder="https://..." className="w-full px-3 py-2" /></div>

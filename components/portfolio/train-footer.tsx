@@ -21,7 +21,7 @@ const carriages: Carriage[] = [
 
 type PreviewItem = { title: string; description?: string | null; href?: string }
 
-export default function TrainFooter({ contactEmail, previews = {} }: { contactEmail?: string | null; previews?: Partial<Record<Carriage['id'], PreviewItem[]>> }) {
+export default function TrainFooter({ contactEmail, musicUrl, previews = {} }: { contactEmail?: string | null; musicUrl?: string | null; previews?: Partial<Record<Carriage['id'], PreviewItem[]>> }) {
   const [active, setActive] = useState<Carriage | null>(null)
   const [emailCopied, setEmailCopied] = useState(false)
   const [soundOn, setSoundOn] = useState(false)
@@ -31,6 +31,7 @@ export default function TrainFooter({ contactEmail, previews = {} }: { contactEm
 
   const stopAmbience = () => { void audioRef.current?.close(); audioRef.current = null; setSoundOn(false) }
   const startAmbience = () => {
+    if (musicUrl) { const audio = new Audio(musicUrl); audio.loop = true; audio.volume = .28; void audio.play(); audioRef.current = { close: () => { audio.pause(); audio.src = '' } } as unknown as AudioContext; setSoundOn(true); return }
     stopAmbience()
     const context = new AudioContext()
     const master = context.createGain(); master.gain.value = 0.028; master.connect(context.destination)

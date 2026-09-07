@@ -28,6 +28,7 @@ export interface Profile {
   linkedin_url?: string | null
   resume_url?: string | null
   primary_cta_label?: string | null
+  train_music_url?: string | null
 }
 
 interface BioReference {

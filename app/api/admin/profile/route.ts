@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
         resume_url: body.resume_url || null,
         primary_cta_label: body.primary_cta_label || 'Start a project',
         testimonials: Array.isArray(body.testimonials) ? body.testimonials : [],
+        train_music_url: body.train_music_url || null,
       })
       .select()
       .single()
