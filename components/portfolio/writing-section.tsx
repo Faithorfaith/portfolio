@@ -148,7 +148,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
     const appearance = getWritingAppearance(selectedWriting.content)
     const articleBlocks = selectedWriting.content.filter(block => block.type !== 'appearance')
     return (
-      <div style={{ backgroundColor: writingBackgroundColor(appearance.background) }}>
+      <div className="writing-page-shell" style={{ backgroundColor: writingBackgroundColor(appearance.background) }}>
       <div id="top" className="w-full min-h-screen max-w-[664px] mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
         <DetailNavigation title={selectedWriting.title} backHref={initialSlug ? '/writing' : '/#writing'} />
 
