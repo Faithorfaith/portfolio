@@ -168,7 +168,7 @@ export default function CaseStudyClient() {
   }, [caseStudy, navItems.length])
 
   if (isLoading) {
-    return <main className="relative min-h-screen bg-background" aria-busy="true"><span className="fixed bottom-6 right-7 text-4xl md:text-6xl font-medium tracking-tight tabular-nums text-foreground/80" role="status">{loadPercent}%</span></main>
+    return <main className="relative min-h-screen bg-background" aria-busy="true"><span className="fixed bottom-6 right-7 text-7xl md:text-9xl font-medium tracking-tight tabular-nums text-foreground/80" role="status">{loadPercent}%</span></main>
   }
 
   if (!caseStudy) return <main className="max-w-[664px] mx-auto px-8 py-24"><h1 className="text-[18px]">Case study unavailable</h1><p className="text-sm text-foreground/60 my-4">It may have moved, or the connection failed.</p><a href="/" className="underline min-h-11 inline-flex items-center">Back to work</a><button type="button" onClick={() => window.location.reload()} className="ml-6 underline">Retry</button></main>
