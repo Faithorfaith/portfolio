@@ -101,7 +101,7 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
       <div className="carriage-room">
         <header className="carriage-room-header">
           <span>Carriage {active.number} · {active.label}</span>
-          <div className="flex items-center gap-2"><button onClick={() => soundOn ? stopAmbience() : startAmbience()} aria-label={soundOn ? 'Mute carriage music' : 'Play carriage music'}>{soundOn ? 'Sound on' : 'Sound off'}</button><button ref={closeRef} onClick={() => setActive(null)} aria-label="Leave carriage">Close <span aria-hidden="true">×</span></button></div>
+          <div className="flex items-center gap-2"><button onClick={() => soundOn ? stopAmbience() : startAmbience()} aria-label={soundOn ? 'Mute carriage music' : 'Play carriage music'}>{soundOn ? 'Sound on' : 'Sound off'}</button><button ref={closeRef} className="carriage-close" onClick={() => setActive(null)} aria-label="Leave carriage">×</button></div>
         </header>
         <div className="carriage-room-view">
           <div className="carriage-window-view" aria-hidden="true"><span /><span /><span /></div>
