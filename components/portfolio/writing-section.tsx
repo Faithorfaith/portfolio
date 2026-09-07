@@ -284,7 +284,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
 
   // Writings List - Medium-style card grid
   return (
-    <div id="top" className="w-full max-w-2xl mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20">
+    <div id="top" className="w-full min-h-screen mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20 bg-background">
       <DetailNavigation title="Writing" showCopy={false} />
       {/* Centered Content Container */}
       <div className="flex justify-center">
