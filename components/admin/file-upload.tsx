@@ -9,6 +9,7 @@ interface FileUploadProps {
   folder: string
   onUpload: (url: string) => void
   accept?: string
+  directStorage?: boolean
 }
 
 export default function FileUpload({
@@ -16,6 +17,7 @@ export default function FileUpload({
   folder,
   onUpload,
   accept = '*',
+  directStorage = false,
 }: FileUploadProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -38,9 +40,8 @@ export default function FileUpload({
     setUploadedName('')
 
     try {
-      // Videos upload straight to Storage so they do not hit Vercel's request
-      // body limit. Images continue through the authenticated server route.
-      if (file.type.startsWith('video/')) {
+      // Direct Storage uploads avoid the server bucket-probing path.
+      if (directStorage || file.type.startsWith('video/')) {
         const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-')
         const filePath = `${folder}/${userId}/${Date.now()}-${safeName}`
         const result = await uploadFileWithProgress(
