@@ -29,6 +29,11 @@ create index if not exists idx_workflow_versions_file on public.workflow_file_ve
 alter table public.workflow_files enable row level security;
 alter table public.workflow_file_versions enable row level security;
 
+drop policy if exists "published_workflow_files_are_public" on public.workflow_files;
+drop policy if exists "owners_manage_workflow_files" on public.workflow_files;
+drop policy if exists "published_workflow_versions_are_public" on public.workflow_file_versions;
+drop policy if exists "owners_manage_workflow_versions" on public.workflow_file_versions;
+
 create policy "published_workflow_files_are_public" on public.workflow_files for select using (published = true or auth.uid() = user_id);
 create policy "owners_manage_workflow_files" on public.workflow_files for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy "published_workflow_versions_are_public" on public.workflow_file_versions for select using (
