@@ -428,8 +428,10 @@
 .article-index-year { grid-column: 1; color: color-mix(in oklch, var(--foreground) 40%, transparent); font-size: 10px; line-height: 1; font-variant-numeric: tabular-nums; }
 .writing-handwritten-section { font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; font-size: 1.12em; line-height: 1.75; letter-spacing: .005em; }
 .writing-page-shell { min-height: 100dvh; width: 100%; }
-.workflow-file-list { border-block: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent); }
-.workflow-file-row { width: 100%; display: grid; grid-template-columns: 36px minmax(0,1fr) auto; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid color-mix(in oklch, var(--foreground) 9%, transparent); text-align: left; }
+.workflow-file-list { border: 0; }
+.workflow-file-row { width: 100%; display: grid; grid-template-columns: 36px minmax(0,1fr) auto; align-items: center; gap: 14px; padding: 14px 0; border: 0; text-align: left; }
+.workflow-version-history { border-top: 0; }
+.workflow-version-history > div { grid-template-columns: 82px 1fr auto; border-bottom: 0; padding: 12px 0; }
 .workflow-file-row:last-child { border-bottom: 0; }
 .workflow-file-row strong { display: block; font-size: 14px; font-weight: 400; }.workflow-file-row small { display: block; margin-top: 2px; color: color-mix(in oklch, var(--foreground) 48%, transparent); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }.workflow-file-row em { color: color-mix(in oklch, var(--foreground) 45%, transparent); font-size: 11px; font-style: normal; }
 .workflow-file-glyph { position: relative; width: 28px; height: 34px; display: grid; place-items: end center; padding-bottom: 5px; border: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent); border-radius: 3px; background: var(--background); }.workflow-file-glyph::after { content: ''; position: absolute; right: -1px; top: -1px; width: 9px; height: 9px; border-left: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent); border-bottom: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent); background: var(--background); }.workflow-file-glyph i { font-size: 7px; font-style: normal; }
