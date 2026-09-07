@@ -160,7 +160,7 @@ export default function CaseStudyClient() {
   }, [caseStudy, navItems.length])
 
   if (isLoading) {
-    return <main className="max-w-[664px] mx-auto px-8 py-24" aria-busy="true"><p role="status" className="text-sm text-foreground/60">Loading case study…</p><div className="mt-8 aspect-video bg-muted rounded animate-pulse" /></main>
+    return <main className="min-h-screen bg-background" aria-busy="true" />
   }
 
   if (!caseStudy) return <main className="max-w-[664px] mx-auto px-8 py-24"><h1 className="text-[18px]">Case study unavailable</h1><p className="text-sm text-foreground/60 my-4">It may have moved, or the connection failed.</p><a href="/" className="underline min-h-11 inline-flex items-center">Back to work</a><button type="button" onClick={() => window.location.reload()} className="ml-6 underline">Retry</button></main>
