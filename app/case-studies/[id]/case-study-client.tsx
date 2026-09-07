@@ -64,6 +64,7 @@ export default function CaseStudyClient() {
   const id = params.id as string
   const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [loadPercent, setLoadPercent] = useState(8)
   const [activeNavItem, setActiveNavItem] = useState<string | null>(null)
   const [readingProgress, setReadingProgress] = useState(0)
   const [relatedArticle, setRelatedArticle] = useState<RelatedArticle | null>(null)
@@ -78,6 +79,12 @@ export default function CaseStudyClient() {
     : typeof caseStudy?.nav_items === 'string'
     ? JSON.parse(caseStudy.nav_items)
     : [], [caseStudy])
+
+  useEffect(() => {
+    if (!isLoading) return
+    const timer = window.setInterval(() => setLoadPercent(value => Math.min(value + Math.ceil(Math.random() * 9), 92)), 180)
+    return () => window.clearInterval(timer)
+  }, [isLoading])
 
   useEffect(() => {
     const closeExpandedImage = (event: KeyboardEvent) => {
@@ -110,6 +117,7 @@ export default function CaseStudyClient() {
       } catch (error) {
         console.error('Error fetching case study:', error)
       } finally {
+        setLoadPercent(100)
         setIsLoading(false)
       }
     }
@@ -160,7 +168,7 @@ export default function CaseStudyClient() {
   }, [caseStudy, navItems.length])
 
   if (isLoading) {
-    return <main className="min-h-screen bg-background" aria-busy="true" />
+    return <main className="relative min-h-screen bg-background" aria-busy="true"><span className="fixed bottom-6 right-7 text-4xl md:text-6xl font-medium tracking-tight tabular-nums text-foreground/80" role="status">{loadPercent}%</span></main>
   }
 
   if (!caseStudy) return <main className="max-w-[664px] mx-auto px-8 py-24"><h1 className="text-[18px]">Case study unavailable</h1><p className="text-sm text-foreground/60 my-4">It may have moved, or the connection failed.</p><a href="/" className="underline min-h-11 inline-flex items-center">Back to work</a><button type="button" onClick={() => window.location.reload()} className="ml-6 underline">Retry</button></main>
