@@ -96,7 +96,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
           </section>
         ))}
       </div>
-      <div ref={cursorLabelRef} className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm" style={{ willChange: 'transform, opacity' }} aria-hidden="true">
+      <div ref={cursorLabelRef} hidden className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm" style={{ willChange: 'transform, opacity' }} aria-hidden="true">
         <span className="mr-1" aria-hidden="true">↗</span> View project
       </div>
     </section>

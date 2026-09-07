@@ -414,7 +414,7 @@
 .document-settings::backdrop { background: rgb(0 0 0 / .2); }
 .document-settings summary { cursor: pointer; font-size: 12px; padding: 12px 0; }
 .article-prose { overflow-wrap: anywhere; letter-spacing: .01em; }
-.work-action-label { opacity: 0; transition: opacity 150ms ease; }
+.work-action-label { display: none; }
 .homepage-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: color-mix(in oklch, var(--foreground) 70%, transparent); }
 .homepage-contact-question, .homepage-contact-action { font-size: 14px; line-height: 1.7; }
 .portfolio-deferred { content-visibility: auto; contain-intrinsic-size: auto 620px; }
