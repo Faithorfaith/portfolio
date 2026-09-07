@@ -38,6 +38,13 @@ export async function POST(request: NextRequest) {
     // Use service role key to bypass RLS
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+    // Keep first-run deployments self-healing when the storage bucket has not
+    // been created yet (the service role is allowed to create it).
+    await supabase.storage.createBucket('portfolio-uploads', {
+      public: true,
+      fileSizeLimit: MAX_UPLOAD_BYTES,
+    }).catch(() => undefined)
+
     // Generate unique filename
     const timestamp = Date.now()
     const ext = file.name.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin'
