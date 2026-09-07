@@ -421,8 +421,8 @@
 .article-index { border-top: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent); }
 .article-index-link { border-bottom: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent); }
 .article-index-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 24px; align-items: baseline; padding: 14px 0; }
-.article-index-row h3 { width: fit-content; max-width: 100%; color: color-mix(in oklch, var(--foreground) 88%, transparent); font-size: 14px; font-weight: 400; line-height: 1.6; letter-spacing: .01em; background-image: linear-gradient(currentColor, currentColor); background-position: 0 100%; background-repeat: no-repeat; background-size: 0 1px; transition: color 160ms ease, background-size 220ms var(--ease-out); }
-.article-index-link:hover .article-index-row h3, .article-index-link:focus-visible .article-index-row h3 { color: var(--foreground); background-size: 100% 1px; }
+.article-index-row h3 { width: fit-content; max-width: 100%; color: color-mix(in oklch, var(--foreground) 88%, transparent); font-size: 14px; font-weight: 400; line-height: 1.6; letter-spacing: .01em; transition: color 160ms ease; }
+.article-index-link:hover .article-index-row h3, .article-index-link:focus-visible .article-index-row h3 { color: var(--foreground); }
 .article-index-row > div > p { display: none; }
 .article-index-time { color: color-mix(in oklch, var(--foreground) 48%, transparent); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .article-index-year { grid-column: 1; color: color-mix(in oklch, var(--foreground) 40%, transparent); font-size: 10px; line-height: 1; font-variant-numeric: tabular-nums; }
