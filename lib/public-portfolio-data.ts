@@ -19,7 +19,7 @@ const publicClient = () => {
 export const getPublicWritings = unstable_cache(async (): Promise<Writing[]> => {
   const supabase = publicClient()
   if (!supabase) return []
-  const { data } = await supabase.from('writings').select('*').eq('published', true).order('created_at', { ascending: false })
+  const { data } = await supabase.from('writings').select('*').order('created_at', { ascending: false })
   return ((data || []).map(writing => ({ ...writing, content: typeof writing.content === 'string' ? JSON.parse(writing.content) : (writing.content || []) })) as Writing[])
 }, ['public-writings-v4'], { revalidate: 60 })
 
@@ -55,7 +55,7 @@ export const getHomepagePortfolioData = unstable_cache(async (): Promise<Homepag
     supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, created_at').eq('published', true).order('created_at', { ascending: false }).limit(50),
     supabase.from('projects').select('id, title, year, type, link, description, created_at').order('created_at', { ascending: false }).limit(30),
     supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type', { count: 'exact' }).order('created_at', { ascending: false }).limit(18),
-    supabase.from('writings').select('id, title, slug, excerpt, cover_image, created_at, content').eq('published', true).order('created_at', { ascending: false }).limit(4),
+    supabase.from('writings').select('id, title, slug, excerpt, cover_image, created_at, content').order('created_at', { ascending: false }).limit(4),
     supabase.from('workflow_files').select('*, workflow_file_versions(*)').eq('published', true).order('updated_at', { ascending: false }).limit(4),
   ])
   const works = (worksResult.data as Work[] | null) ?? []
@@ -81,7 +81,7 @@ export const getPublicPortfolioData = unstable_cache(async (): Promise<Portfolio
     supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, created_at').eq('published', true).order('created_at', { ascending: false }),
     supabase.from('projects').select('id, title, year, type, link, description, created_at').order('created_at', { ascending: false }),
     supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type').order('created_at', { ascending: false }),
-    supabase.from('writings').select('*').eq('published', true).order('created_at', { ascending: false }),
+    supabase.from('writings').select('*').order('created_at', { ascending: false }),
   ])
 
   return {

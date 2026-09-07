@@ -95,7 +95,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
             }
           })
           // Filter published and sort
-          const published = parsed.filter((w: any) => w.published).sort((a: any, b: any) => 
+          const published = parsed.sort((a: any, b: any) => 
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
           )
           setWritings(published)
