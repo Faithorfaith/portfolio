@@ -360,6 +360,7 @@ export default function ProfileSection({
           <div
             ref={cursorLabelRef}
             className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm"
+            style={{ willChange: 'transform, opacity' }}
             aria-hidden="true"
           >
             View case study
