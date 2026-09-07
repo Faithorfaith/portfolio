@@ -31,6 +31,7 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
 
   const stopAmbience = () => { void audioRef.current?.close(); audioRef.current = null; setSoundOn(false) }
   const startAmbience = () => {
+    if (!musicUrl) return
     if (musicUrl) { const audio = new Audio(musicUrl); audio.loop = true; audio.volume = .28; void audio.play(); audioRef.current = { close: () => { audio.pause(); audio.src = '' } } as unknown as AudioContext; setSoundOn(true); return }
     stopAmbience()
     const context = new AudioContext()
@@ -87,7 +88,7 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
                 {index === 2 && <path d="M105 10L120 2H152L140 10M117 1H158" fill="none" stroke="#566168" strokeWidth="1.5"/>}
                 {index < 3 && <path d="M296 23V60" stroke="#343d42" strokeWidth="5"/>}
               </svg>
-              <button className="train-real-door" onClick={() => openCarriage(carriage)} aria-label={`Enter ${carriage.label} carriage`}><i/><span>{carriage.label} ↗</span></button>
+              <button className="train-real-door" onClick={() => openCarriage(carriage)} aria-label={`Enter carriage ${carriage.number}`}><i/></button>
             </div>)}
             <div className="train-vapor" aria-hidden="true"><i/><i/><i/></div>
           </div>
@@ -100,7 +101,7 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
     {active && <dialog ref={dialogRef} className="carriage-experience" aria-labelledby="carriage-title" onCancel={() => setActive(null)} onClose={() => stopAmbience()} onMouseDown={(event) => event.target === event.currentTarget && setActive(null)}>
       <div className="carriage-room">
         <header className="carriage-room-header">
-          <span>Carriage {active.number} · {active.label}</span>
+          <span>Carriage {active.number}</span>
           <div className="flex items-center gap-2"><button onClick={() => soundOn ? stopAmbience() : startAmbience()} aria-label={soundOn ? 'Mute carriage music' : 'Play carriage music'}>{soundOn ? 'Sound on' : 'Sound off'}</button><button ref={closeRef} className="carriage-close" onClick={() => setActive(null)} aria-label="Leave carriage">×</button></div>
         </header>
           <div className="carriage-room-view">
