@@ -31,13 +31,16 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
 
   const stopAmbience = () => { void audioRef.current?.close(); audioRef.current = null; setSoundOn(false) }
   const startAmbience = () => {
-    if (!musicUrl) return
     if (musicUrl) { const audio = new Audio(musicUrl); audio.loop = true; audio.volume = .28; void audio.play(); audioRef.current = { close: () => { audio.pause(); audio.src = '' } } as unknown as AudioContext; setSoundOn(true); return }
     stopAmbience()
     const context = new AudioContext()
     const master = context.createGain(); master.gain.value = 0.028; master.connect(context.destination)
     const filter = context.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 620; filter.connect(master)
-    ;[130.81, 164.81, 196].forEach((frequency, index) => { const oscillator = context.createOscillator(); const gain = context.createGain(); oscillator.type = 'sine'; oscillator.frequency.value = frequency; gain.gain.value = index === 0 ? .5 : .22; oscillator.connect(gain).connect(filter); oscillator.start() })
+    ;[146.83, 174.61, 220].forEach((frequency, index) => { const oscillator = context.createOscillator(); const gain = context.createGain(); oscillator.type = index === 0 ? 'triangle' : 'sine'; oscillator.frequency.value = frequency; gain.gain.value = index === 0 ? .16 : .07; oscillator.connect(gain).connect(filter); oscillator.start() })
+    const melody = context.createOscillator(); const melodyGain = context.createGain(); melody.type = 'sine'; melodyGain.gain.value = .11; melody.connect(melodyGain).connect(filter); melody.start();
+    const notes = [293.66, 329.63, 392, 440, 523.25, 440, 392, 329.63]; let note = 0
+    const playNote = () => { const now = context.currentTime; melody.frequency.setTargetAtTime(notes[note % notes.length], now, .03); melodyGain.gain.cancelScheduledValues(now); melodyGain.gain.setValueAtTime(.01, now); melodyGain.gain.linearRampToValueAtTime(.11, now + .08); melodyGain.gain.linearRampToValueAtTime(.01, now + .62); note += 1 }
+    playNote(); const timer = window.setInterval(playNote, 680); const originalClose = context.close.bind(context); context.close = () => { window.clearInterval(timer); return originalClose() }
     const movement = context.createOscillator(); const movementGain = context.createGain(); movement.type = 'sine'; movement.frequency.value = .08; movementGain.gain.value = 90; movement.connect(movementGain).connect(filter.frequency); movement.start()
     audioRef.current = context; setSoundOn(true)
   }
