@@ -294,11 +294,6 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
             <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Writing</h2>
           </div>
 
-          {/* Cards Grid - 2 columns on desktop */}
-          <div className="flex gap-3 mb-6">
-            <input aria-label="Search articles" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search articles" className="min-w-0 flex-1 border rounded-lg px-3 min-h-11 bg-background text-sm" />
-            <select aria-label="Article year" value={year} onChange={(event) => setYear(event.target.value)} className="border rounded-lg px-3 bg-background text-xs"><option value="all">All years</option>{[...new Set(writings.map((item) => new Date(item.created_at).getFullYear()))].sort((a,b) => b-a).map((value) => <option key={value}>{value}</option>)}</select>
-          </div>
           {!filteredWritings.length && <p role="status" className="py-8 text-sm text-foreground/60">No articles match. Try another search or year.</p>}
             <div className="border-t border-foreground/8">
               {filteredWritings.map((writing, index) => (
