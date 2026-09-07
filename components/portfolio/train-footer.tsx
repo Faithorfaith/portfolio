@@ -97,7 +97,7 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
       <div className="train-footer-meta"><span>FA · 2026</span><span>A little journey.</span></div>
     </footer>
 
-    {active && <dialog ref={dialogRef} className="carriage-experience" aria-labelledby="carriage-title" onCancel={() => setActive(null)} onMouseDown={(event) => event.target === event.currentTarget && setActive(null)}>
+    {active && <dialog ref={dialogRef} className="carriage-experience" aria-labelledby="carriage-title" onCancel={() => setActive(null)} onClose={() => stopAmbience()} onMouseDown={(event) => event.target === event.currentTarget && setActive(null)}>
       <div className="carriage-room">
         <header className="carriage-room-header">
           <span>Carriage {active.number} · {active.label}</span>
@@ -105,14 +105,7 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
         </header>
         <div className="carriage-room-view">
           <div className="carriage-window-view" aria-hidden="true"><span /><span /><span /></div>
-          <div className="carriage-copy">
-            <p>{active.number} / 04</p>
-            <h2 id="carriage-title">{active.title}</h2>
-            <p>{active.description}</p>
-            <div className="carriage-coming-soon">Coming soon</div>
-            {videoUrls[Number(active.number) - 1] && <video className="carriage-feature-video" src={videoUrls[Number(active.number) - 1] || undefined} controls playsInline autoPlay />}
-            {active.href && <Link href={active.href} onClick={() => setActive(null)}>Explore {active.label.toLowerCase()} <span aria-hidden="true">↗</span></Link>}
-          </div>
+          <div className="carriage-copy"><div className="carriage-coming-soon">Coming soon</div>{videoUrls[Number(active.number) - 1] && <video className="carriage-feature-video" src={videoUrls[Number(active.number) - 1] || undefined} controls playsInline autoPlay />}</div>
           <div className="carriage-seat" aria-hidden="true" />
         </div>
       </div>
