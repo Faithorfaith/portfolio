@@ -429,6 +429,7 @@
 .writing-handwritten-section { font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; font-size: 1.12em; line-height: 1.75; letter-spacing: .005em; }
 .writing-handwritten-article .article-prose, .writing-handwritten-article blockquote { font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; font-size: 1.12em; line-height: 1.75; }
 .writing-page-shell { min-height: 100dvh; width: 100%; }
+.writing-content-rail { width: min(100%, 600px); margin-inline: auto; }
 .workflow-file-list { border: 0; }
 .workflow-file-row { width: 100%; display: grid; grid-template-columns: 36px minmax(0,1fr) auto; align-items: center; gap: 14px; padding: 14px 0; border: 0; text-align: left; }
 .workflow-version-history { border-top: 0; }
