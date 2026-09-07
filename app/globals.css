@@ -452,7 +452,7 @@
 }
 
 /* Portfolio train — a restrained footer that becomes an optional spatial experience. */
-.train-footer { width: 100%; margin-top: 48px; padding: 0 0 28px; overflow: hidden; color: var(--foreground); background: linear-gradient(180deg, #fafafa 0%, #f7fbfc 18%, #eaf7fb 100%); }
+.train-footer { width: 100%; margin-top: 48px; padding: 0; overflow: hidden; color: var(--foreground); background: linear-gradient(180deg, #fafafa 0%, #f7fbfc 18%, #eaf7fb 100%); }
 .train-footer-heading, .train-footer-meta { width: min(100% - 40px, 672px); margin-inline: auto; display: flex; justify-content: space-between; gap: 16px; font-size: 11px; color: color-mix(in oklch, var(--foreground) 52%, transparent); }
 .train-footer-heading { margin-bottom: 18px; }
 .train-footer-meta { margin-top: 14px; }
