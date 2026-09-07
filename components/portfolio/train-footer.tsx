@@ -68,10 +68,6 @@ export default function TrainFooter({ contactEmail, musicUrl, previews = {} }: {
 
   return <>
     <footer className="train-footer" aria-label="Explore the portfolio train">
-      <div className="train-footer-heading">
-        <span>Last stop</span>
-        <span>Choose a carriage</span>
-      </div>
       <div className="train-viewport">
         <div className="train-sky" aria-hidden="true"><span /><span /></div>
         <div className="train-scenery" aria-hidden="true"><i /><i /><i /></div>
