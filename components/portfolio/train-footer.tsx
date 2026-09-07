@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 type Carriage = {
-  id: 'work' | 'playground' | 'writing' | 'contact'
+  id: 'work' | 'playground' | 'writing' | 'workflow'
   number: string
   label: string
   title: string
@@ -16,10 +16,12 @@ const carriages: Carriage[] = [
   { id: 'work', number: '01', label: 'Work', title: 'Products made clearer', description: 'Selected case studies covering product thinking, systems and shipped outcomes.', href: '#work' },
   { id: 'playground', number: '02', label: 'Playground', title: 'Ideas in motion', description: 'Visual experiments, unfinished thoughts and small explorations without a brief.', href: '/playground' },
   { id: 'writing', number: '03', label: 'Writing', title: 'Notes from the journey', description: 'Essays about products, people, decisions and the details that shape an experience.', href: '/writing' },
-  { id: 'contact', number: '04', label: 'Contact', title: 'Where next?', description: 'Have a complicated product that needs clarity? Let’s talk about it.' },
+  { id: 'workflow', number: '04', label: 'Workflow files', title: 'Tools for better work', description: 'A small library of personal agents and workflow files that make complex work feel lighter.', href: '/workflows' },
 ]
 
-export default function TrainFooter({ contactEmail }: { contactEmail?: string | null }) {
+type PreviewItem = { title: string; description?: string | null; href?: string }
+
+export default function TrainFooter({ contactEmail, previews = {} }: { contactEmail?: string | null; previews?: Partial<Record<Carriage['id'], PreviewItem[]>> }) {
   const [active, setActive] = useState<Carriage | null>(null)
   const [emailCopied, setEmailCopied] = useState(false)
   const [soundOn, setSoundOn] = useState(false)
@@ -110,8 +112,10 @@ export default function TrainFooter({ contactEmail }: { contactEmail?: string | 
             <p>{active.number} / 04</p>
             <h2 id="carriage-title">{active.title}</h2>
             <p>{active.description}</p>
+            {previews[active.id]?.length ? <div className="carriage-preview-list" aria-label={`${active.label} highlights`}>
+              {previews[active.id]!.slice(0, 4).map((item) => <div key={item.title} className="carriage-preview-item"><strong>{item.title}</strong>{item.description && <span>{item.description}</span>}</div>)}
+            </div> : null}
             {active.href && <Link href={active.href} onClick={() => setActive(null)}>Explore {active.label.toLowerCase()} <span aria-hidden="true">↗</span></Link>}
-            {active.id === 'contact' && contactEmail && <button onClick={copyEmail}>{emailCopied ? 'Email copied' : 'Copy email'} <span aria-hidden="true">{emailCopied ? '✓' : '⧉'}</span></button>}
           </div>
           <div className="carriage-seat" aria-hidden="true" />
         </div>
