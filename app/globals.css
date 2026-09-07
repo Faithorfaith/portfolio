@@ -458,7 +458,6 @@
 .train-footer-meta { margin-top: 14px; }
 .train-viewport { position: relative; width: 100%; height: 190px; overflow: hidden; border-block: 1px solid color-mix(in oklch, var(--foreground) 8%, transparent); background: color-mix(in oklch, var(--foreground) 1.8%, var(--background)); }
 .train-motion { position: absolute; left: 50%; bottom: 30px; display: flex; align-items: end; gap: 3px; width: max-content; filter: grayscale(1); transform: translateX(-50%); transition: filter 500ms ease; animation: train-drift 8s ease-in-out infinite alternate; }
-.train-viewport:hover .train-motion, .train-viewport:focus-within .train-motion { filter: grayscale(0); }
 .train-car { position: relative; width: 152px; height: 92px; color: #202327; }
 .train-car-roof { position: absolute; inset: 0 5px auto; height: 6px; border-radius: 5px 5px 0 0; background: #525c65; }
 .train-car-body { position: absolute; inset: 6px 0 15px; display: grid; grid-template-columns: 1fr 35px 1fr; align-items: center; gap: 7px; padding: 12px 11px 14px; border-radius: 2px; overflow: hidden; background: linear-gradient(180deg, #b94736 0 15%, #d9d7cf 15% 77%, #6a2223 77%); box-shadow: inset 0 0 0 1px rgb(0 0 0 / 14%); }
