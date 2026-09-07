@@ -687,6 +687,7 @@
 .homepage-contact-closing { flex-basis: 100%; font-size: 11px; margin-top: -2px; }
 .homepage-contact-closing { font-size: inherit; }
 .carriage-close { border: 0 !important; outline: 0; box-shadow: none !important; font-size: 18px; line-height: 1; padding: 2px 4px !important; }
+.carriage-close:focus-visible { outline: none !important; box-shadow: none !important; }
 }
 .group:hover .work-action-label, .group:focus-visible .work-action-label, .group:focus-within .work-action-label { opacity: 1; }
 @media (hover: none) { .work-action-label { opacity: 1; } }
