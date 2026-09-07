@@ -143,7 +143,7 @@ export default function ProfileSection({
                 if (galleryCursorLabelRef.current) galleryCursorLabelRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
               }}
               onMouseLeave={() => { if (galleryCursorLabelRef.current) galleryCursorLabelRef.current.style.opacity = '0' }}
-              className="group relative block w-24 h-24 md:w-28 md:h-28 rounded-lg overflow-hidden border border-transparent hover:border-foreground/40 focus-visible:border-foreground/50 transition-[border-color,opacity] hover:opacity-95"
+              className="group relative block w-[72px] h-[72px] md:w-[84px] md:h-[84px] rounded-lg overflow-hidden border border-transparent hover:border-foreground/40 focus-visible:border-foreground/50 transition-[border-color,opacity] hover:opacity-95"
               aria-label={galleryOpen ? 'Hide profile photos' : 'Show profile photos'}
               aria-expanded={galleryOpen}
               aria-controls="profile-photos"
