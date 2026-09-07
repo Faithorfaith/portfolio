@@ -259,8 +259,9 @@
 
   @media (min-width: 640px) {
     .case-study-rail-card {
-      flex-basis: calc((100% - 2.5rem) / 3);
-      min-width: calc((100% - 2.5rem) / 3);
+      /* A stable card width keeps 2–2.5 projects visible and preserves the next-card cue. */
+      flex-basis: clamp(280px, 36vw, 400px);
+      min-width: clamp(280px, 36vw, 400px);
     }
   }
 

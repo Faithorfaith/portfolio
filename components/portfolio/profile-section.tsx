@@ -256,7 +256,7 @@ export default function ProfileSection({
       {caseStudies.length > 0 && (
         <div id="work" className="portfolio-deferred mt-16 scroll-mt-20">
           <div className="flex items-baseline justify-between mb-8">
-            <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">My work</h2>
+            <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Selected case studies</h2>
             {caseStudies.length > 1 && (
               <div className="flex items-center gap-1" aria-label="Browse work">
                 <button type="button" aria-label="Previous work" aria-controls="work-rail" disabled={railEdges.start} onClick={() => browseWork(-1)} className="rail-control">←</button>
@@ -304,7 +304,7 @@ export default function ProfileSection({
               event.stopPropagation()
               dragState.current.moved = false
             }}
-            className="case-study-rail flex w-[calc(50vw+50%-2rem)] gap-4 md:gap-5 overflow-x-auto md:flex-wrap md:overflow-visible snap-x snap-mandatory pb-6 pr-8 cursor-grab active:cursor-grabbing select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="case-study-rail flex w-[calc(50vw+50%-2rem)] gap-4 md:gap-5 overflow-x-auto snap-x snap-mandatory pb-6 pr-8 cursor-grab active:cursor-grabbing select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {caseStudies.map((caseStudy) => (
               <a
