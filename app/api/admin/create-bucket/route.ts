@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase.storage.createBucket('portfolio-uploads', {
       public: true,
       fileSizeLimit: 100 * 1024 * 1024,
-      allowedMimeTypes: ['image/*', 'video/mp4', 'video/webm', 'video/quicktime'],
+      allowedMimeTypes: ['image/*', 'video/mp4', 'video/webm', 'video/quicktime', 'text/markdown', 'text/plain', 'application/pdf', 'application/zip', 'application/octet-stream', 'audio/*'],
     })
 
     if (error) {
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         const { error: updateError } = await supabase.storage.updateBucket('portfolio-uploads', {
           public: true,
           fileSizeLimit: 100 * 1024 * 1024,
-          allowedMimeTypes: ['image/*', 'video/mp4', 'video/webm', 'video/quicktime'],
+          allowedMimeTypes: ['image/*', 'video/mp4', 'video/webm', 'video/quicktime', 'text/markdown', 'text/plain', 'application/pdf', 'application/zip', 'application/octet-stream', 'audio/*'],
         })
         if (updateError) {
           return NextResponse.json({ error: `Failed to configure bucket: ${updateError.message}` }, { status: 400 })
