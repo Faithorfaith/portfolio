@@ -32,8 +32,6 @@ export async function POST(request: NextRequest) {
         .update(payload)
         .eq('id', id)
         .eq('user_id', user.id)
-        .select('id')
-        .single()
 
       if (error) throw error
       revalidatePath('/'); revalidatePath('/writing'); revalidatePath(`/writing/${payload.slug}`)
