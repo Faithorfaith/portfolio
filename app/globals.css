@@ -526,8 +526,8 @@
 /* Dimensional train asset and continuous journey. */
 .train-viewport { height: 238px; }
 .train-sky { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(180deg, #9edff0 0%, #d9f2f5 62%, #f8faf7 100%); }
-.train-sky::before, .train-sky::after { content: ''; position: absolute; inset: -12% -22%; background: url('/images/footer-cloud-sky.png') center 58% / cover repeat-x; opacity: .72; animation: cloud-drift 52s linear infinite; will-change: transform; }
-.train-sky::after { inset: -2% -28%; background-size: min(540px, 44vw) auto; background-position: center 72%; opacity: .32; filter: blur(1.5px); animation-duration: 74s; animation-direction: reverse; }
+.train-sky::before { content: ''; position: absolute; inset: 0; background: url('/images/footer-cloud-sky.png') center / cover no-repeat; opacity: .72; }
+.train-sky::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(250 250 250 / 92%) 0%, transparent 38%, rgb(255 255 255 / 28%) 100%); opacity: .72; }
 .train-sky span:first-child { position: absolute; inset: auto 0 0; height: 38%; background: linear-gradient(180deg, transparent, rgb(255 255 255 / 82%)); }
 .train-sky span:last-child { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(255 255 255 / 18%), transparent 28% 72%, rgb(255 255 255 / 16%)); }
 .train-motion {
@@ -597,8 +597,7 @@
 /* Side-view coaches share one wheel baseline with the rails. */
 .train-viewport { height: 620px; border-block-color: color-mix(in oklch, var(--foreground) 5%, transparent); }
 .train-sky { background: #fafafa; }
-.train-sky::before { background-size: 1100px auto; background-position: center 52%; opacity: .64; }
-.train-sky::after { background-size: 650px auto; }
+.train-sky::before { background-position: center 52%; opacity: .64; }
 .train-scenery { opacity: .09; }
 .train-drawn-motion { width: 1000px; bottom: 33px; }
 .train-drawn-consist { position: relative; display: flex; align-items: end; }
