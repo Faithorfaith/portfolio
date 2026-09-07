@@ -450,6 +450,8 @@
 .writing-page-shell article > header::after { content: ''; position: absolute; left: 50%; bottom: 0; width: 100vw; height: 1px; background: color-mix(in oklch, var(--foreground) 8%, transparent); transform: translateX(-50%); }
 .writing-content-rail figure, .writing-content-rail figure img { width: 100%; max-width: 100%; }
 .workflow-file-list { border: 0; }
+.workflow-file-dialog .workflow-dialog-close { border: 0 !important; outline: none !important; box-shadow: none !important; background: transparent; }
+.workflow-file-dialog .workflow-dialog-close:focus-visible { outline: none !important; box-shadow: none !important; }
 .workflow-file-row { width: 100%; display: grid; grid-template-columns: 36px minmax(0,1fr) auto; align-items: center; gap: 14px; padding: 14px 0; border: 0; text-align: left; }
 .workflow-version-history { border-top: 0; }
 .workflow-version-history > div { grid-template-columns: 48px 1fr auto; border-bottom: 0; padding: 10px 0; align-items: start; }
