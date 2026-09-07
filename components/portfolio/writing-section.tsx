@@ -150,7 +150,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
     return (
       <div className="writing-page-shell" style={{ backgroundColor: writingBackgroundColor(appearance.background) }}>
       <div id="top" className="w-full min-h-screen max-w-[920px] mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
-        <DetailNavigation title={selectedWriting.title} backHref={initialSlug ? '/writing' : '/#writing'} />
+        <DetailNavigation title={selectedWriting.title} backHref={initialSlug ? '/writing' : '/#writing'} backgroundColor={writingBackgroundColor(appearance.background)} />
 
         {/* Article Content */}
         <article>

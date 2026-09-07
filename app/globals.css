@@ -429,6 +429,8 @@
 .writing-handwritten-section { font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; font-size: 1.12em; line-height: 1.75; letter-spacing: .005em; }
 .writing-handwritten-article .article-prose, .writing-handwritten-article blockquote { font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; font-size: 1.12em; line-height: 1.75; }
 .writing-page-shell { min-height: 100dvh; width: 100%; }
+.detail-navigation { position: fixed; }
+.detail-navigation::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100vw; height: 1px; background: color-mix(in oklch, var(--foreground) 8%, transparent); }
 .writing-content-rail { width: min(100%, 600px); margin-inline: auto; }
 .writing-page-shell article > header { position: relative; border-bottom: 0 !important; }
 .writing-page-shell article > header::after { content: ''; position: absolute; left: 50%; bottom: 0; width: 100vw; height: 1px; background: color-mix(in oklch, var(--foreground) 8%, transparent); transform: translateX(-50%); }
