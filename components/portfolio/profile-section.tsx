@@ -29,6 +29,10 @@ export interface Profile {
   resume_url?: string | null
   primary_cta_label?: string | null
   train_music_url?: string | null
+  train_video_1?: string | null
+  train_video_2?: string | null
+  train_video_3?: string | null
+  train_video_4?: string | null
 }
 
 interface BioReference {

@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
         primary_cta_label: body.primary_cta_label || 'Start a project',
         testimonials: Array.isArray(body.testimonials) ? body.testimonials : [],
         train_music_url: body.train_music_url || null,
+        train_video_1: body.train_video_1 || null, train_video_2: body.train_video_2 || null, train_video_3: body.train_video_3 || null, train_video_4: body.train_video_4 || null,
       })
       .select()
       .single()

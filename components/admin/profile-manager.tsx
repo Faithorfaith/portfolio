@@ -108,6 +108,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
     primary_cta_label: 'Start a project',
     testimonials: [] as Testimonial[],
     train_music_url: '',
+    train_video_1: '', train_video_2: '', train_video_3: '', train_video_4: '',
   })
   const supabase = createClient()
 
@@ -143,6 +144,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
             primary_cta_label: data.primary_cta_label || 'Start a project',
           testimonials: Array.isArray(data.testimonials) ? data.testimonials : [],
             train_music_url: data.train_music_url || '',
+            train_video_1: data.train_video_1 || '', train_video_2: data.train_video_2 || '', train_video_3: data.train_video_3 || '', train_video_4: data.train_video_4 || '',
           })
         } else {
           const { data: newProfile, error: createError } = await supabase
@@ -170,6 +172,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
               primary_cta_label: newProfile.primary_cta_label || 'Start a project',
           testimonials: newProfile.testimonials || [],
               train_music_url: newProfile.train_music_url || '',
+              train_video_1: newProfile.train_video_1 || '', train_video_2: newProfile.train_video_2 || '', train_video_3: newProfile.train_video_3 || '', train_video_4: newProfile.train_video_4 || '',
             })
           }
         }
@@ -214,6 +217,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
           primary_cta_label: formData.primary_cta_label || 'Start a project',
           testimonials: formData.testimonials,
           train_music_url: formData.train_music_url || null,
+          train_video_1: formData.train_video_1 || null, train_video_2: formData.train_video_2 || null, train_video_3: formData.train_video_3 || null, train_video_4: formData.train_video_4 || null,
         }),
       })
       const result = await response.json()
@@ -316,6 +320,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5"><label className="block">Contact email</label><input type="email" value={formData.contact_email} onChange={e => set('contact_email', e.target.value)} placeholder="you@example.com" className="w-full px-3 py-2" /></div>
             <div className="space-y-1.5"><label className="block">Train music URL</label><input type="url" value={formData.train_music_url} onChange={e => set('train_music_url', e.target.value)} placeholder="Upload audio in Media Library, then paste its URL" className="w-full px-3 py-2" /><p className="text-[11px] text-foreground/45">MP3, WAV or OGG. Leave blank to use the built-in ambient Japanese-inspired tone.</p></div>
+            <div className="space-y-3"><label className="block">Coach videos</label>{[1,2,3,4].map(n => <div key={n} className="space-y-1"><span className="text-[11px] text-foreground/50">Coach {n} video URL</span><input type="url" value={(formData as any)[`train_video_${n}`]} onChange={e => set(`train_video_${n}`, e.target.value)} placeholder="Paste uploaded video URL" className="w-full px-3 py-2" /></div>)}</div>
             <div className="space-y-1.5"><label className="block">LinkedIn URL</label><input type="url" value={formData.linkedin_url} onChange={e => set('linkedin_url', e.target.value)} placeholder="https://linkedin.com/in/..." className="w-full px-3 py-2" /></div>
           </div>
           <div className="space-y-1.5"><label className="block">Résumé URL</label><input type="url" value={formData.resume_url} onChange={e => set('resume_url', e.target.value)} placeholder="https://..." className="w-full px-3 py-2" /></div>

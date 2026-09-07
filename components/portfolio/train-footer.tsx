@@ -21,7 +21,7 @@ const carriages: Carriage[] = [
 
 type PreviewItem = { title: string; description?: string | null; href?: string; image?: string | null }
 
-export default function TrainFooter({ contactEmail, musicUrl, previews = {} }: { contactEmail?: string | null; musicUrl?: string | null; previews?: Partial<Record<Carriage['id'], PreviewItem[]>> }) {
+export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], previews = {} }: { contactEmail?: string | null; musicUrl?: string | null; videoUrls?: Array<string | null | undefined>; previews?: Partial<Record<Carriage['id'], PreviewItem[]>> }) {
   const [active, setActive] = useState<Carriage | null>(null)
   const [emailCopied, setEmailCopied] = useState(false)
   const [soundOn, setSoundOn] = useState(false)
@@ -110,6 +110,7 @@ export default function TrainFooter({ contactEmail, musicUrl, previews = {} }: {
             <h2 id="carriage-title">{active.title}</h2>
             <p>{active.description}</p>
             <div className="carriage-coming-soon">Coming soon</div>
+            {videoUrls[Number(active.number) - 1] && <video className="carriage-feature-video" src={videoUrls[Number(active.number) - 1] || undefined} controls playsInline autoPlay />}
             {active.href && <Link href={active.href} onClick={() => setActive(null)}>Explore {active.label.toLowerCase()} <span aria-hidden="true">↗</span></Link>}
           </div>
           <div className="carriage-seat" aria-hidden="true" />
