@@ -674,7 +674,7 @@
 .homepage-contact-closing { font-size: inherit; }
 .carriage-close { border: 0 !important; outline: 0; box-shadow: none !important; font-size: 18px; line-height: 1; padding: 2px 4px !important; }
 }
-.group:focus-visible .work-action-label, .group:focus-within .work-action-label { opacity: 1; }
+.group:hover .work-action-label, .group:focus-visible .work-action-label, .group:focus-within .work-action-label { opacity: 1; }
 @media (hover: none) { .work-action-label { opacity: 1; } }
 .article-prose blockquote { border-left: 2px solid var(--border); padding-left: 16px; margin: 24px 0; }
 .article-prose :last-child { margin-bottom: 0; }
