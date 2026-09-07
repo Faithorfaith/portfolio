@@ -68,7 +68,7 @@ export const getHomepagePortfolioData = unstable_cache(async (): Promise<Homepag
     writings: (writingsResult.data || []).map(({ content, ...writing }) => ({ ...writing, readingMinutes: Math.max(1, Math.ceil(wordCount(content) / 200)) })) as HomeWriting[],
     workflowFiles: ((workflowResult.data || []).map(file => ({ ...file, workflow_file_versions: [...(file.workflow_file_versions || [])].sort((a, b) => b.version_number - a.version_number) })) as WorkflowFile[]),
   }
-}, ['homepage-portfolio-data-v3'], { revalidate: 60 })
+}, ['homepage-portfolio-data-v4'], { revalidate: 60 })
 
 export const getPublicPortfolioData = unstable_cache(async (): Promise<PortfolioData> => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
