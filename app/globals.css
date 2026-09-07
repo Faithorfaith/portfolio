@@ -618,7 +618,6 @@
 .train-real-door:hover i, .train-real-door:focus-visible i { opacity: 0; }
 .train-real-door span { position: absolute; left: 50%; bottom: calc(100% + 12px); transform: translateX(-50%); white-space: nowrap; font-size: 11px; padding: 6px 9px; background: #fff; color: #252525; border-radius: 4px; opacity: 0; box-shadow: 0 2px 12px #00000010; }
 .train-real-door:hover span, .train-real-door:focus-visible span { opacity: 1; }
-.train-drawn-motion:focus-within, .train-viewport:hover .train-drawn-motion { animation-play-state: paused; }
 .train-vapor { position: absolute; right: 10%; top: -8px; pointer-events: none; }
 .train-vapor i { position: absolute; width: 17px; height: 10px; border-radius: 50%; background: #ffffffa0; filter: blur(3px); animation: train-vapor 3s ease-out infinite; }
 .train-vapor i:nth-child(2) { animation-delay: -1s; }.train-vapor i:nth-child(3) { animation-delay: -2s; }
