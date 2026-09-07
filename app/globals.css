@@ -505,7 +505,7 @@
 
 @media (max-width: 760px) {
   .train-footer { margin-top: 28px; }
-  .train-viewport { height: 168px; overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: none; }
+  .train-viewport { height: 168px; overflow: hidden; overscroll-behavior-inline: none; scrollbar-width: none; }
   .train-viewport::-webkit-scrollbar { display: none; }
   .train-motion { left: 18px; transform: none; animation: none; padding-right: 18px; }
   .train-car { width: 142px; }
@@ -644,7 +644,7 @@
 @media (prefers-reduced-motion: reduce) {
   .train-vapor i { animation: none; display: none; }
   .train-real-door::before { transition: none; }
-  .train-viewport { overflow-x: auto; }
+  .train-viewport { overflow: hidden; }
   .train-drawn-motion { position: relative; left: 0; bottom: auto; top: 230px; transform: none; }
 }
 .homepage-contact-action { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
