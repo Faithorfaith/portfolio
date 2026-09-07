@@ -6,6 +6,7 @@ import type { Profile, CaseStudy } from '@/components/portfolio/profile-section'
 import type { Project } from '@/components/portfolio/projects-section'
 import type { Work } from '@/components/portfolio/works-gallery'
 import type { Writing } from '@/components/portfolio/writing-section'
+import type { WorkflowFile } from '@/lib/workflow-files'
 
 type PortfolioData = { profile: Profile | null; caseStudies: CaseStudy[]; projects: Project[]; works: Work[]; writings: Writing[] }
 
@@ -20,7 +21,7 @@ export const getPublicWritings = unstable_cache(async (): Promise<Writing[]> => 
   if (!supabase) return []
   const { data } = await supabase.from('writings').select('*').eq('published', true).order('created_at', { ascending: false })
   return ((data || []).map(writing => ({ ...writing, content: typeof writing.content === 'string' ? JSON.parse(writing.content) : (writing.content || []) })) as Writing[])
-}, ['public-writings-v2'], { revalidate: 300 })
+}, ['public-writings-v4'], { revalidate: 60 })
 
 export const getPublicWorks = unstable_cache(async (): Promise<Work[]> => {
   const supabase = publicClient()
@@ -30,7 +31,14 @@ export const getPublicWorks = unstable_cache(async (): Promise<Work[]> => {
 }, ['public-works-v2'], { revalidate: 300 })
 
 export type HomeWriting = Pick<Writing, 'id' | 'title' | 'slug' | 'excerpt' | 'cover_image' | 'created_at'> & { readingMinutes: number }
-export type HomepagePortfolioData = Omit<PortfolioData, 'works' | 'writings'> & { works: Work[]; hiddenWorkCount: number; writings: HomeWriting[] }
+export type HomepagePortfolioData = Omit<PortfolioData, 'works' | 'writings'> & { works: Work[]; hiddenWorkCount: number; writings: HomeWriting[]; workflowFiles: WorkflowFile[] }
+
+export const getPublicWorkflowFiles = unstable_cache(async (): Promise<WorkflowFile[]> => {
+  const supabase = publicClient()
+  if (!supabase) return []
+  const { data } = await supabase.from('workflow_files').select('*, workflow_file_versions(*)').eq('published', true).order('updated_at', { ascending: false })
+  return ((data || []).map(file => ({ ...file, workflow_file_versions: [...(file.workflow_file_versions || [])].sort((a, b) => b.version_number - a.version_number) })) as WorkflowFile[])
+}, ['public-workflow-files-v1'], { revalidate: 60 })
 
 const wordCount = (content: unknown) => {
   const blocks = typeof content === 'string' ? (() => { try { return JSON.parse(content) } catch { return [] } })() : content
@@ -40,14 +48,15 @@ const wordCount = (content: unknown) => {
 export const getHomepagePortfolioData = unstable_cache(async (): Promise<HomepagePortfolioData> => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !key) return { profile: null, caseStudies: [], projects: [], works: [], hiddenWorkCount: 0, writings: [] }
+  if (!url || !key) return { profile: null, caseStudies: [], projects: [], works: [], hiddenWorkCount: 0, writings: [], workflowFiles: [] }
   const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
-  const [profileResult, caseStudiesResult, projectsResult, worksResult, writingsResult] = await Promise.all([
+  const [profileResult, caseStudiesResult, projectsResult, worksResult, writingsResult, workflowResult] = await Promise.all([
     supabase.from('profiles').select('id, username, full_name, bio, avatar_url, hero_image_1, hero_image_2, hero_image_3, gallery_images, bio_references, contact_email').limit(1).maybeSingle(),
     supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, created_at').eq('published', true).order('created_at', { ascending: false }).limit(8),
     supabase.from('projects').select('id, title, year, type, link, description, created_at').order('created_at', { ascending: false }).limit(30),
     supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type', { count: 'exact' }).order('created_at', { ascending: false }).limit(18),
     supabase.from('writings').select('id, title, slug, excerpt, cover_image, created_at, content').eq('published', true).order('created_at', { ascending: false }).limit(4),
+    supabase.from('workflow_files').select('*, workflow_file_versions(*)').eq('published', true).order('updated_at', { ascending: false }).limit(4),
   ])
   const works = (worksResult.data as Work[] | null) ?? []
   return {
@@ -57,8 +66,9 @@ export const getHomepagePortfolioData = unstable_cache(async (): Promise<Homepag
     works,
     hiddenWorkCount: Math.max(0, (worksResult.count || works.length) - 14),
     writings: (writingsResult.data || []).map(({ content, ...writing }) => ({ ...writing, readingMinutes: Math.max(1, Math.ceil(wordCount(content) / 200)) })) as HomeWriting[],
+    workflowFiles: ((workflowResult.data || []).map(file => ({ ...file, workflow_file_versions: [...(file.workflow_file_versions || [])].sort((a, b) => b.version_number - a.version_number) })) as WorkflowFile[]),
   }
-}, ['homepage-portfolio-data-v2'], { revalidate: 300 })
+}, ['homepage-portfolio-data-v3'], { revalidate: 60 })
 
 export const getPublicPortfolioData = unstable_cache(async (): Promise<PortfolioData> => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL

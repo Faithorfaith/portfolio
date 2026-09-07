@@ -65,7 +65,7 @@
   --motion-fast: 140ms;
   --motion-base: 200ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --background: oklch(1 0 0);
+  --background: #FAFAFA;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -183,7 +183,7 @@
   }
   html {
     font-size: 16px;
-    background-color: oklch(1 0 0); /* matches --background, prevents grey flash */
+    background-color: #FAFAFA;
   }
   body {
     @apply bg-background text-foreground;
@@ -426,8 +426,13 @@
 .article-index-row > div > p { display: none; }
 .article-index-time { color: color-mix(in oklch, var(--foreground) 48%, transparent); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .article-index-year { grid-column: 1; color: color-mix(in oklch, var(--foreground) 40%, transparent); font-size: 10px; line-height: 1; font-variant-numeric: tabular-nums; }
-.writing-handwritten, .writing-handwritten .article-prose, .writing-handwritten input, .writing-handwritten textarea { font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; }
-.writing-handwritten .article-prose { font-size: 16px; line-height: 1.85; letter-spacing: .005em; }
+.writing-handwritten-section { font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; font-size: 1.12em; line-height: 1.75; letter-spacing: .005em; }
+.workflow-file-list { border-block: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent); }
+.workflow-file-row { width: 100%; display: grid; grid-template-columns: 36px minmax(0,1fr) auto; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid color-mix(in oklch, var(--foreground) 9%, transparent); text-align: left; }
+.workflow-file-row:last-child { border-bottom: 0; }
+.workflow-file-row strong { display: block; font-size: 14px; font-weight: 400; }.workflow-file-row small { display: block; margin-top: 2px; color: color-mix(in oklch, var(--foreground) 48%, transparent); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }.workflow-file-row em { color: color-mix(in oklch, var(--foreground) 45%, transparent); font-size: 11px; font-style: normal; }
+.workflow-file-glyph { position: relative; width: 28px; height: 34px; display: grid; place-items: end center; padding-bottom: 5px; border: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent); border-radius: 3px; background: var(--background); }.workflow-file-glyph::after { content: ''; position: absolute; right: -1px; top: -1px; width: 9px; height: 9px; border-left: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent); border-bottom: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent); background: var(--background); }.workflow-file-glyph i { font-size: 7px; font-style: normal; }
+.workflow-file-dialog { margin: auto; width: min(560px, calc(100% - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--border); border-radius: 10px; background: var(--background); color: var(--foreground); box-shadow: 0 24px 90px #0002; }.workflow-file-dialog::backdrop { background: #0003; backdrop-filter: blur(4px); }.workflow-file-dialog > div { padding: 24px; }.workflow-file-dialog header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 28px; }.workflow-file-dialog header button { width: 32px; height: 32px; border-radius: 50%; font-size: 18px; color: color-mix(in oklch, var(--foreground) 55%, transparent); }.workflow-file-dialog h2 { margin-top: 6px; font-size: 18px; font-weight: 500; }.workflow-file-dialog h2 + p { margin-top: 10px; color: color-mix(in oklch, var(--foreground) 60%, transparent); font-size: 14px; line-height: 1.7; }.workflow-download { position: sticky; top: 0; display: inline-flex; margin-top: 22px; padding: 9px 12px; border-radius: 7px; background: var(--foreground); color: var(--background); font-size: 12px; }.workflow-version-history { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border); }.workflow-version-history h3 { margin-bottom: 8px; font-size: 12px; font-weight: 500; }.workflow-version-history > div { display: grid; grid-template-columns: 30px 1fr auto 18px; gap: 8px; padding: 10px 0; border-bottom: 1px solid color-mix(in oklch, var(--foreground) 8%, transparent); font-size: 11px; }.workflow-version-history time { color: color-mix(in oklch, var(--foreground) 42%, transparent); }
 .writing-appearance-panel { display: grid; gap: 18px; padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: color-mix(in oklch, var(--background) 96%, var(--foreground)); }
 .writing-appearance-panel h3 { font-size: 13px; font-weight: 500; }
 .writing-appearance-panel h3 + p { margin-top: 3px; color: color-mix(in oklch, var(--foreground) 48%, transparent); font-size: 11px; }
@@ -446,6 +451,194 @@
   .article-index-time { font-size: 11px; }
 }
 
+/* Portfolio train — a restrained footer that becomes an optional spatial experience. */
+.train-footer { width: 100%; margin-top: 48px; padding: 0 0 20px; overflow: hidden; color: var(--foreground); }
+.train-footer-heading, .train-footer-meta { width: min(100% - 40px, 672px); margin-inline: auto; display: flex; justify-content: space-between; gap: 16px; font-size: 11px; color: color-mix(in oklch, var(--foreground) 52%, transparent); }
+.train-footer-heading { margin-bottom: 18px; }
+.train-footer-meta { margin-top: 14px; }
+.train-viewport { position: relative; width: 100%; height: 190px; overflow: hidden; border-block: 1px solid color-mix(in oklch, var(--foreground) 8%, transparent); background: color-mix(in oklch, var(--foreground) 1.8%, var(--background)); }
+.train-motion { position: absolute; left: 50%; bottom: 30px; display: flex; align-items: end; gap: 3px; width: max-content; filter: grayscale(1); transform: translateX(-50%); transition: filter 500ms ease; animation: train-drift 8s ease-in-out infinite alternate; }
+.train-viewport:hover .train-motion, .train-viewport:focus-within .train-motion { filter: grayscale(0); }
+.train-car { position: relative; width: 152px; height: 92px; color: #202327; }
+.train-car-roof { position: absolute; inset: 0 5px auto; height: 6px; border-radius: 5px 5px 0 0; background: #525c65; }
+.train-car-body { position: absolute; inset: 6px 0 15px; display: grid; grid-template-columns: 1fr 35px 1fr; align-items: center; gap: 7px; padding: 12px 11px 14px; border-radius: 2px; overflow: hidden; background: linear-gradient(180deg, #b94736 0 15%, #d9d7cf 15% 77%, #6a2223 77%); box-shadow: inset 0 0 0 1px rgb(0 0 0 / 14%); }
+.train-car-body::after { content: ''; position: absolute; inset: 15% 0 auto; height: 1px; background: rgb(255 255 255 / 38%); }
+.train-car-number, .train-car-label { position: absolute; z-index: 2; font-size: 6px; letter-spacing: .12em; text-transform: uppercase; }
+.train-car-number { left: 8px; top: 3px; color: white; }
+.train-car-label { right: 8px; bottom: 3px; color: white; }
+.train-window { height: 28px; padding: 3px; border-radius: 2px; background: #303941; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 35%); }
+.train-window span { display: block; width: 100%; height: 100%; background: linear-gradient(155deg, #c7e5ee, #829dad 70%); opacity: .8; }
+.train-door { position: relative; z-index: 3; align-self: stretch; border: 1px solid rgb(0 0 0 / 20%); background: #c8c8c0; cursor: pointer; transition: background 180ms ease, transform 180ms ease, box-shadow 180ms ease; }
+.train-door:hover, .train-door:focus-visible { background: #f0b94c; transform: translateY(-2px); box-shadow: 0 4px 12px rgb(0 0 0 / 18%); outline: none; }
+.train-door-window { position: absolute; inset: 5px 5px auto; height: 15px; border: 2px solid #34393d; background: #9ab3bc; }
+.train-door-handle { position: absolute; right: 3px; top: 55%; width: 3px; height: 3px; border-radius: 50%; background: #34393d; }
+.train-undercarriage { position: absolute; inset: auto 8px 3px; height: 14px; border-top: 4px solid #303338; }
+.train-undercarriage i { position: absolute; top: 3px; width: 12px; height: 12px; border: 3px solid #363a3e; border-radius: 50%; background: #a7a7a1; }
+.train-undercarriage i:first-child { left: 14px; }.train-undercarriage i:last-child { right: 14px; }
+.train-engine { position: relative; width: 118px; height: 110px; color: #202327; }
+.train-engine-cab { position: absolute; left: 0; bottom: 15px; width: 76px; height: 77px; border-radius: 3px 10px 2px 2px; background: #405b58; border-top: 7px solid #283c3b; }
+.train-engine-cab span { position: absolute; inset: 10px 10px auto; height: 25px; background: linear-gradient(145deg, #c5e0e7, #78949c); border: 3px solid #273b3a; }
+.train-engine-front { position: absolute; right: 0; bottom: 15px; width: 58px; height: 52px; border-radius: 3px 16px 2px 2px; background: #914134; border-top: 6px solid #652c27; }
+.train-track { position: absolute; inset: auto 0 22px; height: 7px; border-block: 2px solid color-mix(in oklch, var(--foreground) 38%, transparent); background: repeating-linear-gradient(90deg, transparent 0 18px, color-mix(in oklch, var(--foreground) 28%, transparent) 18px 22px); }
+.train-scenery { position: absolute; inset: 0; opacity: .25; }
+.train-scenery i { position: absolute; bottom: 30px; width: 1px; height: 105px; background: currentColor; }
+.train-scenery i::before { content: ''; position: absolute; left: -10px; top: 0; width: 21px; height: 2px; background: currentColor; }
+.train-scenery i:nth-child(1) { left: 9%; }.train-scenery i:nth-child(2) { left: 56%; height: 78px; }.train-scenery i:nth-child(3) { right: 8%; height: 125px; }
+@keyframes train-drift { from { transform: translateX(calc(-50% - 12px)); } to { transform: translateX(calc(-50% + 12px)); } }
+
+.carriage-experience { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: rgb(10 11 12 / 70%); backdrop-filter: blur(12px); animation: carriage-backdrop 280ms ease both; }
+.carriage-room { width: min(920px, 100%); height: min(600px, calc(100dvh - 40px)); overflow: hidden; border: 1px solid rgb(255 255 255 / 22%); border-radius: 12px; color: #f5f2e9; background: #252526; box-shadow: 0 32px 100px rgb(0 0 0 / 45%); animation: carriage-enter 480ms cubic-bezier(.22,.8,.24,1) both; }
+.carriage-room-header { height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; border-bottom: 1px solid rgb(255 255 255 / 12%); font-size: 11px; letter-spacing: .04em; color: rgb(255 255 255 / 62%); }
+.carriage-room-header button { min-height: 34px; padding: 0 10px; border-radius: 6px; color: inherit; transition: color 160ms ease, background 160ms ease; }
+.carriage-room-header button:hover { color: white; background: rgb(255 255 255 / 8%); }
+.carriage-room-view { position: relative; height: calc(100% - 54px); display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: 48px; padding: 54px; overflow: hidden; background: linear-gradient(110deg, #242525 0 66%, #31302e 66%); }
+.carriage-window-view { position: relative; height: min(300px, 44vh); display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; padding: 12px; border: 8px solid #171818; border-radius: 44px 44px 5px 5px; background: #111; }
+.carriage-window-view span { background: linear-gradient(165deg, #c4d6d3 0 32%, #8d9b86 32% 50%, #3c4c43 50% 54%, #96a999 54%); filter: saturate(.65); }
+.carriage-copy { position: relative; z-index: 2; max-width: 310px; }
+.carriage-copy > p:first-child { margin-bottom: 22px; font-size: 11px; color: rgb(255 255 255 / 45%); }
+.carriage-copy h2 { font-size: 18px; font-weight: 500; letter-spacing: .01em; }
+.carriage-copy h2 + p { margin-top: 14px; color: rgb(255 255 255 / 64%); font-size: 14px; line-height: 1.7; }
+.carriage-copy a, .carriage-copy button { display: inline-flex; margin-top: 26px; padding: 10px 13px; border: 1px solid rgb(255 255 255 / 22%); border-radius: 7px; font-size: 12px; transition: background 160ms ease, color 160ms ease; }
+.carriage-copy a:hover, .carriage-copy button:hover { background: #f4f0e6; color: #1b1c1d; }
+.carriage-seat { position: absolute; right: -28px; bottom: -40px; width: 38%; height: 150px; border-radius: 70px 0 0; background: #6f2f2d; box-shadow: inset 0 8px rgb(255 255 255 / 6%); }
+@keyframes carriage-backdrop { from { opacity: 0; } }
+@keyframes carriage-enter { from { opacity: 0; transform: scale(.96) translateY(16px); } }
+
+@media (max-width: 760px) {
+  .train-footer { margin-top: 28px; }
+  .train-viewport { height: 168px; overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: none; }
+  .train-viewport::-webkit-scrollbar { display: none; }
+  .train-motion { left: 18px; transform: none; animation: none; padding-right: 18px; }
+  .train-car { width: 142px; }
+  .train-track { width: 790px; }
+  .train-footer-meta { align-items: end; }
+  .carriage-experience { padding: 10px; }
+  .carriage-room { height: calc(100dvh - 20px); }
+  .carriage-room-view { grid-template-columns: 1fr; align-content: center; gap: 28px; padding: 28px 24px 36px; background: linear-gradient(180deg, #242525 0 72%, #31302e 72%); }
+  .carriage-window-view { height: 210px; }
+  .carriage-copy { max-width: 420px; }
+  .carriage-seat { width: 52%; height: 95px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .train-motion, .carriage-experience, .carriage-room { animation: none; }
+  .train-door, .train-motion { transition: none; }
+}
+
+/* Dimensional train asset and continuous journey. */
+.train-viewport { height: 238px; }
+.train-sky { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(180deg, #9edff0 0%, #d9f2f5 62%, #f8faf7 100%); }
+.train-sky::before, .train-sky::after { content: ''; position: absolute; inset: -12% -22%; background: url('/images/train-sky-clouds.webp') center 58% / min(760px, 58vw) auto repeat-x; opacity: .72; animation: cloud-drift 52s linear infinite; will-change: transform; }
+.train-sky::after { inset: -2% -28%; background-size: min(540px, 44vw) auto; background-position: center 72%; opacity: .32; filter: blur(1.5px); animation-duration: 74s; animation-direction: reverse; }
+.train-sky span:first-child { position: absolute; inset: auto 0 0; height: 38%; background: linear-gradient(180deg, transparent, rgb(255 255 255 / 82%)); }
+.train-sky span:last-child { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(255 255 255 / 18%), transparent 28% 72%, rgb(255 255 255 / 16%)); }
+.train-motion {
+  left: 0;
+  bottom: 23px;
+  z-index: 2;
+  display: block;
+  width: clamp(1100px, 95vw, 1480px);
+  filter: grayscale(1) contrast(.94);
+  transform: translateX(-105%);
+  animation: train-journey 32s linear infinite;
+  will-change: transform;
+}
+.train-motion:hover, .train-motion:focus-within { filter: grayscale(0) contrast(1); animation-play-state: paused; z-index: 3; }
+.train-render { position: relative; width: 100%; }
+.train-render > img { display: block; width: 100%; height: auto; }
+.train-door-hotspot {
+  --door-position: 0%;
+  position: absolute;
+  left: var(--door-position);
+  top: 27%;
+  width: 4.8%;
+  height: 45%;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+.train-door-hotspot > span {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 9px);
+  padding: 5px 7px;
+  border-radius: 5px;
+  color: var(--background);
+  background: var(--foreground);
+  font-size: 10px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+.train-door-hotspot:hover, .train-door-hotspot:focus-visible { border-color: rgb(255 255 255 / 75%); background: rgb(255 255 255 / 10%); box-shadow: 0 0 0 3px rgb(255 255 255 / 12%); outline: none; }
+.train-door-hotspot:hover > span, .train-door-hotspot:focus-visible > span { opacity: 1; transform: translate(-50%, 0); }
+.train-track { bottom: 25px; z-index: 1; height: 8px; perspective: 300px; }
+.train-track::after { content: ''; position: absolute; inset: 7px 0 auto; height: 18px; background: repeating-linear-gradient(90deg, transparent 0 25px, color-mix(in oklch, var(--foreground) 18%, transparent) 25px 29px); transform: rotateX(68deg); transform-origin: top; }
+@keyframes train-journey {
+  0%, 8% { transform: translateX(-105%); }
+  92%, 100% { transform: translateX(100vw); }
+}
+@keyframes cloud-drift { to { transform: translateX(18%); } }
+
+@media (max-width: 760px) {
+  .train-viewport { height: 198px; overflow: hidden; }
+  .train-motion { left: 0; bottom: 22px; width: 1100px; transform: translateX(-105%); animation: train-journey 28s linear infinite; }
+  .train-door-hotspot { min-width: 44px; min-height: 44px; top: 23%; height: 52%; }
+  .train-track { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .train-motion { left: 50%; transform: translateX(-50%); animation: none; }
+  .train-sky::before, .train-sky::after { animation: none; }
+}
+/* Side-view coaches share one wheel baseline with the rails. */
+.train-viewport { height: 360px; }
+.train-sky::before { background-size: 780px auto; background-position: center 52%; }
+.train-sky::after { background-size: 650px auto; }
+.train-scenery { opacity: .09; }
+.train-drawn-motion { width: 1000px; bottom: 33px; }
+.train-drawn-consist { position: relative; display: flex; align-items: end; }
+.train-drawn-coach { position: relative; width: 25%; flex: 0 0 25%; }
+.train-drawn-coach svg { display: block; width: 100%; overflow: visible; }
+.train-track { bottom: 25px; height: 8px; }
+.train-real-door { position: absolute; left: 13%; top: 28%; width: 8%; height: 51%; border: 1px solid #692726; background: #20292e; border-radius: 1px; perspective: 150px; }
+.train-real-door::before { content: ''; position: absolute; inset: 0; background: #cb3029; transform-origin: left; transition: transform 240ms ease, background 240ms ease; }
+.train-real-door i { position: absolute; top: 18%; left: 25%; width: 50%; height: 31%; background: #6e9bac; border: 1px solid #263c46; pointer-events: none; transition: opacity 180ms ease; }
+.train-real-door:hover::before, .train-real-door:focus-visible::before { transform: rotateY(-65deg); background: #e7493d; }
+.train-real-door:hover i, .train-real-door:focus-visible i { opacity: 0; }
+.train-real-door span { position: absolute; left: 50%; bottom: calc(100% + 12px); transform: translateX(-50%); white-space: nowrap; font-size: 11px; padding: 6px 9px; background: #fff; color: #252525; border-radius: 4px; opacity: 0; box-shadow: 0 2px 12px #00000010; }
+.train-real-door:hover span, .train-real-door:focus-visible span { opacity: 1; }
+.train-drawn-motion:focus-within, .train-viewport:hover .train-drawn-motion { animation-play-state: paused; }
+.train-vapor { position: absolute; right: 10%; top: -8px; pointer-events: none; }
+.train-vapor i { position: absolute; width: 17px; height: 10px; border-radius: 50%; background: #ffffffa0; filter: blur(3px); animation: train-vapor 3s ease-out infinite; }
+.train-vapor i:nth-child(2) { animation-delay: -1s; }.train-vapor i:nth-child(3) { animation-delay: -2s; }
+@keyframes train-vapor { from { opacity: 0; transform: translate(0,0) scale(.6); } 20% { opacity: .6; } to { opacity: 0; transform: translate(-80px,-65px) scale(3.5); } }
+.carriage-experience { width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; border: 0; background: #f7f7f4; color: #242424; }
+.carriage-experience::backdrop { background: #ffffffc0; }
+.carriage-room { height: min(650px, calc(100dvh - 40px)); background: #fafaf7; color: #242424; border: 1px solid #deded6; border-radius: 8px; box-shadow: 0 20px 90px #0000000a; }
+.carriage-room-header { color: #777; border-color: #e5e5dd; }
+.carriage-room-header button:hover { color: #222; background: #eeeeea; }
+.carriage-room-view { grid-template-columns: 1fr; align-content: center; gap: 30px; background: #fafaf7; padding: 36px 60px; }
+.carriage-window-view { height: 180px; border: 5px solid #d4d7d3; padding: 0; border-radius: 28px; overflow: hidden; background: #d4d7d3; gap: 5px; box-shadow: inset 0 0 0 1px #b2b8b5; }
+.carriage-window-view span { background: #ddf1f6 url('/images/train-sky-clouds.webp') center 50% / cover; filter: none; }
+.carriage-copy { max-width: 480px; }
+.carriage-copy > p:first-child { color: #8c8c84; margin-bottom: 10px; }
+.carriage-copy h2 + p { color: #686862; }
+.carriage-copy a, .carriage-copy button { color: #30302c; border: 0; border-bottom: 1px solid #bdbdb3; border-radius: 0; padding: 6px 0; gap: 14px; margin-top: 18px; }
+.carriage-seat { display: none; }
+@media (max-width: 760px) {
+  .train-viewport { height: 320px; }
+  .train-drawn-motion { width: 1000px; bottom: 33px; }
+  .train-real-door::after { content: ''; position: absolute; inset: -7px -12px; }
+  .carriage-room-view { padding: 24px; gap: 24px; }
+  .carriage-window-view { height: 180px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .train-vapor i { animation: none; display: none; }
+  .train-real-door::before { transition: none; }
+  .train-viewport { overflow-x: auto; }
+  .train-drawn-motion { position: relative; left: 0; bottom: auto; top: 230px; transform: none; }
+}
 .homepage-contact-action { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 @media (max-width: 639px) {
   .homepage-contact { display: block; padding-top: 4px; }

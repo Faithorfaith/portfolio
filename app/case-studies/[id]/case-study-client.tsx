@@ -227,19 +227,6 @@ export default function CaseStudyClient() {
 
         <div className="min-w-0 py-8 md:py-8">
           <div className="w-full max-w-[600px] mx-auto">
-          {navItems.length > 0 && (
-            <label className="lg:hidden block mb-10">
-              <span className="block text-[11px] text-foreground/40 mb-2">Jump to section</span>
-              <select
-                value={activeNavItem || ''}
-                onChange={(event) => handleNavClick(event.target.value)}
-                className="w-full h-10 rounded-md border border-foreground/12 bg-background px-3 text-sm"
-              >
-                <option value="" disabled>Select a section</option>
-                {navItems.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
-              </select>
-            </label>
-          )}
           <header className="mb-12 w-full max-w-[600px]">
             <h1 className="text-[18px] font-medium tracking-[-0.01em] leading-snug text-foreground">{caseStudy.title}</h1>
             {caseStudy.excerpt && <p className="mt-6 text-sm text-foreground/65 leading-relaxed max-w-2xl">{caseStudy.excerpt}</p>}

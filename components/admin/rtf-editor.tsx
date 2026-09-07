@@ -1,6 +1,6 @@
 'use client'
 import { useEditor, EditorContent } from '@tiptap/react'
-import { Extension, Node, mergeAttributes } from '@tiptap/core'
+import { Extension, Mark, Node, mergeAttributes } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import { Plugin } from '@tiptap/pm/state'
 import { normalizeEmbedUrl } from '@/components/safe-embed'
@@ -42,6 +42,11 @@ const EmbedNode = Node.create({ name: 'documentEmbed', group: 'block', atom: tru
   addAttributes: () => ({ url: { default: '', parseHTML: el => el.getAttribute('data-embed'), renderHTML: attrs => ({ 'data-embed': attrs.url }) } }),
   parseHTML: () => [{ tag: 'div[data-embed]' }], renderHTML: ({ HTMLAttributes }) => ['div', HTMLAttributes, 'Embedded content · ' + HTMLAttributes['data-embed']],
 })
+const HandwrittenMark = Mark.create({
+  name: 'handwritten',
+  parseHTML: () => [{ tag: 'span[data-handwritten="true"]' }, { tag: 'span.writing-handwritten-section' }],
+  renderHTML: ({ HTMLAttributes }) => ['span', mergeAttributes(HTMLAttributes, { 'data-handwritten': 'true', class: 'writing-handwritten-section' }), 0],
+})
 
 export default function RTFEditor({ value, onChange, placeholder = 'Start writing…', userId = '', toc = false }: { value: string; onChange: (html: string) => void; placeholder?: string; userId?: string; toc?: boolean }) {
   const [panel, setPanel] = useState<'link' | 'media' | 'embed' | null>(null)
@@ -49,7 +54,7 @@ export default function RTFEditor({ value, onChange, placeholder = 'Start writin
   const [error, setError] = useState('')
   const [, refresh] = useState(0)
   const editor = useEditor({
-    extensions: [StarterKit.configure({ link: { openOnClick: false } }), HeadingMetadata, ImageNode, VideoNode, EmbedNode],
+    extensions: [StarterKit.configure({ link: { openOnClick: false } }), HeadingMetadata, HandwrittenMark, ImageNode, VideoNode, EmbedNode],
     content: value, immediatelyRender: false,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     onTransaction: () => refresh(n => n + 1),
@@ -77,6 +82,7 @@ export default function RTFEditor({ value, onChange, placeholder = 'Start writin
       </select>
       {button('Bold', 'B', () => { editor.chain().focus().toggleBold().run() }, editor.isActive('bold'))}
       {button('Italic', 'I', () => { editor.chain().focus().toggleItalic().run() }, editor.isActive('italic'))}
+      {button('Handwritten selection', '✎', () => { editor.chain().focus().toggleMark('handwritten').run() }, editor.isActive('handwritten'), editor.state.selection.empty)}
       {button('Bulleted list', '•', () => { editor.chain().focus().toggleBulletList().run() }, editor.isActive('bulletList'))}
       {button('Numbered list', '1.', () => { editor.chain().focus().toggleOrderedList().run() }, editor.isActive('orderedList'))}
       {button('Quote', '“', () => { editor.chain().focus().toggleBlockquote().run() }, editor.isActive('blockquote'))}

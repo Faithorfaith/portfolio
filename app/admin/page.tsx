@@ -7,10 +7,16 @@ import ProjectsManager from '@/components/admin/projects-manager'
 import WorksManager from '@/components/admin/works-manager'
 import WritingsManager from '@/components/admin/writings-manager'
 import CaseStudiesManager from '@/components/admin/case-studies-manager'
+import WorkflowFilesManager from '@/components/admin/workflow-files-manager'
 
-type Tab = 'profile' | 'projects' | 'works' | 'writing' | 'case-studies'
+type Tab = 'profile' | 'projects' | 'works' | 'writing' | 'case-studies' | 'workflow-files'
 
 const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  {
+    id: 'workflow-files',
+    label: 'Workflow Files',
+    icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 3h7l5 5v13H7zM14 3v5h5M10 13h6m-6 4h6"/></svg>,
+  },
   {
     id: 'profile',
     label: 'Profile',
@@ -241,6 +247,7 @@ export default function AdminPage() {
               {activeTab === 'projects' && <ProjectsManager />}
               {activeTab === 'works' && <WorksManager userId={userId} />}
               {activeTab === 'writing' && <WritingsManager onEditorOpenChange={handleCaseStudyEditorOpenChange} />}
+              {activeTab === 'workflow-files' && <WorkflowFilesManager userId={userId} />}
               {activeTab === 'case-studies' && (
                 <CaseStudiesManager
                   userId={userId}

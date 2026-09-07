@@ -36,7 +36,7 @@ export default function RootLayout({
         {/* Critical inline styles for above-the-fold content */}
         <style>{`
           body { margin: 0; padding: 0; }
-          main { display: flex; flex-direction: column; width: 100%; min-height: 100vh; background: oklch(1 0 0); }
+          main { display: flex; flex-direction: column; width: 100%; min-height: 100vh; background: #FAFAFA; }
         `}</style>
         {/* DNS prefetch for external services */}
         <link rel="dns-prefetch" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" />
