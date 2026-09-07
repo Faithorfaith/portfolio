@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import FileUpload from './file-upload'
 import MediaLibrary from './media-library'
 import SafeHtml from '@/components/safe-html'
+import { writingBackgroundColor, writingBackgrounds, type WritingAppearance, type WritingTypeface } from '@/lib/writing-appearance'
 
 const Editor = dynamic(() => import('./rtf-editor'), { ssr: false })
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
   published: boolean; onPublished: (value: boolean) => void
   error: string | null; settings: ReactNode; recovery: ReactNode
   toc?: boolean; userId?: string; busy?: boolean
+  appearance?: WritingAppearance; onAppearance?: (appearance: WritingAppearance) => void
 }
 export default function DocumentWorkspace(props: Props) {
   const [preview, setPreview] = useState(false)
@@ -34,7 +36,7 @@ export default function DocumentWorkspace(props: Props) {
       <button type="button" className="document-save" disabled={props.saving || props.busy} onClick={props.onSave}>{props.saving ? 'Saving…' : props.published ? 'Save & publish' : 'Save draft'}</button>
     </header>
     {props.error && <p role="alert" className="max-w-[600px] mx-auto p-4 text-sm text-red-600">{props.error}</p>}
-    <div className="document-sheet" style={{ maxWidth: preview && mobile ? 375 : 600 }}>
+    <div className={`document-sheet ${props.appearance?.typeface === 'handwritten' ? 'writing-handwritten' : ''}`} style={{ maxWidth: preview && mobile ? 375 : 600, backgroundColor: props.appearance ? writingBackgroundColor(props.appearance.background) : undefined }}>
       {preview ? <>
         <button type="button" className="text-xs text-foreground/60 mb-8" onClick={() => setMobile(!mobile)}>{mobile ? 'Mobile preview · switch to desktop' : 'Desktop preview · switch to mobile'}</button>
         <h1 className="text-[18px] font-medium mb-4">{props.title || 'Untitled'}</h1>
@@ -51,6 +53,11 @@ export default function DocumentWorkspace(props: Props) {
       <div className="space-y-6 p-6">
         <div className="flex justify-between items-center"><h2 className="text-sm font-medium">Document settings</h2><button type="button" onClick={close}>Close</button></div>
         <label className="flex items-center gap-3 text-sm"><input type="checkbox" checked={props.published} onChange={e => props.onPublished(e.target.checked)} />Publish when saved</label>
+        {props.appearance && props.onAppearance && <section className="writing-appearance-panel" aria-labelledby="writing-appearance-title">
+          <div><h3 id="writing-appearance-title">Article appearance</h3><p>Give this article its own atmosphere.</p></div>
+          <fieldset><legend>Paper colour</legend><div className="writing-color-options">{writingBackgrounds.map(option => <label key={option.id} title={option.label}><input type="radio" name="writing-background" value={option.id} checked={props.appearance?.background === option.id} onChange={() => props.onAppearance?.({ ...props.appearance!, background: option.id })} /><span style={{ backgroundColor: option.color }} /><em>{option.label}</em></label>)}</div></fieldset>
+          <fieldset><legend>Typeface</legend><div className="writing-type-options">{(['sans', 'handwritten'] as WritingTypeface[]).map(typeface => <label key={typeface} className={typeface === 'handwritten' ? 'writing-handwritten' : ''}><input type="radio" name="writing-typeface" checked={props.appearance?.typeface === typeface} onChange={() => props.onAppearance?.({ ...props.appearance!, typeface })} /><span>{typeface === 'sans' ? 'Clean sans' : 'Handwritten'}</span></label>)}</div></fieldset>
+        </section>}
         <details><summary>Cover image</summary><div className="space-y-3 pt-4">
           {props.cover && <img src={props.cover.split('#')[0]} alt="Cover" className="w-full max-h-48 object-cover" />}
           <FileUpload userId={userId} folder="covers" accept="image/*" onUpload={props.onCover} />

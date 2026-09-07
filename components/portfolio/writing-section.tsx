@@ -13,10 +13,11 @@ import ArticleRowContent from '@/components/article-row-content'
 import { playFeedback } from '@/lib/interaction-feedback'
 import Link from 'next/link'
 import { slugify } from '@/lib/slugify'
+import { getWritingAppearance, writingBackgroundColor } from '@/lib/writing-appearance'
 
 interface ContentBlock {
   id: string
-  type: 'heading' | 'paragraph' | 'image' | 'quote' | 'divider'
+  type: 'heading' | 'paragraph' | 'image' | 'quote' | 'divider' | 'appearance'
   content: string
   level?: 1 | 2 | 3
 }
@@ -144,8 +145,11 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
 
   // Article View - Medium-style clean layout
   if (selectedWriting) {
+    const appearance = getWritingAppearance(selectedWriting.content)
+    const articleBlocks = selectedWriting.content.filter(block => block.type !== 'appearance')
     return (
-      <div id="top" className="w-full max-w-[664px] mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
+      <div className={appearance.typeface === 'handwritten' ? 'writing-handwritten' : ''} style={{ backgroundColor: writingBackgroundColor(appearance.background) }}>
+      <div id="top" className="w-full min-h-screen max-w-[664px] mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20" style={{ animation: 'articleEntrance 0.35s cubic-bezier(0.22,1,0.36,1) both' }}>
         <DetailNavigation title={selectedWriting.title} backHref={initialSlug ? '/writing' : '/#writing'} />
 
         {/* Article Content */}
@@ -172,7 +176,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                   </time>
                   <span className="text-sm text-foreground/45">•</span>
                   <span className="text-sm text-foreground/50">
-                    {Math.ceil(selectedWriting.content.reduce((acc, block) => acc + (block.content?.split(' ').length || 0), 0) / 200)} min read
+                    {Math.max(1, Math.ceil(articleBlocks.reduce((acc, block) => acc + (block.content?.split(' ').length || 0), 0) / 200))} min read
                   </span>
                 </div>
                 
@@ -192,7 +196,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                         tmp.innerHTML = html
                         return tmp.textContent || tmp.innerText || ''
                       }
-                      const textToRead = selectedWriting.content
+                      const textToRead = articleBlocks
                         .filter(b => b.type !== 'image' && b.type !== 'divider')
                         .map(block => stripHtml(block.content || ''))
                         .join(' ')
@@ -242,9 +246,10 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
             </header>
 
             <div className="w-full max-w-[600px] mx-auto">
-              <ArticleBody blocks={selectedWriting.content} />
+              <ArticleBody blocks={articleBlocks} />
             </div>
           </article>
+      </div>
       </div>
     )
   }
@@ -264,7 +269,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                 onMouseEnter={showArticleCursor}
                 onMouseMove={moveArticleCursor}
                 onMouseLeave={hideArticleCursor}
-                className="group grid w-full grid-cols-[88px_minmax(0,1fr)_20px] md:grid-cols-[112px_minmax(0,1fr)_24px] gap-4 md:gap-5 items-center py-3 text-left"
+                className="article-index-link group block w-full text-left"
               >
                 <ArticleRowContent title={writing.title} excerpt={writing.excerpt} cover={writing.cover_image} minutes={Math.max(1, Math.ceil(wordCount / 200))} year={new Date(writing.created_at).getFullYear()} />
               </Link>
@@ -305,7 +310,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                     onMouseEnter={showArticleCursor}
                     onMouseMove={moveArticleCursor}
                     onMouseLeave={hideArticleCursor}
-                    className="group text-left grid grid-cols-[88px_minmax(0,1fr)_20px] md:grid-cols-[112px_minmax(0,1fr)_24px] gap-x-4 md:gap-x-5 w-full py-3 items-center"
+                    className="article-index-link group block w-full text-left"
                   >
                     <ArticleRowContent title={writing.title} excerpt={writing.excerpt} cover={writing.cover_image} minutes={Math.max(1, Math.ceil(writing.content.reduce((acc, block) => acc + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0) / 200))} year={new Date(writing.created_at).getFullYear()} />
                 </Link>

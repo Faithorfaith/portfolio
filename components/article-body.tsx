@@ -8,6 +8,7 @@ export interface ArticleBlock { id: string; type: string; content: string; level
 export default function ArticleBody({ blocks }: { blocks: ArticleBlock[] }) {
   return <div className="w-full max-w-[600px] text-sm">
     {blocks.map((block) => {
+      if (block.type === 'appearance') return null
       if (block.type === 'heading') {
         const Heading = block.level === 1 ? 'h2' : block.level === 2 ? 'h3' : 'h4'
         return <Heading key={block.id} id={`block-${block.id}`} className="scroll-mt-20 text-sm font-medium leading-relaxed tracking-[0.01em] mt-10 mb-4">{block.content.replace(/<[^>]*>/g, '')}</Heading>

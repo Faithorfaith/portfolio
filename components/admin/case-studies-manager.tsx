@@ -483,16 +483,16 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
           <p className="text-xs text-foreground/30 mt-1">Create your first one to get started</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3">
           {caseStudies.filter((item) => listFilter === 'all' || item.published === (listFilter === 'published')).map((cs, index) => (
-            <div key={cs.id} className="group border border-border rounded-xl overflow-hidden hover:border-foreground/20 transition-all bg-background">
+            <div key={cs.id} className="group border border-border rounded-lg overflow-hidden hover:border-foreground/25 transition-colors bg-background">
               {/* Thumbnail */}
-              <div className="aspect-[16/9] bg-muted/30 relative overflow-hidden">
+              <div className="aspect-[2/1] bg-muted/30 relative overflow-hidden">
                 {cs.thumbnail_url ? (
                   <ProgressiveImage
                     src={cs.thumbnail_url}
                     alt={cs.title}
-                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-[1.015] transition-transform duration-300"
                     containerClassName="w-full h-full"
                   />
                 ) : (
@@ -511,11 +511,11 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
               </div>
 
               {/* Info */}
-              <div className="p-4">
+              <div className="p-3">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <h4 className="text-sm font-semibold text-foreground leading-tight">{cs.title || 'Untitled'}</h4>
                 </div>
-                <p className="text-xs text-foreground/50 line-clamp-2 mb-4 leading-relaxed">{cs.excerpt || 'No description added'}</p>
+                <p className="text-xs text-foreground/50 line-clamp-1 mb-3 leading-relaxed">{cs.excerpt || 'No description added'}</p>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {

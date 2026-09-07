@@ -328,7 +328,7 @@ export default function ProfileSection({
                       style={{ objectPosition: imageFocus(caseStudy.thumbnail_url).position }}
                       alt={caseStudy.title}
                       fill
-                      sizes="(max-width: 640px) 72vw, 36vw"
+                      sizes="(max-width: 640px) 72vw, (max-width: 1100px) 36vw, 400px"
                       className="object-cover"
                     />
                     <span className="work-action-label absolute bottom-2 right-2 rounded-full bg-background/95 px-2.5 py-1.5 text-[11px]">View case study ↗</span>

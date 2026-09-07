@@ -12,12 +12,13 @@ import DocumentWorkspace from './document-workspace'
 import { blocksToDocument } from '@/lib/document-content'
 import MediaLibrary from './media-library'
 import { generateNarrationInWorker } from '@/lib/generate-narration'
+import { appearanceBlock, defaultWritingAppearance, getWritingAppearance, type WritingAppearance } from '@/lib/writing-appearance'
 
 const RTFEditor = dynamic(() => import('./rtf-editor'), { ssr: false })
 
 interface ContentBlock {
   id: string
-  type: 'heading' | 'paragraph' | 'image' | 'quote' | 'divider'
+  type: 'heading' | 'paragraph' | 'image' | 'quote' | 'divider' | 'appearance'
   content: string
   level?: 1 | 2 | 3
 }
@@ -98,7 +99,7 @@ export default function WritingsManager({ onEditorOpenChange }: { onEditorOpenCh
       id: '',
       title: '',
       slug: '',
-      content: [{ id: crypto.randomUUID(), type: 'heading', content: '', level: 1 }],
+      content: [appearanceBlock(defaultWritingAppearance), { id: crypto.randomUUID(), type: 'heading', content: '', level: 1 }],
       excerpt: null,
       cover_image: null,
       audio_url: null,
@@ -210,7 +211,7 @@ export default function WritingsManager({ onEditorOpenChange }: { onEditorOpenCh
     if (!editing || narrationController.current) return
     const container = document.createElement('div')
     const text = editing.content
-      .filter((block) => block.type !== 'image' && block.type !== 'divider')
+      .filter((block) => block.type !== 'image' && block.type !== 'divider' && block.type !== 'appearance')
       .map((block) => {
         container.innerHTML = block.content || ''
         container.querySelectorAll('p, li, h1, h2, h3, blockquote, br').forEach((node) => node.append(document.createTextNode('\n')))
@@ -244,14 +245,17 @@ export default function WritingsManager({ onEditorOpenChange }: { onEditorOpenCh
   }
 
   if (editing) {
-    return <DocumentWorkspace key={editing.id || 'new'} title={editing.title} subtitle={editing.excerpt || ''} html={blocksToDocument(editing.content)} cover={editing.cover_image}
+    const appearance = getWritingAppearance(editing.content)
+    const updateAppearance = (next: WritingAppearance) => setEditing({ ...editing, content: [appearanceBlock(next), ...editing.content.filter(block => block.type !== 'appearance')] })
+    return <DocumentWorkspace key={editing.id || 'new'} title={editing.title} subtitle={editing.excerpt || ''} html={blocksToDocument(editing.content.filter(block => block.type !== 'appearance'))} cover={editing.cover_image}
       onTitle={title => setEditing({ ...editing, title })}
       onSubtitle={excerpt => setEditing({ ...editing, excerpt })}
       onCover={cover_image => setEditing({ ...editing, cover_image })}
-      onChange={content => setEditing({ ...editing, content: [{ id: 'document', type: 'paragraph', content }] })}
+      onChange={content => setEditing({ ...editing, content: [appearanceBlock(appearance), { id: 'document', type: 'paragraph', content }] })}
       onBack={() => { if (dirty && !window.confirm('Leave the editor? Unsaved changes are available in recovery.')) return; setEditing(null); setIsCreating(false) }}
       onSave={handleSave} saving={isSaving} dirty={dirty} published={editing.published} busy={isGeneratingAudio}
       onPublished={published => setEditing({ ...editing, published })} error={error}
+      appearance={appearance} onAppearance={updateAppearance}
       recovery={<DraftTools key={editing.id || 'new'} kind="writing" draft={editing} onRestore={setEditing} />}
       settings={<>
         <label className="block text-xs space-y-2"><span>URL slug</span><input className="w-full border rounded p-2" value={editing.slug} onChange={e => setEditing({ ...editing, slug: e.target.value })} /></label>
