@@ -103,8 +103,8 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
           <span>Carriage {active.number} · {active.label}</span>
           <div className="flex items-center gap-2"><button onClick={() => soundOn ? stopAmbience() : startAmbience()} aria-label={soundOn ? 'Mute carriage music' : 'Play carriage music'}>{soundOn ? 'Sound on' : 'Sound off'}</button><button ref={closeRef} className="carriage-close" onClick={() => setActive(null)} aria-label="Leave carriage">×</button></div>
         </header>
-        <div className="carriage-room-view">
-          <div className="carriage-window-view" aria-hidden="true"><span /><span /><span /></div>
+          <div className="carriage-room-view">
+          {!videoUrls[Number(active.number) - 1] && <div className="carriage-window-view" aria-hidden="true"><span /><span /><span /></div>}
           <div className="carriage-copy">{videoUrls[Number(active.number) - 1] ? <video className="carriage-feature-video" src={videoUrls[Number(active.number) - 1] || undefined} controls playsInline autoPlay /> : <div className="carriage-coming-soon">Coming soon</div>}</div>
           <div className="carriage-seat" aria-hidden="true" />
         </div>
