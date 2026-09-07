@@ -26,7 +26,7 @@ export default function WorkflowFilesSection({ files = [], compact = false }: { 
     {active && <dialog ref={dialog} className="workflow-file-dialog" onCancel={close} onClick={e => e.target === e.currentTarget && close()}>
       <div><header><FileGlyph/><button onClick={close} aria-label="Close file preview">×</button></header><p className="text-[11px] text-foreground/45">Workflow file</p><h2>{active.name}</h2><p>{active.description}</p>
         {active.workflow_file_versions[0] && <a className="workflow-download" href={active.workflow_file_versions[0].file_url} download>Download v{active.workflow_file_versions[0].version_number} ↓</a>}
-        <section className="workflow-version-history"><h3>Version history</h3>{active.workflow_file_versions.map(version => <div key={version.id}><time>{new Date(version.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</time><span><strong>v{version.version_number}</strong> {version.notes || version.file_name}</span><a href={version.file_url} download>Download</a></div>)}</section>
+        <section className="workflow-version-history"><h3>Version history</h3>{active.workflow_file_versions.map(version => { const date = new Date(version.created_at); return <div key={version.id}><time>{date.getFullYear()}</time><span><small>{date.toLocaleDateString('en-US', { month: 'short' })}</small><strong>v{version.version_number} · {version.notes || version.file_name}</strong></span><a href={version.file_url} download>Download</a></div> })}</section>
       </div>
     </dialog>}
   </section>
