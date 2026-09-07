@@ -246,7 +246,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
             </header>
 
             <div className="w-full max-w-[600px] mx-auto">
-              <ArticleBody blocks={articleBlocks} />
+              <ArticleBody blocks={articleBlocks} typeface={appearance.typeface} />
             </div>
           </article>
       </div>
