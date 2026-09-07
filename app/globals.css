@@ -577,7 +577,7 @@
 .train-door-hotspot:hover, .train-door-hotspot:focus-visible { border-color: rgb(255 255 255 / 75%); background: rgb(255 255 255 / 10%); box-shadow: 0 0 0 3px rgb(255 255 255 / 12%); outline: none; }
 .train-door-hotspot:hover > span, .train-door-hotspot:focus-visible > span { opacity: 1; transform: translate(-50%, 0); }
 .train-track { bottom: 25px; z-index: 1; height: 8px; perspective: 300px; }
-.carriage-preview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 34px; width: 100%; max-width: 1080px; margin: 28px 0 20px; }
+.carriage-preview-grid { display: grid; grid-template-columns: 1fr; gap: 26px; width: 100%; max-width: 1080px; margin: 28px 0 20px; }
 .carriage-preview-item { display: grid; grid-template-columns: minmax(150px, 42%) 1fr; align-items: start; gap: 24px; min-width: 0; padding: 0; text-align: left; color: inherit; border: 0; }
 .carriage-preview-item img, .carriage-preview-icon { display: block; width: 100%; height: 150px; object-fit: cover; border-radius: 10px; background: #e8ebe8; }
 .carriage-preview-icon { display: grid; place-items: center; font-size: 11px; letter-spacing: .08em; color: #727872; }
