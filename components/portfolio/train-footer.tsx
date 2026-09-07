@@ -109,9 +109,7 @@ export default function TrainFooter({ contactEmail, musicUrl, previews = {} }: {
             <p>{active.number} / 04</p>
             <h2 id="carriage-title">{active.title}</h2>
             <p>{active.description}</p>
-            {previews[active.id]?.length ? <div className="carriage-preview-grid" aria-label={`${active.label} highlights`}>
-              {previews[active.id]!.slice(0, 4).map((item) => <Link href={item.href || '#'} onClick={() => setActive(null)} key={item.title} className="carriage-preview-item">{item.image ? <img src={item.image} alt="" /> : <span className="carriage-preview-icon">{active.id === 'workflow' ? 'MD' : active.number}</span>}<div className="carriage-preview-copy"><strong>{item.title}</strong>{item.description && <span>{item.description}</span>}</div></Link>)}
-            </div> : null}
+            <div className="carriage-coming-soon">Coming soon</div>
             {active.href && <Link href={active.href} onClick={() => setActive(null)}>Explore {active.label.toLowerCase()} <span aria-hidden="true">↗</span></Link>}
           </div>
           <div className="carriage-seat" aria-hidden="true" />
