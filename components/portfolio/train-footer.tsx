@@ -105,7 +105,7 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
         </header>
         <div className="carriage-room-view">
           <div className="carriage-window-view" aria-hidden="true"><span /><span /><span /></div>
-          <div className="carriage-copy"><div className="carriage-coming-soon">Coming soon</div>{videoUrls[Number(active.number) - 1] && <video className="carriage-feature-video" src={videoUrls[Number(active.number) - 1] || undefined} controls playsInline autoPlay />}</div>
+          <div className="carriage-copy">{videoUrls[Number(active.number) - 1] ? <video className="carriage-feature-video" src={videoUrls[Number(active.number) - 1] || undefined} controls playsInline autoPlay /> : <div className="carriage-coming-soon">Coming soon</div>}</div>
           <div className="carriage-seat" aria-hidden="true" />
         </div>
       </div>
