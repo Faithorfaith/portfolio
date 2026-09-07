@@ -67,12 +67,12 @@ export async function DELETE(request: Request) {
     if (!auth) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    const { supabase, user } = auth
+    const { supabase } = auth
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
 
-    const { error } = await supabase.from('case_studies').delete().eq('id', id).eq('user_id', user.id)
+    const { error } = await supabase.from('case_studies').delete().eq('id', id)
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
     revalidatePath('/')
