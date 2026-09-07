@@ -154,7 +154,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
 
         {/* Article Content */}
         <article>
-            <header className="mb-8 pb-6 border-b border-foreground/8">
+            <header className="writing-article-header mb-8 pb-6 border-b border-foreground/8 max-w-[600px] mx-auto">
               <h1 className="text-[18px] font-medium tracking-[-0.01em] text-foreground mb-5 leading-snug">
                 {selectedWriting.title}
               </h1>
