@@ -542,7 +542,9 @@
   will-change: transform;
   pointer-events: none;
 }
-.train-motion:hover, .train-motion:focus-within { filter: grayscale(0) contrast(1); animation-play-state: paused; z-index: 3; }
+.train-motion:hover { filter: grayscale(0) contrast(1); animation-play-state: paused; z-index: 3; }
+.train-motion:has(.train-drawn-coach:hover) { filter: grayscale(0) contrast(1); animation-play-state: paused; z-index: 3; }
+.train-drawn-coach { pointer-events: auto; }
 .train-render { position: relative; width: 100%; }
 .train-render > img { display: block; width: 100%; height: auto; }
 .train-door-hotspot {
@@ -600,7 +602,7 @@
   .train-sky::before, .train-sky::after { animation: none; }
 }
 /* Side-view coaches share one wheel baseline with the rails. */
-.train-viewport { height: 620px; border-block-color: color-mix(in oklch, var(--foreground) 5%, transparent); }
+.train-viewport { height: 620px; border: 0; }
 .train-sky { background: #fafafa; }
 .train-sky::before { background-position: center 52%; opacity: .64; }
 .train-scenery { opacity: .09; }
