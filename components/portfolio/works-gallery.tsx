@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { fetchWithCache } from '@/lib/cache-utils'
-import { StaggerContainer, StaggerItem, ParallaxImage } from '@/components/animations/scroll-animations'
 import EmptyState from './empty-state'
 import ProgressiveImage from '@/components/progressive-image'
 import { playFeedback } from '@/lib/interaction-feedback'
@@ -272,13 +271,12 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           </div>
 
           {/* Grid Layout - 2 cols */}
-          <StaggerContainer delay={0.1}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
               {works.map((work) => {
                 const coverImage = getCoverImage(work)
                 
                 return (
-                  <StaggerItem key={work.id}>
+                  <div key={work.id}>
                     <button
                       onClick={() => openWork(work)}
                       className="group text-left w-full focus-visible:outline-offset-6"
@@ -327,11 +325,10 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                         <span className="absolute right-0 top-0 text-foreground/45 group-hover:text-foreground/65 group-hover:translate-x-0.5 transition-all" aria-hidden="true">↗</span>
                       </div>
                     </button>
-                  </StaggerItem>
+                  </div>
                 )
               })}
             </div>
-          </StaggerContainer>
         </div>
       </div>
 

@@ -51,7 +51,7 @@ export default function ProgressiveImage({
           } ${className}`}
           onLoad={() => setIsLoaded(true)}
           priority={priority}
-          quality={85}
+          quality={75}
         />
       ) : (
         <Image
@@ -69,7 +69,7 @@ export default function ProgressiveImage({
           } ${className}`}
           onLoad={() => setIsLoaded(true)}
           priority={priority}
-          quality={85}
+          quality={75}
         />
       )}
     </div>

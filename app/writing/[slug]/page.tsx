@@ -1,11 +1,11 @@
 import WritingSection from '@/components/portfolio/writing-section'
-import { getPublicPortfolioData } from '@/lib/public-portfolio-data'
+import { getPublicWritings } from '@/lib/public-portfolio-data'
 import type { Metadata } from 'next'
 import { slugify } from '@/lib/slugify'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const { writings } = await getPublicPortfolioData()
+  const writings = await getPublicWritings()
   const requestedSlug = decodeURIComponent(slug)
   const article = writings.find((item) => item.slug === requestedSlug || slugify(item.title) === requestedSlug)
   if (!article) return { title: 'Writing — Faith Awokunle' }
@@ -23,6 +23,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function WritingArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const { writings } = await getPublicPortfolioData()
+  const writings = await getPublicWritings()
   return <WritingSection variant="full" initialSlug={decodeURIComponent(slug)} initialWritings={writings} />
 }

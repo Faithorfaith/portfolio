@@ -1,5 +1,5 @@
 import WorksGallery from '@/components/portfolio/works-gallery'
-import { getPublicPortfolioData } from '@/lib/public-portfolio-data'
+import { getPublicWorks } from '@/lib/public-portfolio-data'
 
 export const metadata = {
   title: 'Playground — Faith Awokunle',
@@ -7,6 +7,6 @@ export const metadata = {
 }
 
 export default async function PlaygroundPage() {
-  const { works } = await getPublicPortfolioData()
+  const works = await getPublicWorks()
   return <WorksGallery variant="full" initialWorks={works} />
 }

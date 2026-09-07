@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { fetchWithCache, batchFetch } from '@/lib/cache-utils'
 import { useArticleAudio } from '@/components/article-audio-provider'
-import { StaggerContainer, StaggerItem } from '@/components/animations/scroll-animations'
 import EmptyState from './empty-state'
 import { DetailNavigation } from '@/components/detail-page-header'
 import SafeHtml from '@/components/safe-html'
@@ -296,10 +295,9 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
             <select aria-label="Article year" value={year} onChange={(event) => setYear(event.target.value)} className="border rounded-lg px-3 bg-background text-xs"><option value="all">All years</option>{[...new Set(writings.map((item) => new Date(item.created_at).getFullYear()))].sort((a,b) => b-a).map((value) => <option key={value}>{value}</option>)}</select>
           </div>
           {!filteredWritings.length && <p role="status" className="py-8 text-sm text-foreground/60">No articles match. Try another search or year.</p>}
-          <StaggerContainer delay={0.2}>
             <div className="border-t border-foreground/8">
               {filteredWritings.map((writing, index) => (
-                <StaggerItem key={writing.id}>
+                <div key={writing.id}>
                   {(index === 0 || new Date(filteredWritings[index - 1].created_at).getFullYear() !== new Date(writing.created_at).getFullYear()) && <h3 className="text-[11px] text-foreground/60 pt-6 pb-3 tabular-nums">{new Date(writing.created_at).getFullYear()}</h3>}
                   <Link
                     href={`/writing/${encodeURIComponent(slugify(writing.title))}`}
@@ -311,10 +309,9 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                   >
                     <ArticleRowContent title={writing.title} excerpt={writing.excerpt} cover={writing.cover_image} minutes={Math.max(1, Math.ceil(writing.content.reduce((acc, block) => acc + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0) / 200))} year={new Date(writing.created_at).getFullYear()} />
                 </Link>
-                </StaggerItem>
+                </div>
               ))}
             </div>
-          </StaggerContainer>
           <div ref={articleCursorRef} className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm" aria-hidden="true">Read article</div>
         </div>
       </div>

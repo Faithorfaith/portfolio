@@ -30,7 +30,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
   }, {})
 
   return (
-      <section id="projects" className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 scroll-mt-20">
+      <section id="projects" className="portfolio-deferred w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 scroll-mt-20">
       <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground mb-8">Projects I&apos;ve built</h2>
 
       <div className="space-y-10">

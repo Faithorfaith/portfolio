@@ -1,5 +1,5 @@
 import WritingSection from '@/components/portfolio/writing-section'
-import { getPublicPortfolioData } from '@/lib/public-portfolio-data'
+import { getPublicWritings } from '@/lib/public-portfolio-data'
 
 export const metadata = {
   title: 'Writing — Faith Awokunle',
@@ -7,6 +7,6 @@ export const metadata = {
 }
 
 export default async function WritingPage() {
-  const { writings } = await getPublicPortfolioData()
+  const writings = await getPublicWritings()
   return <WritingSection variant="full" initialWritings={writings} />
 }

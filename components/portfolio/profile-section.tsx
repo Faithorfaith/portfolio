@@ -156,7 +156,7 @@ export default function ProfileSection({
             <div className="grid transition-[grid-template-rows,opacity] duration-300" style={{ gridTemplateRows: galleryOpen ? '1fr' : '0fr', opacity: galleryOpen ? 1 : 0 }} inert={!galleryOpen} aria-hidden={!galleryOpen}>
               <div className="min-h-0 overflow-hidden">
               <div id="profile-photos" tabIndex={galleryOpen ? 0 : -1} className="flex gap-2.5 mt-3 overflow-x-auto snap-x snap-proximity pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Profile photos">
-                {galleryImages.map((src, index) => (
+                {galleryOpen && galleryImages.map((src, index) => (
                   <div
                     key={`${src}-${index}`}
                     className="gallery-photo-card gallery-photo-reveal group/photo relative shrink-0 aspect-[4/5] overflow-hidden bg-foreground/5 snap-start"
@@ -249,7 +249,7 @@ export default function ProfileSection({
 
       {/* Case Studies Section */}
       {caseStudies.length > 0 && (
-        <div id="work" className="mt-16 scroll-mt-20">
+        <div id="work" className="portfolio-deferred mt-16 scroll-mt-20">
           <div className="flex items-baseline justify-between mb-8">
             <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">My work</h2>
             {caseStudies.length > 1 && (
