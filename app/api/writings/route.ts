@@ -66,9 +66,10 @@ export async function DELETE(request: NextRequest) {
       .from('writings')
       .delete()
       .eq('id', id)
-      .eq('user_id', user.id)
 
     if (error) throw error
+    revalidatePath('/')
+    revalidatePath('/writing')
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('[v0] Error deleting writing:', error)
