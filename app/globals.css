@@ -540,6 +540,7 @@
   transform: translateX(-105%);
   animation: train-journey 32s linear infinite;
   will-change: transform;
+  pointer-events: none;
 }
 .train-motion:hover, .train-motion:focus-within { filter: grayscale(0) contrast(1); animation-play-state: paused; z-index: 3; }
 .train-render { position: relative; width: 100%; }
@@ -556,6 +557,7 @@
   cursor: pointer;
   transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
 }
+.train-real-door { pointer-events: auto; }
 .train-door-hotspot > span {
   position: absolute;
   left: 50%;
