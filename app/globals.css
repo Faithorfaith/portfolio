@@ -452,7 +452,7 @@
 }
 
 /* Portfolio train — a restrained footer that becomes an optional spatial experience. */
-.train-footer { width: 100%; margin-top: 48px; padding: 0 0 20px; overflow: hidden; color: var(--foreground); }
+.train-footer { width: 100%; margin-top: 48px; padding: 0 0 28px; overflow: hidden; color: var(--foreground); background: linear-gradient(180deg, #fafafa 0%, #f7fbfc 18%, #eaf7fb 100%); }
 .train-footer-heading, .train-footer-meta { width: min(100% - 40px, 672px); margin-inline: auto; display: flex; justify-content: space-between; gap: 16px; font-size: 11px; color: color-mix(in oklch, var(--foreground) 52%, transparent); }
 .train-footer-heading { margin-bottom: 18px; }
 .train-footer-meta { margin-top: 14px; }
@@ -595,8 +595,9 @@
   .train-sky::before, .train-sky::after { animation: none; }
 }
 /* Side-view coaches share one wheel baseline with the rails. */
-.train-viewport { height: 360px; }
-.train-sky::before { background-size: 780px auto; background-position: center 52%; }
+.train-viewport { height: 620px; border-block-color: color-mix(in oklch, var(--foreground) 5%, transparent); }
+.train-sky { background: #fafafa; }
+.train-sky::before { background-size: 1100px auto; background-position: center 52%; opacity: .64; }
 .train-sky::after { background-size: 650px auto; }
 .train-scenery { opacity: .09; }
 .train-drawn-motion { width: 1000px; bottom: 33px; }
