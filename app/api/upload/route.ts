@@ -43,6 +43,12 @@ export async function POST(request: NextRequest) {
     await supabase.storage.createBucket('portfolio-uploads', {
       public: true,
       fileSizeLimit: MAX_UPLOAD_BYTES,
+      allowedMimeTypes: ['image/*', 'video/*', 'text/markdown', 'text/plain', 'application/pdf', 'application/zip', 'application/octet-stream', 'audio/*'],
+    }).catch(() => undefined)
+    await supabase.storage.updateBucket('portfolio-uploads', {
+      public: true,
+      fileSizeLimit: MAX_UPLOAD_BYTES,
+      allowedMimeTypes: ['image/*', 'video/*', 'text/markdown', 'text/plain', 'application/pdf', 'application/zip', 'application/octet-stream', 'audio/*'],
     }).catch(() => undefined)
 
     // Generate unique filename
