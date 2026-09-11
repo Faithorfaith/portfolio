@@ -272,7 +272,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           </div>
 
           {/* Image wall: Playground media is intentionally label-free. */}
-            <div className={`grid gap-5 md:gap-8 ${layout === 'small' ? 'grid-cols-2 md:grid-cols-4' : layout === 'large' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
+            <div className={`grid gap-5 md:gap-8 ${layout === 'small' ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-6' : layout === 'large' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
               {works.map((work) => {
                 const coverImage = getCoverImage(work)
                 
