@@ -199,7 +199,6 @@ export default function ProfileSection({
           </div>
         )}
 
-        <p className="mb-3 text-[10px] uppercase tracking-[0.18em] text-foreground/40">Profile</p>
         <h1 className="mb-4 text-2xl font-medium tracking-tight text-foreground md:text-3xl">{profile.full_name || profile.username}</h1>
 
       {/* Bio - Display as paragraphs */}
