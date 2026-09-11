@@ -441,6 +441,31 @@
 .bio-inline-card small { margin-top: 3px; color: color-mix(in oklch, var(--foreground) 58%, transparent); font-size: 11px; line-height: 1.45; }
 .bio-inline-tag:hover .bio-inline-card, .bio-inline-tag:focus-within .bio-inline-card, .bio-inline-tag:focus .bio-inline-card { opacity: 1; transform: translate(-50%, 0); }
 .portfolio-deferred { content-visibility: auto; contain-intrinsic-size: auto 620px; }
+.playground-conveyor { width: min(100%, 920px); margin-inline: auto; display: grid; gap: 10px; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+.playground-conveyor-lane { overflow: hidden; }
+.playground-conveyor-track { display: flex; width: max-content; animation: playground-conveyor-left 38s linear infinite; will-change: transform; }
+.playground-conveyor-lane.is-reverse .playground-conveyor-track { animation-name: playground-conveyor-right; animation-duration: 44s; }
+.playground-conveyor-set { display: flex; flex: none; gap: 10px; padding-right: 10px; align-items: center; }
+.playground-conveyor-card { min-height: 128px; max-height: 210px; filter: saturate(.82); transition: filter 220ms ease, transform 220ms cubic-bezier(.22,1,.36,1); }
+.playground-conveyor-card:hover, .playground-conveyor-card:focus-visible { filter: saturate(1); transform: scale(.985); outline: none; }
+.playground-conveyor-card img, .playground-conveyor-card video { width: 100%; height: 100%; object-fit: cover; transition: transform 300ms cubic-bezier(.22,1,.36,1); }
+.playground-conveyor-card:hover img, .playground-conveyor-card:hover video { transform: scale(1.025); }
+.playground-conveyor-caption { position: absolute; inset: auto 0 0; display: flex; justify-content: space-between; align-items: end; gap: 8px; padding: 24px 10px 9px; color: #fff; background: linear-gradient(transparent, rgb(0 0 0 / 64%)); }
+.playground-conveyor-caption strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; font-weight: 500; }
+.playground-conveyor-caption small { flex: none; color: rgb(255 255 255 / 68%); font-size: 9px; }
+.playground-conveyor-lane:has(.playground-conveyor-card:hover) .playground-conveyor-track, .playground-conveyor-lane:has(.playground-conveyor-card:focus-visible) .playground-conveyor-track { animation-play-state: paused; }
+@keyframes playground-conveyor-left { to { transform: translateX(-50%); } }
+@keyframes playground-conveyor-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@media (max-width: 639px) {
+  .playground-conveyor { width: 100%; padding-left: 20px; gap: 8px; overflow-x: auto; mask-image: linear-gradient(90deg, #000 0, #000 94%, transparent); scrollbar-width: none; }
+  .playground-conveyor::-webkit-scrollbar { display: none; }
+  .playground-conveyor-lane { overflow-x: auto; scrollbar-width: none; }
+  .playground-conveyor-lane::-webkit-scrollbar { display: none; }
+  .playground-conveyor-lane.is-reverse { display: none; }
+  .playground-conveyor-track, .playground-conveyor-lane.is-reverse .playground-conveyor-track { animation: none; }
+  .playground-conveyor-track .playground-conveyor-set:last-child { display: none; }
+  .playground-conveyor-card { width: 68vw; max-width: 260px; min-width: 170px; }
+}
 .article-index { border-top: 0; }
 .article-index-link { border-bottom: 0; }
 .article-index-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 24px; align-items: baseline; padding: 14px 0; }
