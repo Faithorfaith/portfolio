@@ -230,11 +230,21 @@ export default function WorksManager({ userId }: WorksManagerProps) {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-foreground">Portfolio Works</h2>
-        {!isAdding && (
-          <Button onClick={() => setIsAdding(true)}>Add Work</Button>
-        )}
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/40">Media library</p>
+          <h2 className="mt-2 text-2xl font-medium tracking-tight text-foreground">Playground</h2>
+          <p className="mt-1 text-sm text-foreground/50">A visual archive of experiments, interfaces, and small ideas.</p>
+        </div>
+        {!isAdding && <Button onClick={() => setIsAdding(true)} className="rounded-full px-5">Add media <span className="ml-1 text-base">＋</span></Button>}
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[['Items', works.length], ['Images', works.filter(work => work.media_type !== 'video').length], ['Videos', works.filter(work => work.media_type === 'video').length], ['Latest', works[0] ? new Date(works[0].created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—']].map(([label, value]) => (
+          <div key={String(label)} className="rounded-2xl border border-border/70 bg-foreground/[0.025] px-4 py-3">
+            <p className="text-[11px] text-foreground/45">{label}</p><p className="mt-1 text-lg font-medium text-foreground">{value}</p>
+          </div>
+        ))}
       </div>
 
       {error && (
@@ -251,8 +261,11 @@ export default function WorksManager({ userId }: WorksManagerProps) {
 
       {/* Add Form */}
       {isAdding && (
-        <div className="max-w-2xl border border-border rounded-lg p-6 bg-background/50">
-          <h3 className="text-lg font-semibold text-foreground mb-4">{editingId ? 'Edit Playground media' : 'Add Playground media'}</h3>
+        <div className="rounded-3xl border border-border/70 bg-background/60 p-5 sm:p-7">
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <div><p className="text-[11px] uppercase tracking-[0.16em] text-foreground/40">{editingId ? 'Update item' : 'New upload'}</p><h3 className="mt-1 text-lg font-medium text-foreground">{editingId ? 'Edit Playground media' : 'Add Playground media'}</h3></div>
+            <button type="button" onClick={resetForm} className="text-xs text-foreground/45 hover:text-foreground">Cancel</button>
+          </div>
 
           <div className="space-y-4">
             {/* Media Type */}
@@ -260,17 +273,17 @@ export default function WorksManager({ userId }: WorksManagerProps) {
               <label className="block text-sm font-medium text-foreground mb-2">
                 Media Type
               </label>
-              <div className="flex gap-2">
+              <div className="inline-flex rounded-full bg-foreground/[0.045] p-1">
                 <Button
                   type="button"
-                  variant={formData.media_type === 'image' ? 'default' : 'outline'}
+                  variant={formData.media_type === 'image' ? 'default' : 'ghost'}
                   onClick={() => handleMediaTypeChange('image')}
                 >
                   Image
                 </Button>
                 <Button
                   type="button"
-                  variant={formData.media_type === 'video' ? 'default' : 'outline'}
+                  variant={formData.media_type === 'video' ? 'default' : 'ghost'}
                   onClick={() => handleMediaTypeChange('video')}
                 >
                   Video
@@ -288,6 +301,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
                   File: {formData.media_url.split('/').pop()}
                 </p>
               )}
+              <div className="rounded-2xl border border-dashed border-foreground/20 bg-foreground/[0.02] p-4">
               <FileUpload
                 userId={userId}
                 folder={formData.media_type === 'image' ? 'portfolio-images' : 'portfolio-videos'}
@@ -296,28 +310,14 @@ export default function WorksManager({ userId }: WorksManagerProps) {
                 multiple
                 accept={formData.media_type === 'image' ? 'image/*' : 'video/*'}
               />
-            </div>
-
-            {/* Order Index */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Display Order
-              </label>
-              <input
-                type="number"
-                value={formData.order_index}
-                onChange={(e) => setFormData({ ...formData, order_index: parseInt(e.target.value) })}
-                className="w-full px-3 py-2 rounded border border-border bg-background text-foreground placeholder-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20"
-              />
+              <p className="mt-3 text-center text-[11px] text-foreground/40">Select multiple files or drag them here · newest uploads appear first</p>
+              </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
-              <Button onClick={editingId ? handleUpdate : handleSave} className="flex-1">
+            <div className="flex gap-3 pt-2">
+              <Button onClick={editingId ? handleUpdate : handleSave} className="rounded-full px-5">
                 {editingId ? 'Update Work' : 'Save Work'}
-              </Button>
-              <Button onClick={resetForm} variant="outline" className="flex-1">
-                Cancel
               </Button>
             </div>
           </div>
@@ -325,26 +325,28 @@ export default function WorksManager({ userId }: WorksManagerProps) {
       )}
 
       {/* Works List */}
-      <div className="space-y-3">
+      <div>
+        <div className="mb-4 flex items-center justify-between"><h3 className="text-sm font-medium text-foreground">All media</h3><span className="text-xs text-foreground/40">Newest first</span></div>
         {works.length === 0 ? (
-          <p className="text-foreground/50 text-center py-8">No works yet</p>
+          <div className="rounded-3xl border border-dashed border-border p-12 text-center"><p className="text-sm text-foreground/50">Your Playground is empty.</p><button type="button" onClick={() => setIsAdding(true)} className="mt-3 text-xs underline underline-offset-4">Upload your first experiment</button></div>
         ) : (
-          works.map((work) => (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {works.map((work) => (
             <div
               key={work.id}
-              className="flex items-center gap-4 p-4 border border-border rounded-lg hover:bg-background/50 transition-colors"
+              className="group relative aspect-square overflow-hidden rounded-2xl border border-border/70 bg-foreground/[0.04]"
             >
               {/* Media Preview */}
               {work.media_type === 'image' && work.media_url && (
                 <ProgressiveImage
                   src={work.media_url}
                   alt="Portfolio work"
-                  className="w-16 h-16 rounded object-cover flex-shrink-0"
-                  containerClassName="w-16 h-16 rounded overflow-hidden flex-shrink-0"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  containerClassName="h-full w-full"
                 />
               )}
               {work.media_type === 'video' && (
-                <div className="w-16 h-16 rounded bg-muted flex items-center justify-center flex-shrink-0">
+                <div className="flex h-full w-full items-center justify-center bg-foreground/[0.06]">
                   <svg
                     className="w-6 h-6 text-foreground/50"
                     fill="currentColor"
@@ -355,33 +357,18 @@ export default function WorksManager({ userId }: WorksManagerProps) {
                 </div>
               )}
 
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-foreground/60">
-                  {new Date(work.created_at).toLocaleDateString()}
-                </p>
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/65 to-transparent p-3 pt-10 opacity-0 transition-opacity group-hover:opacity-100">
+                <span className="text-[10px] text-white/75">{new Date(work.created_at).toLocaleDateString()}</span>
+                <div className="flex gap-1.5">
+                  <button type="button" onClick={() => startEdit(work)} className="rounded-full bg-white/90 px-2.5 py-1 text-[10px] text-black">Edit</button>
+                  <button type="button" onClick={() => handleDelete(work.id)} className="rounded-full bg-red-500/90 px-2.5 py-1 text-[10px] text-white">Delete</button>
+                </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => startEdit(work)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleDelete(work.id)}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
-                >
-                  Delete
-                </Button>
-              </div>
             </div>
-          ))
+          ))}
+          </div>
         )}
       </div>
     </div>
