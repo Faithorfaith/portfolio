@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Work } from './works-gallery'
 
-const tileClass = 'w-[250px] aspect-[4/3]'
+const tileClass = 'w-[320px] aspect-[4/3]'
 const cover = (work: Work) => work.thumbnail_url || (!work.media_type?.startsWith('video') ? work.media_url : null)
 
 function ConveyorCard({ work, index, duplicate = false }: { work: Work; index: number; duplicate?: boolean }) {

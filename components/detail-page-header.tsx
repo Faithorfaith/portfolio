@@ -4,7 +4,7 @@ import CopyLinkButton from '@/components/copy-link-button'
 export function DetailNavigation({ title, backHref = '/', showCopy = true, backgroundColor }: { title: string; backHref?: string; showCopy?: boolean; backgroundColor?: string }) {
   return (
     <header className="detail-navigation fixed top-0 inset-x-0 z-50 h-[52px] border-b-0 bg-background/95 backdrop-blur-xl" style={backgroundColor ? { backgroundColor } : undefined}>
-      <nav aria-label="Page navigation" className="h-full max-w-[920px] mx-auto px-5 md:px-8 flex items-center justify-between gap-3">
+      <nav aria-label="Page navigation" className="h-full max-w-6xl mx-auto px-5 md:px-8 flex items-center justify-between gap-3">
         <div className="flex flex-1 items-center gap-4 md:gap-7 min-w-0">
           <Link href={backHref} className="inline-flex shrink-0 items-center gap-1.5 h-8 px-3 rounded-lg bg-foreground/[0.045] text-xs text-foreground/55 hover:text-foreground hover:bg-foreground/[0.075] transition-colors">
             <span aria-hidden="true">‹</span>

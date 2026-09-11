@@ -26,6 +26,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
   const [isLoading, setIsLoading] = useState(!initialWorks)
   const [selectedWork, setSelectedWork] = useState<Work | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
+  const [layout, setLayout] = useState<'small' | 'medium' | 'large'>('medium')
   const viewAllCursorRef = useRef<HTMLDivElement>(null)
   const dialogRef = useRef<HTMLDialogElement>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
@@ -261,7 +262,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
   }
 
   return (
-    <div id="top" className="w-full max-w-6xl mx-auto px-8 pt-[84px] pb-12 md:pb-20">
+    <div id="top" className="w-full max-w-6xl mx-auto px-5 md:px-8 pt-[84px] pb-28 md:pb-32">
       <DetailNavigation title="Playground" showCopy={false} />
       <div className="flex justify-center">
         <div className="max-w-6xl w-full">
@@ -271,7 +272,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           </div>
 
           {/* Image wall: Playground media is intentionally label-free. */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8">
+            <div className={`grid gap-5 md:gap-8 ${layout === 'small' ? 'grid-cols-2 md:grid-cols-4' : layout === 'large' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
               {works.map((work) => {
                 const coverImage = getCoverImage(work)
                 
@@ -310,6 +311,13 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                   </div>
                 )
               })}
+            </div>
+            <div className="fixed bottom-5 left-1/2 z-40 -translate-x-1/2 flex items-center gap-1 rounded-full bg-background/90 p-1 shadow-lg backdrop-blur-xl ring-1 ring-foreground/10" aria-label="Playground layout size">
+              {(['small', 'medium', 'large'] as const).map((size) => (
+                <button key={size} type="button" onClick={() => setLayout(size)} aria-pressed={layout === size} className={`rounded-full px-3 py-1.5 text-[11px] capitalize transition-colors ${layout === size ? 'bg-foreground text-background' : 'text-foreground/55 hover:text-foreground'}`}>
+                  {size}
+                </button>
+              ))}
             </div>
         </div>
       </div>
