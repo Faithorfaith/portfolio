@@ -19,11 +19,12 @@ export async function POST(request: NextRequest) {
     console.log('[v0] Profile save request - user:', user.id, 'body:', body)
 
     const bioReferences = Array.isArray(body.bio_references)
-      ? body.bio_references.map((reference: { id?: string; label?: string; description?: string; url?: string }) => ({
+      ? body.bio_references.map((reference: { id?: string; label?: string; description?: string; url?: string; image?: string }) => ({
           ...reference,
           label: cleanInlineText(reference.label),
           description: cleanInlineText(reference.description),
           url: normalizeExternalUrl(reference.url),
+          image: reference.image || '',
         }))
       : []
 

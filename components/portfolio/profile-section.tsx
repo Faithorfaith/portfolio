@@ -40,6 +40,7 @@ interface BioReference {
   label: string
   description: string
   url: string
+  image?: string
 }
 
 interface Project {
@@ -98,6 +99,27 @@ export default function ProfileSection({
   }
 
   const contactEmail = profile?.contact_email || 'faithawokunle1@gmail.com'
+  const renderBioText = (paragraph: string) => {
+    const references = (profile?.bio_references || []).filter(reference => reference.label.trim())
+    if (!references.length) return paragraph
+    const labels = references.map(reference => cleanInlineText(reference.label)).filter(Boolean).sort((a, b) => b.length - a.length)
+    if (!labels.length) return paragraph
+    const pattern = new RegExp(`(${labels.map(label => label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi')
+    return paragraph.split(pattern).map((part, index) => {
+      const reference = references.find(item => cleanInlineText(item.label).toLowerCase() === part.toLowerCase())
+      if (!reference) return part
+      const description = cleanInlineText(reference.description)
+      const url = normalizeExternalUrl(reference.url)
+      const tag = <span className="bio-inline-tag-label">{part}</span>
+      return <span key={`${reference.id}-${index}`} className="bio-inline-tag group" tabIndex={0}>
+        {url ? <a href={url} target="_blank" rel="noopener noreferrer">{tag}</a> : tag}
+        <span className="bio-inline-card" role="tooltip">
+          {reference.image && <img src={reference.image} alt="" />}
+          <span><strong>{reference.label}</strong>{description && <small>{description}</small>}</span>
+        </span>
+      </span>
+    })
+  }
 
   const legacyImages = [profile?.hero_image_1, profile?.hero_image_2, profile?.hero_image_3].filter(Boolean) as string[]
   const galleryImages = profile?.gallery_images?.length ? profile.gallery_images : legacyImages
@@ -143,7 +165,6 @@ export default function ProfileSection({
                 sizes="84px"
                 priority
                 className={`object-cover transition-[filter] duration-300 ${galleryOpen ? 'grayscale-0' : 'grayscale'}`}
-                priority
               />
             </button>
 
@@ -192,29 +213,10 @@ export default function ProfileSection({
                 key={index}
                 className="text-foreground/70 leading-relaxed"
               >
-                {paragraph}
+                {renderBioText(paragraph)}
               </p>
             ))}
           </div>
-        </div>
-      )}
-
-      {profile.bio_references && profile.bio_references.length > 0 && (
-        <div className="flex flex-wrap items-start gap-2 mb-8">
-          {profile.bio_references.filter((reference) => reference.label.trim()).map((reference) => {
-            const label = cleanInlineText(reference.label)
-            const description = cleanInlineText(reference.description)
-            const url = normalizeExternalUrl(reference.url)
-            const content = (
-              <>
-                {description && <span className="text-foreground/55">{description}</span>}
-                <span className="font-medium text-foreground/75">{label}</span>
-                {url && <span className="text-foreground/40 group-hover:text-foreground/65 transition-colors">↗</span>}
-              </>
-            )
-            const classes = 'group inline-flex max-w-full flex-wrap items-baseline gap-x-1.5 gap-y-0.5 px-2.5 py-1.5 rounded-full bg-foreground/[0.045] text-xs leading-relaxed text-foreground/70 hover:bg-foreground/[0.075] transition-colors whitespace-normal'
-            return url ? <a key={reference.id} href={url} target="_blank" rel="noopener noreferrer" className={classes}>{content}</a> : <span key={reference.id} className={classes}>{content}</span>
-          })}
         </div>
       )}
 

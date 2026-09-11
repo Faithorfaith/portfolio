@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import FileUpload from './file-upload'
 
@@ -29,6 +29,7 @@ interface BioReference {
   label: string
   description: string
   url: string
+  image?: string
 }
 
 interface Testimonial { id: string; quote: string; name: string; role: string; company: string; url: string }
@@ -90,6 +91,8 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [selectedBioText, setSelectedBioText] = useState('')
+  const bioTextareaRef = useRef<HTMLTextAreaElement>(null)
   const [formData, setFormData] = useState({
     username: '',
     full_name: '',
@@ -353,12 +356,16 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
                 rows={2}
                 className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background resize-none"
               />
+              <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-center">
+                <FileUpload userId={userId} folder="bio-tags" accept="image/*" onUpload={url => setFormData((current) => ({ ...current, bio_references: current.bio_references.map((item, itemIndex) => itemIndex === index ? { ...item, image: url } : item) }))} />
+                {reference.image && <img src={reference.image} alt="" className="size-12 rounded-md object-cover" />}
+              </div>
               <button type="button" onClick={() => setFormData((current) => ({ ...current, bio_references: current.bio_references.filter((_, itemIndex) => itemIndex !== index) }))} className="text-xs text-red-600">Remove</button>
             </div>
           ))}
           <button
             type="button"
-            onClick={() => setFormData((current) => ({ ...current, bio_references: [...current.bio_references, { id: crypto.randomUUID(), label: '', description: '', url: '' }] }))}
+            onClick={() => setFormData((current) => ({ ...current, bio_references: [...current.bio_references, { id: crypto.randomUUID(), label: '', description: '', url: '', image: '' }] }))}
             className="w-full py-2 text-xs font-medium border border-dashed border-border rounded-lg hover:border-foreground/30 transition-colors"
           >
             + Add reference
@@ -369,13 +376,32 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
       {/* Bio */}
       <SectionCard title="Bio" description="Separate paragraphs with a blank line">
         <textarea
+          ref={bioTextareaRef}
           value={formData.bio}
           onChange={e => set('bio', e.target.value)}
+          onSelect={(event) => {
+            const input = event.currentTarget
+            setSelectedBioText(input.value.slice(input.selectionStart, input.selectionEnd).trim())
+          }}
           placeholder={"Paragraph 1\n\nParagraph 2\n\nParagraph 3"}
           rows={6}
           className="w-full text-sm bg-background focus:outline-none focus:ring-2 focus:ring-foreground/15 transition-shadow resize-none font-mono rounded-lg"
           style={{ padding: '8px 12px', border: '1px solid oklch(0.91 0 0)' }}
         />
+        {selectedBioText && (
+          <button
+            type="button"
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => {
+              setFormData((current) => current.bio_references.some(reference => reference.label.toLowerCase() === selectedBioText.toLowerCase()) ? current : ({ ...current, bio_references: [...current.bio_references, { id: crypto.randomUUID(), label: selectedBioText, description: '', url: '', image: '' }] }))
+              setSelectedBioText('')
+              bioTextareaRef.current?.focus()
+            }}
+            className="mt-2 rounded-full bg-foreground px-3 py-1.5 text-xs text-background"
+          >
+            Convert “{selectedBioText}” to tag
+          </button>
+        )}
         {formData.bio && (
           <div className="mt-4 pt-4 border-t border-border space-y-3">
             <p className="text-xs text-foreground/40 uppercase tracking-wider font-medium">Preview</p>
