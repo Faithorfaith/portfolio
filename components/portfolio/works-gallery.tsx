@@ -277,7 +277,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                 const coverImage = getCoverImage(work)
                 
                 return (
-                  <div key={work.id} className={`${index % 7 === 0 ? 'playground-feature-card' : ''}`}>
+                  <div key={work.id}>
                     <button
                       onClick={() => openWork(work)}
                       className="group text-left w-full focus-visible:outline-offset-6"
