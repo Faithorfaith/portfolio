@@ -262,10 +262,10 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
   }
 
   return (
-    <div id="top" className="w-full max-w-6xl mx-auto px-5 md:px-8 pt-[84px] pb-28 md:pb-32">
+    <div id="top" className="w-full px-5 md:px-10 pt-[84px] pb-28 md:pb-32">
       <DetailNavigation title="Playground" showCopy={false} />
       <div className="flex justify-center">
-        <div className="max-w-6xl w-full">
+        <div className="w-full">
           {/* Section Header */}
           <div className="mb-10 max-w-xl">
             <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Playground</h2>
@@ -278,10 +278,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                 
                 return (
                   <div key={work.id}>
-                    <button
-                      onClick={() => openWork(work)}
-                      className="group text-left w-full focus-visible:outline-offset-6"
-                    >
+                    <div className="group w-full">
                       <div className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-foreground/5 ring-1 ring-transparent group-hover:ring-foreground/25 transition-[box-shadow,filter] duration-200 group-hover:brightness-[0.98]">
                         {coverImage ? (
                           <ProgressiveImage
@@ -307,7 +304,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                         )}
                       </div>
 
-                    </button>
+                    </div>
                   </div>
                 )
               })}
@@ -323,7 +320,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
       </div>
 
       {/* Modal - Work Detail */}
-      {selectedWork && (
+      {selectedWork && false && (
         <dialog
           ref={dialogRef}
           aria-label="Playground media preview"
@@ -363,11 +360,11 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
             <div className="flex flex-col md:flex-row h-full">
               {/* Left - Media (2/3) */}
               <div className="md:w-2/3 bg-foreground/[0.035] flex items-center justify-center p-4 md:p-8 max-h-[50vh] md:max-h-[80vh] overflow-hidden">
-                {selectedWork.media_url ? (
-                  selectedWork.media_type?.startsWith('image') ? (
+                {selectedWork!.media_url ? (
+                  selectedWork!.media_type?.startsWith('image') ? (
                     <ProgressiveImage
-                      src={selectedWork.media_url}
-                      alt={selectedWork.title}
+                      src={selectedWork!.media_url || ''}
+                      alt={selectedWork!.title}
                       className="max-w-full max-h-full object-contain rounded-lg"
                       containerClassName="max-w-full max-h-full rounded-lg"
                     />
@@ -375,8 +372,8 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                     <button type="button" onClick={() => setVideoError(false)} className="min-h-11 text-sm">Video unavailable · Retry</button>
                   ) : (
                     <video
-                      key={selectedWork.id}
-                      src={selectedWork.media_url}
+                      key={selectedWork!.id}
+                      src={selectedWork!.media_url || ''}
                       onError={() => setVideoError(true)}
                       playsInline
                       preload="metadata"
@@ -384,10 +381,10 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                       className="max-w-full max-h-full rounded-lg"
                     />
                   )
-                ) : getCoverImage(selectedWork) ? (
+                ) : getCoverImage(selectedWork!) ? (
                   <ProgressiveImage
-                    src={getCoverImage(selectedWork)!}
-                    alt={selectedWork.title}
+                    src={getCoverImage(selectedWork!)!}
+                    alt={selectedWork!.title}
                     className="max-w-full max-h-full object-contain rounded-lg"
                     containerClassName="max-w-full max-h-full rounded-lg"
                   />
@@ -405,9 +402,9 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
               <div className="md:w-1/3 p-6 md:p-8 flex flex-col overflow-y-auto">
                 {/* Spacer */}
                 <div className="flex items-center gap-2 mb-4">
-                  <button type="button" className="rail-control" aria-label="Previous project" disabled={works[0]?.id === selectedWork.id} onClick={() => stepWork(-1)}>←</button>
-                  <span className="text-xs text-foreground/60 tabular-nums">{works.findIndex((work) => work.id === selectedWork.id) + 1} / {works.length}</span>
-                  <button type="button" className="rail-control" aria-label="Next project" disabled={works.at(-1)?.id === selectedWork.id} onClick={() => stepWork(1)}>→</button>
+                  <button type="button" className="rail-control" aria-label="Previous project" disabled={works[0]?.id === selectedWork!.id} onClick={() => stepWork(-1)}>←</button>
+                  <span className="text-xs text-foreground/60 tabular-nums">{works.findIndex((work) => work.id === selectedWork!.id) + 1} / {works.length}</span>
+                  <button type="button" className="rail-control" aria-label="Next project" disabled={works.at(-1)?.id === selectedWork!.id} onClick={() => stepWork(1)}>→</button>
                 </div>
                 <div className="flex-1" />
 
