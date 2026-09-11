@@ -272,7 +272,8 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           </div>
 
           {/* Image wall: Playground media is intentionally label-free. */}
-            <div className={`playground-full-grid grid gap-5 md:gap-8 ${layout === 'small' ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-6' : layout === 'large' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-2 md:grid-cols-4'}`}>
+            <div className="w-full overflow-x-auto pb-5 [scrollbar-width:thin]">
+            <div className={`playground-full-grid grid min-w-[920px] gap-4 md:gap-6 ${layout === 'small' ? 'grid-cols-6' : layout === 'large' ? 'grid-cols-2' : 'grid-cols-4'}`}>
               {works.map((work, index) => {
                 const coverImage = getCoverImage(work)
                 
@@ -308,6 +309,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                   </div>
                 )
               })}
+            </div>
             </div>
             <div className="fixed bottom-5 left-1/2 z-40 -translate-x-1/2 flex items-center gap-1 rounded-full bg-background/90 p-1 shadow-lg backdrop-blur-xl ring-1 ring-foreground/10" aria-label="Playground layout size">
               {(['small', 'medium', 'large'] as const).map((size) => (
