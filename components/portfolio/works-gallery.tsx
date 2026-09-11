@@ -272,12 +272,12 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           </div>
 
           {/* Image wall: Playground media is intentionally label-free. */}
-            <div className={`grid gap-5 md:gap-8 ${layout === 'small' ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-6' : layout === 'large' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-2 md:grid-cols-4'}`}>
-              {works.map((work) => {
+            <div className={`playground-full-grid grid gap-5 md:gap-8 ${layout === 'small' ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-6' : layout === 'large' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-2 md:grid-cols-4'}`}>
+              {works.map((work, index) => {
                 const coverImage = getCoverImage(work)
                 
                 return (
-                  <div key={work.id}>
+                  <div key={work.id} className={`${index % 7 === 0 ? 'playground-feature-card' : ''}`}>
                     <button
                       onClick={() => openWork(work)}
                       className="group text-left w-full focus-visible:outline-offset-6"
