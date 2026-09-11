@@ -69,6 +69,24 @@ export default function WorksManager({ userId }: WorksManagerProps) {
     setFormData((prev) => ({ ...prev, media_url: url, title: prev.title || decodeURIComponent(url.split('/').pop()?.split('?')[0] || 'Untitled').replace(/\.[^.]+$/, '') }))
   }
 
+  const handleBulkMediaUpload = async (urls: string[]) => {
+    if (urls.length < 2) return
+    const supabase = createClient()
+    const rows = urls.map((media_url) => ({
+      user_id: userId,
+      title: 'Untitled playground study',
+      media_url,
+      media_type: formData.media_type,
+      order_index: 0,
+    }))
+    const { error: insertError } = await supabase.from('portfolio_works').insert(rows)
+    if (insertError) { setError(insertError.message); return }
+    const { data } = await supabase.from('portfolio_works').select('*').eq('user_id', userId)
+    setWorks(newestFirst(data || []))
+    setSuccess(true)
+    window.setTimeout(() => setSuccess(false), 3000)
+  }
+
   const handleMediaTypeChange = (type: 'image' | 'video') => {
     setFormData(prev => ({ ...prev, media_url: '', media_type: type }))
   }
@@ -274,6 +292,8 @@ export default function WorksManager({ userId }: WorksManagerProps) {
                 userId={userId}
                 folder={formData.media_type === 'image' ? 'portfolio-images' : 'portfolio-videos'}
                 onUpload={handleMediaUpload}
+                onUploadMany={handleBulkMediaUpload}
+                multiple
                 accept={formData.media_type === 'image' ? 'image/*' : 'video/*'}
               />
             </div>

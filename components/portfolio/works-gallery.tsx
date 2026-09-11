@@ -264,14 +264,14 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
     <div id="top" className="w-full max-w-6xl mx-auto px-8 pt-[84px] pb-12 md:pb-20">
       <DetailNavigation title="Playground" showCopy={false} />
       <div className="flex justify-center">
-        <div className="max-w-4xl w-full">
+        <div className="max-w-6xl w-full">
           {/* Section Header */}
           <div className="mb-10 max-w-xl">
             <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Playground</h2>
           </div>
 
           {/* Image wall: Playground media is intentionally label-free. */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8">
               {works.map((work) => {
                 const coverImage = getCoverImage(work)
                 

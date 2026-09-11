@@ -8,6 +8,8 @@ interface FileUploadProps {
   userId: string
   folder: string
   onUpload: (url: string) => void
+  onUploadMany?: (urls: string[]) => void
+  multiple?: boolean
   accept?: string
   directStorage?: boolean
 }
@@ -16,6 +18,8 @@ export default function FileUpload({
   userId,
   folder,
   onUpload,
+  onUploadMany,
+  multiple = false,
   accept = '*',
   directStorage = false,
 }: FileUploadProps) {
@@ -26,12 +30,12 @@ export default function FileUpload({
   const [uploadedName, setUploadedName] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const uploadFile = async (file?: File) => {
-    if (!file || isLoading) return
+  const uploadFile = async (file?: File): Promise<string | null> => {
+    if (!file) return null
     const allowed = accept.split(',').map((type) => type.trim())
     if (accept !== '*' && !allowed.some((type) => type.startsWith('.') ? file.name.toLowerCase().endsWith(type.toLowerCase()) : type.endsWith('/*') ? file.type.startsWith(type.slice(0, -1)) : type === file.type)) {
       setError(`Choose a supported file: ${accept}`)
-      return
+      return null
     }
 
     setIsLoading(true)
@@ -54,8 +58,8 @@ export default function FileUpload({
         if (!result.success || !result.publicUrl) throw new Error(result.error || 'Video upload failed')
         onUpload(result.publicUrl)
         setUploadedName(file.name)
-        if (fileInputRef.current) fileInputRef.current.value = ''
-        return
+      if (fileInputRef.current) fileInputRef.current.value = ''
+        return result.publicUrl
       }
 
       const formData = new FormData()
@@ -94,10 +98,12 @@ export default function FileUpload({
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
       }
+      return data.url || null
     } catch (err) {
       console.error('[v0] Upload error:', err)
       const errorMsg = err instanceof Error ? err.message : 'Failed to upload file'
       setError(errorMsg)
+      return null
     } finally {
       setIsLoading(false)
       window.setTimeout(() => setProgress(0), 500)
@@ -105,7 +111,14 @@ export default function FileUpload({
   }
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    await uploadFile(e.target.files?.[0])
+    const files = Array.from(e.target.files || [])
+    if (!multiple) return uploadFile(files[0])
+    const urls: string[] = []
+    for (const file of files) {
+      const url = await uploadFile(file)
+      if (url) urls.push(url)
+    }
+    if (urls.length) onUploadMany?.(urls)
   }
 
   return (
@@ -114,6 +127,7 @@ export default function FileUpload({
         ref={fileInputRef}
         type="file"
         accept={accept}
+        multiple={multiple}
         onChange={handleFileSelect}
         disabled={isLoading}
         className="hidden"
