@@ -318,7 +318,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
       {selectedWork && (
         <dialog
           ref={dialogRef}
-          aria-labelledby="playground-work-title"
+          aria-label="Playground media preview"
           onCancel={(event) => { event.preventDefault(); closeWork() }}
           onKeyDown={(event) => {
             if ((event.target as HTMLElement).closest('video, input, textarea, select')) return
@@ -393,27 +393,8 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                 )}
               </div>
 
-              {/* Right - Details (1/3) */}
+              {/* Minimal controls; Playground stays media-first. */}
               <div className="md:w-1/3 p-6 md:p-8 flex flex-col overflow-y-auto">
-                {/* Type */}
-                {selectedWork.type && (
-                  <span className="text-foreground/35 text-xs mb-3">
-                    {selectedWork.type}
-                  </span>
-                )}
-
-                {/* Title */}
-                <h2 id="playground-work-title" className="text-[18px] font-medium tracking-[-0.01em] text-foreground mb-4">
-                  {selectedWork.title}
-                </h2>
-
-                {/* Description */}
-                {selectedWork.description && (
-                  <p className="text-foreground/55 leading-relaxed mb-6">
-                    {selectedWork.description}
-                  </p>
-                )}
-
                 {/* Spacer */}
                 <div className="flex items-center gap-2 mb-4">
                   <button type="button" className="rail-control" aria-label="Previous project" disabled={works[0]?.id === selectedWork.id} onClick={() => stepWork(-1)}>←</button>
@@ -422,15 +403,6 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                 </div>
                 <div className="flex-1" />
 
-                {/* Date */}
-                <div className="pt-6 mt-auto" style={{ borderTop: '0.5px solid rgba(0,0,0,0.08)' }}>
-                  <span className="text-foreground/40 text-xs">
-                    {new Date(selectedWork.created_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long'
-                    })}
-                  </span>
-                </div>
               </div>
             </div>
           </div>
