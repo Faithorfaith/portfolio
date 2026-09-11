@@ -33,7 +33,7 @@ export default function HomePlaygroundPreview({ works, hiddenCount }: { works: W
       <h2 id="playground-preview-title" className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Playground</h2>
       <Link href="/playground" className="text-[11px] text-foreground/50 transition-colors hover:text-foreground">Explore all{hiddenCount > 0 ? ` +${hiddenCount}` : ''} ↗</Link>
     </div>
-    <div className="playground-reference-grid mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-5 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[320px_320px] lg:px-8" aria-label="Playground highlights">
+    <div className="playground-reference-grid mx-auto grid w-full max-w-2xl grid-cols-1 gap-5 px-5 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[320px_320px] lg:px-8" aria-label="Playground highlights">
       {visible.slice(0, 6).map((work, index) => <div key={work.id} className={`playground-reference-card ${index === 0 ? 'lg:row-span-2' : ''} ${index === 3 ? 'lg:col-start-2' : ''}`}><ConveyorCard work={work} index={index} /></div>)}
       <Link href="/playground" className="col-span-full mt-2 text-center text-xs text-foreground/50 hover:text-foreground">Explore all{hiddenCount > 0 ? ` +${hiddenCount}` : ''} ↗</Link>
     </div>
