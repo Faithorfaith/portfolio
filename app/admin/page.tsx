@@ -213,6 +213,9 @@ export default function AdminPage() {
 
       {/* Main Area */}
       <div className="admin-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflowY: 'auto', background: 'oklch(1 0 0)' }}>
+        <nav className="admin-mobile-nav" aria-label="Admin sections">
+          {NAV_ITEMS.map((item) => <button key={item.id} type="button" onClick={() => setActiveTab(item.id)} className={activeTab === item.id ? 'is-active' : ''}>{item.label}</button>)}
+        </nav>
         {isCaseStudyEditorOpen && (
           <button
             type="button"

@@ -430,6 +430,15 @@
 .article-prose { overflow-wrap: anywhere; letter-spacing: .01em; }
 .work-action-label { display: none; }
 .homepage-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: color-mix(in oklch, var(--foreground) 70%, transparent); }
+.admin-mobile-nav { display: none; }
+@media (max-width: 767px) {
+  .admin-sidebar { display: none !important; }
+  .admin-mobile-nav { display: flex; position: sticky; top: 0; z-index: 30; gap: 6px; overflow-x: auto; padding: 10px 14px; background: oklch(1 0 0 / .96); border-bottom: 1px solid oklch(.93 0 0); scrollbar-width: none; }
+  .admin-mobile-nav::-webkit-scrollbar { display: none; }
+  .admin-mobile-nav button { flex: 0 0 auto; border: 0; border-radius: 999px; padding: 8px 12px; background: transparent; color: var(--foreground); opacity: .5; font-size: 11px; white-space: nowrap; }
+  .admin-mobile-nav button.is-active { background: var(--foreground); color: var(--background); opacity: 1; }
+  .admin-content { padding: 24px 16px !important; }
+}
 .homepage-contact-question, .homepage-contact-action { font-size: 14px; line-height: 1.7; }
 .bio-inline-tag { position: relative; display: inline-flex; margin-inline: .08em; vertical-align: baseline; outline: none; }
 .bio-inline-tag-label { display: inline; padding: .08em .38em .12em; border-radius: 999px; background: color-mix(in oklch, var(--foreground) 7%, transparent); color: color-mix(in oklch, var(--foreground) 84%, transparent); cursor: pointer; transition: background 160ms ease, color 160ms ease; }

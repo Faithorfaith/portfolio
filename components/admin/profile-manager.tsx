@@ -243,7 +243,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
   }
 
   return (
-    <div className="max-w-2xl space-y-5">
+    <div className="w-full max-w-none space-y-5">
       {/* Page Header */}
       <div className="flex items-center justify-between pb-1">
         <div>

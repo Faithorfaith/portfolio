@@ -109,7 +109,7 @@ export default function ProjectsManager() {
   const labelStyle = { color: 'var(--foreground)', opacity: 0.5 }
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="w-full max-w-none space-y-8">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between pb-1">
         <div>
           <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">Portfolio directory</p>
