@@ -22,6 +22,8 @@ interface WorksManagerProps {
   userId: string
 }
 
+const newestFirst = (items: Work[]) => [...items].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
 export default function WorksManager({ userId }: WorksManagerProps) {
   const [works, setWorks] = useState<Work[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -51,7 +53,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
           .order('created_at', { ascending: false })
 
         if (fetchError) throw fetchError
-        setWorks(data || [])
+        setWorks(newestFirst(data || []))
       } catch (err) {
         console.error('Error fetching works:', err)
         setError('Failed to load works')
@@ -106,7 +108,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
         .order('created_at', { ascending: false })
 
       if (fetchError) throw fetchError
-      setWorks(works || [])
+      setWorks(newestFirst(works || []))
 
       setSuccess(true)
       resetForm()
@@ -181,7 +183,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
 
-      setWorks(data || [])
+      setWorks(newestFirst(data || []))
       setSuccess(true)
       resetForm()
       setTimeout(() => setSuccess(false), 3000)
