@@ -270,8 +270,8 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
             <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Playground</h2>
           </div>
 
-          {/* Grid Layout - 2 cols */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
+          {/* Image wall: Playground media is intentionally label-free. */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
               {works.map((work) => {
                 const coverImage = getCoverImage(work)
                 
@@ -281,8 +281,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                       onClick={() => openWork(work)}
                       className="group text-left w-full focus-visible:outline-offset-6"
                     >
-                      {/* Card */}
-                      <div className="relative w-full aspect-[4/3] rounded-md overflow-hidden mb-4 bg-foreground/5 ring-1 ring-transparent group-hover:ring-foreground/25 transition-[box-shadow,filter] duration-200 group-hover:brightness-[0.98]">
+                      <div className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-foreground/5 ring-1 ring-transparent group-hover:ring-foreground/25 transition-[box-shadow,filter] duration-200 group-hover:brightness-[0.98]">
                         {coverImage ? (
                           <ProgressiveImage
                             src={coverImage}
@@ -307,23 +306,6 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                         )}
                       </div>
 
-                      {/* Info */}
-                      <div className="relative pr-7">
-                        {work.type && (
-                          <p className="text-foreground/35 text-xs mb-2">
-                            {work.type}
-                          </p>
-                        )}
-                        <h3 className="text-sm leading-relaxed tracking-[0.01em] text-foreground/70 font-normal group-hover:text-foreground transition-colors line-clamp-1">
-                          {work.title}
-                        </h3>
-                        {work.description && (
-                          <p className="text-foreground/45 text-sm mt-1 line-clamp-2 leading-relaxed">
-                            {work.description}
-                          </p>
-                        )}
-                        <span className="absolute right-0 top-0 text-foreground/45 group-hover:text-foreground/65 group-hover:translate-x-0.5 transition-all" aria-hidden="true">↗</span>
-                      </div>
                     </button>
                   </div>
                 )

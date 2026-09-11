@@ -37,7 +37,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
     media_url: '',
     media_type: 'image',
     thumbnail_url: '',
-    type: 'Animation',
+    type: '',
     order_index: 0,
   })
 
@@ -66,7 +66,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
   }, [userId])
 
   const handleMediaUpload = (url: string) => {
-    setFormData((prev) => ({ ...prev, media_url: url }))
+    setFormData((prev) => ({ ...prev, media_url: url, title: prev.title || decodeURIComponent(url.split('/').pop()?.split('?')[0] || 'Untitled').replace(/\.[^.]+$/, '') }))
   }
 
   const handleMediaTypeChange = (type: 'image' | 'video') => {
@@ -74,8 +74,8 @@ export default function WorksManager({ userId }: WorksManagerProps) {
   }
 
   const handleSave = async () => {
-    if (!formData.title.trim() || !formData.media_url.trim()) {
-      setError('Please fill in title and upload media')
+    if (!formData.media_url.trim()) {
+      setError('Please upload media')
       return
     }
 
@@ -88,12 +88,12 @@ export default function WorksManager({ userId }: WorksManagerProps) {
         .from('portfolio_works')
         .insert([{
           user_id: userId,
-          title: formData.title,
+          title: formData.title || 'Untitled playground study',
           description: formData.description || null,
           media_url: formData.media_url,
           media_type: formData.media_type,
           thumbnail_url: formData.thumbnail_url || null,
-          type: formData.type,
+          type: formData.type || null,
           order_index: formData.order_index,
         }])
         .select()
@@ -154,8 +154,8 @@ export default function WorksManager({ userId }: WorksManagerProps) {
   }
 
   const handleUpdate = async () => {
-    if (!editingId || !formData.title.trim()) {
-      setError('Please fill in the title')
+    if (!editingId) {
+      setError('No work selected')
       return
     }
 
@@ -165,12 +165,12 @@ export default function WorksManager({ userId }: WorksManagerProps) {
       const { error: updateError } = await supabase
         .from('portfolio_works')
         .update({
-          title: formData.title,
+          title: formData.title || 'Untitled playground study',
           description: formData.description || null,
           media_url: formData.media_url,
           media_type: formData.media_type,
           thumbnail_url: formData.thumbnail_url || null,
-          type: formData.type,
+          type: formData.type || null,
           order_index: formData.order_index,
         })
         .eq('id', editingId)
@@ -234,50 +234,9 @@ export default function WorksManager({ userId }: WorksManagerProps) {
       {/* Add Form */}
       {isAdding && (
         <div className="max-w-2xl border border-border rounded-lg p-6 bg-background/50">
-          <h3 className="text-lg font-semibold text-foreground mb-4">{editingId ? 'Edit Portfolio Work' : 'Add Portfolio Work'}</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">{editingId ? 'Edit Playground media' : 'Add Playground media'}</h3>
 
           <div className="space-y-4">
-            {/* Title */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Title *
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="e.g., Dynamic Island Streak"
-                className="w-full px-3 py-2 rounded border border-border bg-background text-foreground placeholder-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20"
-              />
-            </div>
-
-            {/* Type */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Type
-              </label>
-              <input
-                type="text"
-                value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                placeholder="e.g., Animation, UI, Interaction"
-                className="w-full px-3 py-2 rounded border border-border bg-background text-foreground placeholder-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20"
-              />
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Description
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Brief description of the work"
-                className="w-full px-3 py-2 rounded border border-border bg-background text-foreground placeholder-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 min-h-20"
-              />
-            </div>
-
             {/* Media Type */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
@@ -316,24 +275,6 @@ export default function WorksManager({ userId }: WorksManagerProps) {
                 folder={formData.media_type === 'image' ? 'portfolio-images' : 'portfolio-videos'}
                 onUpload={handleMediaUpload}
                 accept={formData.media_type === 'image' ? 'image/*' : 'video/*'}
-              />
-            </div>
-
-            {/* Thumbnail Upload */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Thumbnail Image (Square)
-              </label>
-              {formData.thumbnail_url && (
-                <p className="text-sm text-foreground/60 mb-2">
-                  File: {formData.thumbnail_url.split('/').pop()}
-                </p>
-              )}
-              <FileUpload
-                userId={userId}
-                folder="portfolio-thumbnails"
-                onUpload={(url) => setFormData({ ...formData, thumbnail_url: url })}
-                accept="image/*"
               />
             </div>
 
