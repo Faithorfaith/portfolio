@@ -261,8 +261,8 @@ export default function WorksManager({ userId }: WorksManagerProps) {
 
       {/* Add Form */}
       {isAdding && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/25 p-4 backdrop-blur-md" onMouseDown={(event) => { if (event.target === event.currentTarget) resetForm() }}>
-        <div className="max-h-[82dvh] w-full max-w-lg overflow-y-auto rounded-[28px] border border-border/70 bg-background p-5 shadow-2xl sm:p-6">
+        <div className="!fixed !inset-0 z-[999] flex min-h-screen w-screen items-center justify-center bg-black/20 p-4 backdrop-blur-sm" onMouseDown={(event) => { if (event.target === event.currentTarget) resetForm() }}>
+        <div className="w-full max-w-lg rounded-[28px] border border-border/70 bg-background p-5 shadow-2xl sm:p-6">
           <div className="mb-5 flex items-start justify-between gap-4">
             <div><p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">{editingId ? 'Update item' : 'New upload'}</p><h3 className="mt-1 text-xl font-medium tracking-tight text-foreground">{editingId ? 'Edit Playground media' : 'Add Playground media'}</h3></div>
             <button type="button" onClick={resetForm} aria-label="Close upload dialog" className="grid size-8 place-items-center rounded-full text-lg text-foreground/45 transition-colors hover:bg-foreground/[0.06] hover:text-foreground">×</button>
