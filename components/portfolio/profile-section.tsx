@@ -71,7 +71,6 @@ export default function ProfileSection({
   profile: Profile | null
   caseStudies: CaseStudy[]
 }) {
-  const [copied, setCopied] = useState(false)
   const [galleryOpen, setGalleryOpen] = useState(false)
   const railRef = useRef<HTMLDivElement>(null)
   const cursorLabelRef = useRef<HTMLDivElement>(null)
@@ -99,17 +98,6 @@ export default function ProfileSection({
   }
 
   const contactEmail = profile?.contact_email || 'faithawokunle1@gmail.com'
-  const handleCopyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(contactEmail)
-      track('contact_email_copied', { location: 'homepage' })
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 2000)
-    } catch {
-      // Keep this a copy-only interaction; never redirect to an email app.
-      setCopied(false)
-    }
-  }
 
   const legacyImages = [profile?.hero_image_1, profile?.hero_image_2, profile?.hero_image_3].filter(Boolean) as string[]
   const galleryImages = profile?.gallery_images?.length ? profile.gallery_images : legacyImages
@@ -233,20 +221,14 @@ export default function ProfileSection({
         <p className="homepage-contact-question">Got something in mind?</p>
         <div className="homepage-contact-action">
           <span>Reach out at</span>
-          <button
-            type="button"
-            onClick={handleCopyEmail}
+          <a
+            href={`mailto:${contactEmail}`}
+            onClick={() => track('contact_email_opened', { location: 'homepage' })}
             className="inline-flex h-9 min-h-9 items-center gap-1.5 rounded-lg border border-foreground/15 px-3 text-xs font-medium text-foreground/70 transition-colors hover:border-foreground/30 hover:bg-foreground/[0.035]"
-            aria-live="polite"
-            title="Copy email address"
+            title={`Email ${contactEmail}`}
           >
-            {copied ? 'Email copied' : 'Send me a message'}
-            {!copied && (
-              <svg className="size-3.5 text-foreground/45" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-            )}
-          </button>
+            Send me a message
+          </a>
           <span className="homepage-contact-closing">— I&apos;d love to hear from you</span>
         </div>
       </div>
