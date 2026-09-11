@@ -140,7 +140,8 @@ export default function ProfileSection({
                 src={galleryImages[0]}
                 alt="Profile gallery cover"
                 fill
-                sizes="112px"
+                sizes="84px"
+                priority
                 className={`object-cover transition-[filter] duration-300 ${galleryOpen ? 'grayscale-0' : 'grayscale'}`}
                 priority
               />
