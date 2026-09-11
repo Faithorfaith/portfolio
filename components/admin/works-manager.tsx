@@ -261,17 +261,17 @@ export default function WorksManager({ userId }: WorksManagerProps) {
 
       {/* Add Form */}
       {isAdding && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/20 p-4 backdrop-blur-sm" onMouseDown={(event) => { if (event.target === event.currentTarget) resetForm() }}>
-        <div className="max-h-[90dvh] w-full max-w-xl overflow-y-auto rounded-3xl border border-border/70 bg-background p-5 shadow-2xl sm:p-7">
-          <div className="mb-6 flex items-start justify-between gap-4">
-            <div><p className="text-[11px] uppercase tracking-[0.16em] text-foreground/40">{editingId ? 'Update item' : 'New upload'}</p><h3 className="mt-1 text-lg font-medium text-foreground">{editingId ? 'Edit Playground media' : 'Add Playground media'}</h3></div>
-            <button type="button" onClick={resetForm} className="text-xs text-foreground/45 hover:text-foreground">Cancel</button>
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/25 p-4 backdrop-blur-md" onMouseDown={(event) => { if (event.target === event.currentTarget) resetForm() }}>
+        <div className="max-h-[82dvh] w-full max-w-lg overflow-y-auto rounded-[28px] border border-border/70 bg-background p-5 shadow-2xl sm:p-6">
+          <div className="mb-5 flex items-start justify-between gap-4">
+            <div><p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">{editingId ? 'Update item' : 'New upload'}</p><h3 className="mt-1 text-xl font-medium tracking-tight text-foreground">{editingId ? 'Edit Playground media' : 'Add Playground media'}</h3></div>
+            <button type="button" onClick={resetForm} aria-label="Close upload dialog" className="grid size-8 place-items-center rounded-full text-lg text-foreground/45 transition-colors hover:bg-foreground/[0.06] hover:text-foreground">×</button>
           </div>
 
           <div className="space-y-4">
             {/* Media Type */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="mb-2 block text-xs font-medium text-foreground/70">
                 Media Type
               </label>
               <div className="inline-flex rounded-full bg-foreground/[0.045] p-1">
@@ -294,8 +294,8 @@ export default function WorksManager({ userId }: WorksManagerProps) {
 
             {/* Media Upload */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                {formData.media_type === 'image' ? 'Upload Image' : 'Upload Video'} *
+              <label className="mb-2 block text-xs font-medium text-foreground/70">
+                {formData.media_type === 'image' ? 'Image files' : 'Video files'}
               </label>
               {formData.media_url && (
                 <p className="text-sm text-foreground/60 mb-2">
@@ -311,14 +311,14 @@ export default function WorksManager({ userId }: WorksManagerProps) {
                 multiple
                 accept={formData.media_type === 'image' ? 'image/*' : 'video/*'}
               />
-              <p className="mt-3 text-center text-[11px] text-foreground/40">Select multiple files or drag them here · newest uploads appear first</p>
+              <p className="mt-3 text-center text-[10px] text-foreground/40">Select multiple files or drag them here · newest first</p>
               </div>
             </div>
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-2">
               <Button onClick={editingId ? handleUpdate : handleSave} className="rounded-full px-5">
-                {editingId ? 'Update Work' : 'Save Work'}
+                {editingId ? 'Save changes' : 'Save media'}
               </Button>
             </div>
           </div>
