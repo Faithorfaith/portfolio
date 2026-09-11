@@ -31,6 +31,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
   const [success, setSuccess] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -149,11 +150,27 @@ export default function WorksManager({ userId }: WorksManagerProps) {
 
       if (deleteError) throw deleteError
       setWorks((prev) => prev.filter((work) => work.id !== id))
+      setSelectedIds((prev) => prev.filter((selected) => selected !== id))
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
       console.error('Error deleting work:', err)
       setError('Failed to delete work')
+    }
+  }
+
+  const handleBulkDelete = async () => {
+    if (!selectedIds.length || !confirm(`Delete ${selectedIds.length} selected item${selectedIds.length === 1 ? '' : 's'}?`)) return
+    try {
+      const supabase = createClient()
+      const { error: deleteError } = await supabase.from('portfolio_works').delete().in('id', selectedIds).eq('user_id', userId)
+      if (deleteError) throw deleteError
+      setWorks((prev) => prev.filter((work) => !selectedIds.includes(work.id)))
+      setSelectedIds([])
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 3000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete selected media')
     }
   }
 
@@ -328,7 +345,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
 
       {/* Works List */}
       <div>
-        <div className="mb-4 flex items-center justify-between"><h3 className="text-sm font-medium text-foreground">All media</h3><span className="text-xs text-foreground/40">Newest first</span></div>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-3"><h3 className="text-sm font-medium text-foreground">All media</h3><span className="text-xs text-foreground/40">Newest first</span></div><div className="flex items-center gap-2"><button type="button" onClick={() => setSelectedIds(selectedIds.length === works.length ? [] : works.map(work => work.id))} className="text-xs text-foreground/50 hover:text-foreground">{selectedIds.length === works.length ? 'Clear all' : 'Select all'}</button>{selectedIds.length > 0 && <button type="button" onClick={handleBulkDelete} className="rounded-full bg-red-500 px-3 py-1.5 text-[11px] text-white">Delete {selectedIds.length}</button>}</div></div>
         {works.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-border p-12 text-center"><p className="text-sm text-foreground/50">Your Playground is empty.</p><button type="button" onClick={() => setIsAdding(true)} className="mt-3 text-xs underline underline-offset-4">Upload your first experiment</button></div>
         ) : (
@@ -359,6 +376,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
                 </div>
               )}
 
+              <button type="button" aria-label={`Select ${work.title}`} onClick={() => setSelectedIds(prev => prev.includes(work.id) ? prev.filter(id => id !== work.id) : [...prev, work.id])} className={`absolute left-3 top-3 z-10 grid size-6 place-items-center rounded-full border text-xs transition-colors ${selectedIds.includes(work.id) ? 'border-foreground bg-foreground text-background' : 'border-white/70 bg-black/20 text-transparent hover:text-white'}`}>✓</button>
               <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/65 to-transparent p-3 pt-10 opacity-0 transition-opacity group-hover:opacity-100">
                 <span className="text-[10px] text-white/75">{new Date(work.created_at).toLocaleDateString()}</span>
                 <div className="flex gap-1.5">
