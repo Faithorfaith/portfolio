@@ -134,7 +134,7 @@ export default function ProfileSection({
 
   return (
     <div className="relative w-full">
-      <div className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 md:py-16 relative z-10">
+      <div className="w-full max-w-4xl mx-auto px-5 sm:px-8 py-16 md:py-24 relative z-10">
         {/* One quiet cover reveals the gallery in place. */}
         {galleryImages.length > 0 && (
           <div className="mb-8">
@@ -200,7 +200,8 @@ export default function ProfileSection({
         )}
 
         {/* Name - Left Aligned */}
-        <h1 className="font-medium text-foreground mb-1">
+        <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40 mb-3">Product designer · builder</p>
+        <h1 className="text-2xl md:text-3xl font-medium tracking-tight text-foreground mb-3">
           {profile.full_name || profile.username}
         </h1>
 

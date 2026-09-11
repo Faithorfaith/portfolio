@@ -464,7 +464,8 @@
 }
 .article-index { border-top: 0; }
 .article-index-link { border-bottom: 0; }
-.article-index-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 24px; align-items: baseline; padding: 14px 0; }
+.article-index-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 24px; align-items: baseline; padding: 18px 14px; border-radius: 14px; transition: background-color 160ms ease; }
+.article-index-link:hover .article-index-row, .article-index-link:focus-visible .article-index-row { background: color-mix(in oklch, var(--foreground) 5%, transparent); }
 .article-index-row h3 { width: fit-content; max-width: 100%; color: color-mix(in oklch, var(--foreground) 88%, transparent); font-size: 14px; font-weight: 400; line-height: 1.6; letter-spacing: .01em; transition: color 160ms ease; }
 .article-index-link:hover .article-index-row h3, .article-index-link:focus-visible .article-index-row h3 { color: var(--foreground); }
 .article-index-row > div > p { display: none; }

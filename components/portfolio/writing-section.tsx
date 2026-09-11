@@ -288,10 +288,11 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
       <DetailNavigation title="Writing" showCopy={false} />
       {/* Centered Content Container */}
       <div className="flex justify-center">
-        <div className="max-w-4xl w-full">
+        <div className="max-w-5xl w-full">
           {/* Section Header */}
           <div className="mb-10 max-w-xl">
-            <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Writing</h2>
+            <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">Notes, essays, and experiments</p>
+            <h2 className="mt-3 text-xl font-medium tracking-tight text-foreground">Writing</h2>
           </div>
 
           {!filteredWritings.length && <p role="status" className="py-8 text-sm text-foreground/60">No articles match. Try another search or year.</p>}
