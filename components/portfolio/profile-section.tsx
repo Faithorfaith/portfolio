@@ -199,11 +199,8 @@ export default function ProfileSection({
           </div>
         )}
 
-        {/* Name - Left Aligned */}
-        <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40 mb-3">Product designer · builder</p>
-        <h1 className="text-2xl md:text-3xl font-medium tracking-tight text-foreground mb-3">
-          {profile.full_name || profile.username}
-        </h1>
+        <p className="mb-3 text-[10px] uppercase tracking-[0.18em] text-foreground/40">Profile</p>
+        <h1 className="mb-4 text-2xl font-medium tracking-tight text-foreground md:text-3xl">{profile.full_name || profile.username}</h1>
 
       {/* Bio - Display as paragraphs */}
       {profile.bio && (

@@ -306,27 +306,12 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
         </div>
       </SectionCard>
 
-      <SectionCard title="Client positioning" description="Tell a prospective client what you do, who it is for, and whether you are available.">
+      <SectionCard title="Footer experience" description="Manage the optional audio and train media used in the footer.">
         <div className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="block">Positioning headline</label>
-            <textarea value={formData.positioning_headline} onChange={e => set('positioning_headline', e.target.value)} rows={2} placeholder="Product designer helping early-stage teams turn complex products into clear experiences." className="w-full px-3 py-2 resize-none" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="block">Supporting statement</label>
-            <textarea value={formData.supporting_statement} onChange={e => set('supporting_statement', e.target.value)} rows={2} placeholder="Focused on AI, fintech, developer tools, and infrastructure products." className="w-full px-3 py-2 resize-none" />
-          </div>
           <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5"><label className="block">Availability</label><input value={formData.availability_status} onChange={e => set('availability_status', e.target.value)} placeholder="Available for selected projects · Q4 2026" className="w-full px-3 py-2" /></div>
-            <div className="space-y-1.5"><label className="block">Primary button label</label><input value={formData.primary_cta_label} onChange={e => set('primary_cta_label', e.target.value)} placeholder="Start a project" className="w-full px-3 py-2" /></div>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5"><label className="block">Contact email</label><input type="email" value={formData.contact_email} onChange={e => set('contact_email', e.target.value)} placeholder="you@example.com" className="w-full px-3 py-2" /></div>
             <div className="space-y-1.5"><label className="block">Footer sound</label><FileUpload userId={userId} folder="train-audio" accept="audio/*" onUpload={url => set('train_music_url', url)} /><input type="url" value={formData.train_music_url} onChange={e => set('train_music_url', e.target.value)} placeholder="Or paste an audio URL" className="w-full px-3 py-2" /><p className="text-[11px] text-foreground/45">Upload MP3, WAV, or OGG. Leave blank to use the built-in Japanese-inspired loop.</p></div>
             <div className="space-y-3"><label className="block">Coach videos</label>{[1,2,3,4].map(n => <div key={n} className="space-y-1"><span className="text-[11px] text-foreground/50">Coach {n} video URL</span><input type="url" value={(formData as any)[`train_video_${n}`]} onChange={e => set(`train_video_${n}`, e.target.value)} placeholder="Paste uploaded video URL" className="w-full px-3 py-2" /></div>)}</div>
-            <div className="space-y-1.5"><label className="block">LinkedIn URL</label><input type="url" value={formData.linkedin_url} onChange={e => set('linkedin_url', e.target.value)} placeholder="https://linkedin.com/in/..." className="w-full px-3 py-2" /></div>
           </div>
-          <div className="space-y-1.5"><label className="block">Résumé URL</label><input type="url" value={formData.resume_url} onChange={e => set('resume_url', e.target.value)} placeholder="https://..." className="w-full px-3 py-2" /></div>
         </div>
       </SectionCard>
 
