@@ -24,6 +24,7 @@ export default function ProjectsManager() {
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [isAdding, setIsAdding] = useState(false)
 
   const supabase = createClient()
 
@@ -76,6 +77,7 @@ export default function ProjectsManager() {
       if (!res.ok) throw new Error(result.error || 'Failed to save')
 
       setSuccess(true)
+      setIsAdding(false)
       setFormData({ title: '', year: String(new Date().getFullYear()), type: '', link: '', description: '' })
       setTimeout(() => setSuccess(false), 3000)
       await fetchProjects()
@@ -107,13 +109,17 @@ export default function ProjectsManager() {
   const labelStyle = { color: 'var(--foreground)', opacity: 0.5 }
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <div className="flex items-center justify-between pb-1">
+    <div className="max-w-4xl space-y-8">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between pb-1">
         <div>
-          <h2 className="font-semibold text-foreground" style={{ fontSize: '16px', letterSpacing: '-0.02em' }}>Projects</h2>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--foreground)', opacity: 0.45 }}>{projects.length} total</p>
+          <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">Portfolio directory</p>
+          <h2 className="mt-2 text-2xl font-medium tracking-tight text-foreground">Projects I&apos;ve built</h2>
+          <p className="mt-1 text-sm text-foreground/50">Keep your shipped work clear, current, and easy to discover.</p>
         </div>
+        <button type="button" onClick={() => setIsAdding(true)} className="rounded-full bg-foreground px-5 py-2.5 text-xs font-medium text-background transition-opacity hover:opacity-85">Add project <span className="ml-1 text-base">＋</span></button>
       </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3"><div className="rounded-2xl border border-border/70 bg-foreground/[0.025] p-4"><p className="text-[11px] text-foreground/45">Total projects</p><p className="mt-1 text-xl font-medium">{projects.length}</p></div><div className="rounded-2xl border border-border/70 bg-foreground/[0.025] p-4"><p className="text-[11px] text-foreground/45">With live links</p><p className="mt-1 text-xl font-medium">{projects.filter(project => project.link).length}</p></div><div className="rounded-2xl border border-border/70 bg-foreground/[0.025] p-4"><p className="text-[11px] text-foreground/45">Latest year</p><p className="mt-1 text-xl font-medium">{projects[0]?.year || '—'}</p></div></div>
 
       {error && (
         <div className="flex items-center gap-2 p-3 rounded-lg text-sm" style={{ background: 'oklch(0.97 0.01 27)', border: '1px solid oklch(0.92 0.03 27)', color: 'oklch(0.5 0.18 27)' }}>
@@ -133,10 +139,11 @@ export default function ProjectsManager() {
       )}
 
       {/* Add Project Form */}
-      <div className="rounded-xl overflow-hidden" style={{ border: '1px solid oklch(0.91 0 0)', boxShadow: '0 1px 2px oklch(0 0 0 / 0.04)' }}>
-        <div className="px-6 py-4 border-b" style={{ borderColor: 'oklch(0.93 0 0)', background: 'oklch(0.985 0 0)' }}>
-          <p className="text-sm font-semibold text-foreground" style={{ letterSpacing: '-0.01em' }}>Add Project</p>
+      {isAdding && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/25 p-4 backdrop-blur-md" onMouseDown={(event) => { if (event.target === event.currentTarget) setIsAdding(false) }}><div className="max-h-[85dvh] w-full max-w-xl overflow-y-auto rounded-[28px] border border-border/70 bg-background shadow-2xl">
+        <div className="flex items-start justify-between border-b px-6 py-5" style={{ borderColor: 'oklch(0.93 0 0)', background: 'oklch(0.985 0 0)' }}>
+          <div><p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">New entry</p><p className="mt-1 text-lg font-medium text-foreground">Add project</p>
           <p className="text-xs mt-0.5" style={{ color: 'var(--foreground)', opacity: 0.45 }}>Appears in the Projects section of your portfolio</p>
+          </div><button type="button" onClick={() => setIsAdding(false)} className="text-2xl text-foreground/40 hover:text-foreground">×</button>
         </div>
         <div className="px-6 py-5 space-y-4" style={{ background: 'oklch(1 0 0)' }}>
           <div className="space-y-1.5">
@@ -173,7 +180,7 @@ export default function ProjectsManager() {
             </button>
           </div>
         </div>
-      </div>
+      </div></div>}
 
       {/* Projects List */}
       <div>
