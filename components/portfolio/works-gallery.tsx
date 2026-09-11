@@ -280,7 +280,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                 return (
                   <div key={work.id}>
                     <div className="group w-full">
-                      <div className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-foreground/5 ring-1 ring-transparent group-hover:ring-foreground/25 transition-[box-shadow,filter] duration-200 group-hover:brightness-[0.98]">
+                      <div className="relative w-full aspect-[3/4] rounded-md overflow-hidden bg-foreground/5 ring-1 ring-transparent group-hover:ring-foreground/25 transition-[box-shadow,filter] duration-200 group-hover:brightness-[0.98]">
                         {coverImage ? (
                           <ProgressiveImage
                             src={coverImage}
