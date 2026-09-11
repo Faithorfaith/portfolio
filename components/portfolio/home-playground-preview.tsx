@@ -4,14 +4,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Work } from './works-gallery'
 
-const tileClass = 'w-[190px] aspect-[4/3]'
+const tileClass = 'w-[250px] aspect-[4/3]'
 const cover = (work: Work) => work.thumbnail_url || (!work.media_type?.startsWith('video') ? work.media_url : null)
 
 function ConveyorCard({ work, index, duplicate = false }: { work: Work; index: number; duplicate?: boolean }) {
   const image = cover(work)
   const video = work.media_type?.startsWith('video') && work.media_url
   return <Link href={`/playground?work=${encodeURIComponent(work.id)}`} aria-label={duplicate ? undefined : `View ${work.title} in Playground`} aria-hidden={duplicate || undefined} tabIndex={duplicate ? -1 : undefined} className={`playground-conveyor-card group relative block shrink-0 overflow-hidden rounded-md bg-foreground/5 ${tileClass}`}>
-    {image ? <Image src={image.split('#')[0]} alt={duplicate ? '' : work.title} fill sizes="190px" className="object-cover" /> : video ? <video src={work.media_url || undefined} muted playsInline loop preload="metadata" onMouseEnter={event => void event.currentTarget.play()} onMouseLeave={event => { event.currentTarget.pause(); event.currentTarget.currentTime = 0 }} /> : <span className="grid h-full place-items-center p-3 text-center text-xs text-foreground/45" aria-hidden="true" />}
+    {image ? <Image src={image.split('#')[0]} alt={duplicate ? '' : work.title} fill sizes="250px" className="object-cover" /> : video ? <video src={work.media_url || undefined} muted playsInline loop preload="metadata" onMouseEnter={event => void event.currentTarget.play()} onMouseLeave={event => { event.currentTarget.pause(); event.currentTarget.currentTime = 0 }} /> : <span className="grid h-full place-items-center p-3 text-center text-xs text-foreground/45" aria-hidden="true" />}
   </Link>
 }
 
