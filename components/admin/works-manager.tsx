@@ -261,7 +261,8 @@ export default function WorksManager({ userId }: WorksManagerProps) {
 
       {/* Add Form */}
       {isAdding && (
-        <div className="rounded-3xl border border-border/70 bg-background/60 p-5 sm:p-7">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/20 p-4 backdrop-blur-sm" onMouseDown={(event) => { if (event.target === event.currentTarget) resetForm() }}>
+        <div className="max-h-[90dvh] w-full max-w-xl overflow-y-auto rounded-3xl border border-border/70 bg-background p-5 shadow-2xl sm:p-7">
           <div className="mb-6 flex items-start justify-between gap-4">
             <div><p className="text-[11px] uppercase tracking-[0.16em] text-foreground/40">{editingId ? 'Update item' : 'New upload'}</p><h3 className="mt-1 text-lg font-medium text-foreground">{editingId ? 'Edit Playground media' : 'Add Playground media'}</h3></div>
             <button type="button" onClick={resetForm} className="text-xs text-foreground/45 hover:text-foreground">Cancel</button>
@@ -321,6 +322,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
               </Button>
             </div>
           </div>
+        </div>
         </div>
       )}
 
