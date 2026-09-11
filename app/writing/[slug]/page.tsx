@@ -8,9 +8,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const writings = await getPublicWritings()
   const requestedSlug = decodeURIComponent(slug)
   const article = writings.find((item) => item.slug === requestedSlug || slugify(item.title) === requestedSlug)
-  if (!article) return { title: 'Writing — Faith Awokunle' }
+  if (!article) return { title: 'Writing - Faith Awokunle' }
   return {
-    title: `${article.title} — Faith Awokunle`,
+    title: `${article.title} - Faith Awokunle`,
     description: article.excerpt || `An article by Faith Awokunle: ${article.title}`,
     openGraph: {
       title: article.title,

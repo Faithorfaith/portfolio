@@ -12,14 +12,14 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Faith Awokunle — Product Designer',
+  title: 'Faith Awokunle - Product Designer',
   description: 'Product designer turning complex digital products into clear, usable experiences across strategy, UX, interface design, and prototyping.',
   icons: {
     icon: { url: '/favicon.ico', type: 'image/png' },
     shortcut: '/favicon.ico',
   },
   openGraph: {
-    title: 'Faith Awokunle — Product Designer',
+    title: 'Faith Awokunle - Product Designer',
     description: 'Selected product design work, case studies, and writing about making complex products clear and usable.',
     type: 'website',
   },

@@ -2,7 +2,7 @@ import WorksGallery from '@/components/portfolio/works-gallery'
 import { getPublicWorks } from '@/lib/public-portfolio-data'
 
 export const metadata = {
-  title: 'Playground — Faith Awokunle',
+  title: 'Playground - Faith Awokunle',
   description: 'Design experiments, visual explorations, and independent projects by Faith Awokunle.',
 }
 
