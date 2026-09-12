@@ -28,6 +28,16 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
   const closeRef = useRef<HTMLButtonElement>(null)
   const dialogRef = useRef<HTMLDialogElement>(null)
   const audioRef = useRef<AudioContext | null>(null)
+  const footerRef = useRef<HTMLElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const footer = footerRef.current
+    if (!footer) return
+    const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), { rootMargin: '240px 0px' })
+    observer.observe(footer)
+    return () => observer.disconnect()
+  }, [])
 
   const stopAmbience = () => { void audioRef.current?.close(); audioRef.current = null; setSoundOn(false) }
   const startAmbience = () => {
@@ -71,7 +81,7 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
   }
 
   return <>
-    <footer className="train-footer" aria-label="Explore the portfolio train">
+    <footer ref={footerRef} className={`train-footer ${isVisible ? 'is-visible' : ''}`} aria-label="Explore the portfolio train">
       <div className="train-viewport">
         <div className="train-sky" aria-hidden="true"><span /><span /></div>
         <div className="train-scenery" aria-hidden="true"><i /><i /><i /></div>

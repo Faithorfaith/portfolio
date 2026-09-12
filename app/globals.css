@@ -705,6 +705,10 @@
 .train-real-door:hover span, .train-real-door:focus-visible span { opacity: 1; }
 .train-vapor { position: absolute; right: 10%; top: -8px; pointer-events: none; }
 .train-vapor i { position: absolute; width: 17px; height: 10px; border-radius: 50%; background: #ffffffa0; filter: blur(3px); animation: train-vapor 3s ease-out infinite; }
+.train-footer:not(.is-visible) .train-motion,
+.train-footer:not(.is-visible) .train-vapor i,
+.train-footer:not(.is-visible) .train-sky::before,
+.train-footer:not(.is-visible) .train-sky::after { animation-play-state: paused !important; }
 .train-vapor i:nth-child(2) { animation-delay: -1s; }.train-vapor i:nth-child(3) { animation-delay: -2s; }
 @keyframes train-vapor { from { opacity: 0; transform: translate(0,0) scale(.6); } 20% { opacity: .6; } to { opacity: 0; transform: translate(-80px,-65px) scale(3.5); } }
 .carriage-experience { width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; border: 0; background: #f7f7f4; color: #242424; }

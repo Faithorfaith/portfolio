@@ -11,7 +11,7 @@ function ConveyorCard({ work, index, duplicate = false }: { work: Work; index: n
   const image = cover(work)
   const video = work.media_type?.startsWith('video') && work.media_url
   return <Link href={`/playground?work=${encodeURIComponent(work.id)}`} aria-label={duplicate ? undefined : `View ${work.title} in Playground`} aria-hidden={duplicate || undefined} tabIndex={duplicate ? -1 : undefined} className={`playground-conveyor-card group relative block shrink-0 overflow-hidden rounded-md bg-foreground/5 ${tileClass}`}>
-    {image ? <Image src={image.split('#')[0]} alt={duplicate ? '' : work.title} fill sizes="250px" className="object-cover" /> : video ? <video src={work.media_url || undefined} muted playsInline loop preload="metadata" onMouseEnter={event => void event.currentTarget.play()} onMouseLeave={event => { event.currentTarget.pause(); event.currentTarget.currentTime = 0 }} /> : <span className="grid h-full place-items-center p-3 text-center text-xs text-foreground/45" aria-hidden="true" />}
+    {image ? <Image src={image.split('#')[0]} alt={duplicate ? '' : work.title} fill sizes="(max-width: 639px) 46vw, (max-width: 1023px) 300px, 210px" quality={68} className="object-cover" /> : video ? <video src={work.media_url || undefined} muted playsInline loop preload="none" onMouseEnter={event => void event.currentTarget.play()} onMouseLeave={event => { event.currentTarget.pause(); event.currentTarget.currentTime = 0 }} /> : <span className="grid h-full place-items-center p-3 text-center text-xs text-foreground/45" aria-hidden="true" />}
   </Link>
 }
 
