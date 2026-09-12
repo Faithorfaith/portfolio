@@ -746,8 +746,7 @@
   .homepage-contact { display: block; padding-top: 4px; }
   .homepage-contact-question { margin-bottom: 8px; }
   .homepage-contact-action { align-items: center; gap: 8px; }
-.homepage-contact-closing { flex-basis: 100%; font-size: 11px; margin-top: -2px; }
-.homepage-contact-closing { font-size: inherit; }
+.homepage-contact-closing { flex-basis: auto; font-size: inherit; margin-top: 0; }
 .carriage-close { border: 0 !important; outline: 0; box-shadow: none !important; font-size: 18px; line-height: 1; padding: 2px 4px !important; }
 .carriage-close:focus-visible { outline: none !important; box-shadow: none !important; }
 }
