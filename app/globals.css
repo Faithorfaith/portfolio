@@ -485,6 +485,7 @@
   .playground-conveyor-track, .playground-conveyor-lane.is-reverse .playground-conveyor-track { animation: none; }
   .playground-conveyor-track .playground-conveyor-set:last-child { display: none; }
   .playground-conveyor-card { width: 80vw; max-width: 280px; min-width: 210px; }
+  .playground-reference-card .playground-conveyor-card { width: 100%; min-width: 0; max-width: none; }
 }
 .article-index { border-top: 0; }
 .article-index-link { border-bottom: 0; }
