@@ -220,7 +220,6 @@ export default function ProfileSection({
       <div className="homepage-contact mb-20 pt-2">
         <p className="homepage-contact-question">Got something in mind?</p>
         <div className="homepage-contact-action">
-          <span>Reach out at</span>
           <a
             href={`mailto:${contactEmail}`}
             onClick={() => track('contact_email_opened', { location: 'homepage' })}
