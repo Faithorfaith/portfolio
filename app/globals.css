@@ -638,6 +638,11 @@
   .train-door, .train-motion { transition: none; }
 }
 
+/* Subpage metadata and reading progress. */
+.writing-reading-progress { position: fixed; inset: 0 auto auto 0; z-index: 70; height: 2px; background: var(--foreground); transition: width 120ms linear; }
+.workflow-file-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; color: color-mix(in oklch, var(--foreground) 48%, transparent); font-size: 10px; }
+.workflow-file-meta b { color: var(--foreground); font-weight: 500; }
+
 /* Dimensional train asset and continuous journey. */
 .train-viewport { height: 238px; }
 .train-sky { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(180deg, #74cfe9 0%, #c9edf7 62%, #f8faf7 100%); }
