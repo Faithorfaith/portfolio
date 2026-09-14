@@ -493,6 +493,8 @@
 .playground-viewer-controls { position: absolute; inset: auto 0 0; z-index: 3; width: 100% !important; height: 118px; min-height: 0 !important; padding: 12px 20px !important; display: flex; align-items: center; justify-content: center; background: linear-gradient(transparent, color-mix(in oklch, var(--background) 96%, transparent)); overflow: visible !important; }
 .playground-viewer-thumbnails { scrollbar-width: none; }
 .playground-viewer-thumbnails::-webkit-scrollbar { display: none; }
+.playground-nav-button { color: var(--foreground) !important; font-size: 22px; }
+.playground-nav-button:disabled { opacity: .25; }
 .playground-viewer-controls > .flex-1 { display: none; }
 .playground-viewer-shell .md\:w-1\/3 { background: var(--background); }
 .playground-viewer-shell .rail-control { color: #fff; }

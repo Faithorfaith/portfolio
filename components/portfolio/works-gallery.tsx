@@ -451,15 +451,15 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
               {/* Minimal controls; Playground stays media-first. */}
               <div className="playground-viewer-controls p-4 md:p-6 flex flex-col">
                 <div className="flex items-center gap-5 mb-3">
-                  <button type="button" className="rail-control" aria-label="Previous project" disabled={works[0]?.id === selectedWork!.id} onClick={() => stepWork(-1)}>←</button>
+                  <button type="button" className="rail-control playground-nav-button" aria-label="Previous project" disabled={works[0]?.id === selectedWork!.id} onClick={() => stepWork(-1)}>←</button>
                   <span className="text-xs text-foreground/60 tabular-nums">{works.findIndex((work) => work.id === selectedWork!.id) + 1} / {works.length}</span>
-                  <button type="button" className="rail-control" aria-label="Next project" disabled={works.at(-1)?.id === selectedWork!.id} onClick={() => stepWork(1)}>→</button>
+                  <button type="button" className="rail-control playground-nav-button" aria-label="Next project" disabled={works.at(-1)?.id === selectedWork!.id} onClick={() => stepWork(1)}>→</button>
                 </div>
                 <div className="flex-1" />
                 <div className="playground-viewer-thumbnails flex max-w-full items-center gap-1.5 overflow-x-auto pb-1">
                   {works.map((work) => {
                     const thumb = getCoverImage(work) || work.media_url
-                    return <button key={work.id} type="button" onClick={() => setSelectedWork(work)} aria-label={`Open ${work.title}`} className={`h-20 w-16 shrink-0 overflow-hidden rounded-lg ${work.id === selectedWork!.id ? 'ring-2 ring-white' : 'opacity-60 hover:opacity-100'}`}>
+                    return <button key={work.id} type="button" onClick={() => setSelectedWork(work)} aria-label={`Open ${work.title}`} className={`h-20 w-16 shrink-0 overflow-hidden rounded-lg ${work.id === selectedWork!.id ? 'ring-2 ring-black' : 'opacity-60 grayscale hover:opacity-100 hover:grayscale-0'}`}>
                       {thumb ? <img src={thumb} alt="" className="h-full w-full object-cover" /> : <span className="block h-full w-full bg-white/10" />}
                     </button>
                   })}
