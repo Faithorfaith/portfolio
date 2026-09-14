@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-export default function HomePresence({ currentFocus, deskNote, listening }: { currentFocus?: string | null; deskNote?: string | null; listening?: boolean }) {
+export default function HomePresence({ deskNote, listening }: { currentFocus?: string | null; deskNote?: string | null; listening?: boolean }) {
   const [lagosTime, setLagosTime] = useState('')
   const [greeting, setGreeting] = useState('')
 
@@ -26,7 +26,6 @@ export default function HomePresence({ currentFocus, deskNote, listening }: { cu
   return <aside className="home-presence" aria-label="A note from Faith's desk">
     <div className="home-presence-meta">
       <span><i aria-hidden="true" /> {greeting || 'Lagos'}{lagosTime ? ` · ${lagosTime}` : ''}</span>
-      <span>Currently · {currentFocus || 'Making thoughtful things for the web'}</span>
     </div>
     {deskNote && <p><span>On my desk</span>{deskNote}</p>}
     {listening && <p className="home-presence-listening"><span>Currently listening</span>Soft sounds from the footer journey</p>}

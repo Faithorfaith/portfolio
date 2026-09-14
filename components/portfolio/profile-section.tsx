@@ -201,10 +201,7 @@ export default function ProfileSection({
           </div>
         )}
 
-        <div className="profile-heading-row">
-          <h1 className="mb-4 text-sm font-medium tracking-tight text-foreground md:text-lg">{profile.full_name || profile.username}</h1>
-          <HomePresence currentFocus={profile.availability_status} deskNote={profile.supporting_statement} listening={Boolean(profile.train_music_url)} />
-        </div>
+        <h1 className="mb-4 text-sm font-medium tracking-tight text-foreground md:text-lg">{profile.full_name || profile.username}</h1>
 
       {/* Bio - Display as paragraphs */}
       {profile.bio && (
@@ -221,6 +218,8 @@ export default function ProfileSection({
           </div>
         </div>
       )}
+
+      <HomePresence deskNote={profile.supporting_statement} listening={Boolean(profile.train_music_url)} />
 
       <div className="homepage-contact mb-20 pt-2">
         <p className="homepage-contact-question">Got something in mind?</p>

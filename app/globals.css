@@ -473,13 +473,14 @@
 .playground-reference-card:hover { transform: translateY(-3px); box-shadow: 0 16px 38px rgb(0 0 0 / 7%); }
 .playground-reference-card .playground-conveyor-card { width: 100%; height: 100%; min-height: 0; max-height: none; border-radius: 32px; }
 .playground-reference-card .playground-conveyor-card img, .playground-reference-card .playground-conveyor-card video { border-radius: 32px; }
-.playground-full-grid > div { overflow: hidden; border-radius: 28px; background: transparent; }
+.playground-full-grid { gap: 12px; }
+.playground-full-grid > div { overflow: hidden; aspect-ratio: 1 / 1; border-radius: 28px; background: transparent; }
 .playground-full-grid > div .group { transition: transform 240ms var(--ease-out); }
 .playground-full-grid > div:hover .group { transform: translateY(-3px); }
 .playground-pan-surface { scroll-behavior: smooth; overscroll-behavior-inline: contain; touch-action: pan-x pan-y; }
 .playground-full-grid { grid-auto-flow: row; }
 .playground-full-grid > div > button { height: 100%; }
-.playground-full-grid > div .relative { border-radius: 28px; }
+.playground-full-grid > div .relative { height: 100%; aspect-ratio: 1 / 1; border-radius: 28px; }
 @media (min-width: 1024px) {
   .playground-full-grid { grid-template-rows: none; }
   .playground-full-grid > div:nth-child(1) { transform: scale(1.04); z-index: 2; }
@@ -809,11 +810,10 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 /* A lived-in homepage: quiet signals of place, time and continuity. */
 .digital-home { position: relative; isolation: isolate; }
 .digital-home > * { position: relative; z-index: 1; }
-.profile-heading-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 0 16px; }
 .home-presence {
   width: fit-content;
   max-width: 100%;
-  margin: -7px 0 25px;
+  margin: 0 0 25px;
   padding: 0;
   background: transparent;
 }
@@ -838,7 +838,6 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .article-index-row h3 .home-new-marker { margin: 0 0 0 9px; vertical-align: 1px; }
 
 @media (max-width: 760px) {
-  .profile-heading-row { display: block; }
   .home-presence { margin-bottom: 22px; }
   .home-presence-meta { align-items: flex-start; flex-direction: column; gap: 5px; }
 }
