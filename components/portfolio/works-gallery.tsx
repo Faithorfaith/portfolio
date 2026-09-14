@@ -295,8 +295,8 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
         <div className="w-full">
           {/* Section Header */}
           <div className="mb-10 max-w-2xl">
-            <h1 className="text-3xl md:text-5xl font-normal leading-tight tracking-[-0.03em] text-foreground">Playground</h1>
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-foreground/60">A visual archive of experiments, interfaces, and small ideas.</p>
+            <h1 className="text-xl md:text-2xl font-normal leading-tight tracking-[-0.02em] text-foreground">Playground</h1>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-foreground/60">A visual archive of experiments, interfaces, and small ideas.</p>
           </div>
 
           {/* Image wall: Playground media is intentionally label-free. */}
