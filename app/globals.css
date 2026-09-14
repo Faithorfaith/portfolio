@@ -802,9 +802,11 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 /* A lived-in homepage: quiet signals of place, time and continuity. */
 .digital-home { position: relative; isolation: isolate; }
 .digital-home > * { position: relative; z-index: 1; }
+.profile-heading-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 0 16px; }
 .home-presence {
-  width: min(100%, 610px);
-  margin: -3px 0 25px;
+  width: fit-content;
+  max-width: 100%;
+  margin: -7px 0 25px;
   padding: 11px 13px 12px;
   border-radius: 9px;
   background: color-mix(in oklch, var(--foreground) 2.6%, transparent);
@@ -818,6 +820,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .article-index-row h3 .home-new-marker { margin: 0 0 0 9px; vertical-align: 1px; }
 
 @media (max-width: 760px) {
+  .profile-heading-row { display: block; }
   .home-presence { margin-bottom: 22px; }
   .home-presence-meta { align-items: flex-start; flex-direction: column; gap: 5px; }
 }

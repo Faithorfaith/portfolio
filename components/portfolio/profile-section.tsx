@@ -201,9 +201,10 @@ export default function ProfileSection({
           </div>
         )}
 
-        <h1 className="mb-4 text-xl font-medium tracking-tight text-foreground md:text-2xl">{profile.full_name || profile.username}</h1>
-
-        <HomePresence currentFocus={profile.availability_status} deskNote={profile.supporting_statement} />
+        <div className="profile-heading-row">
+          <h1 className="mb-4 text-sm font-medium tracking-tight text-foreground md:text-lg">{profile.full_name || profile.username}</h1>
+          <HomePresence currentFocus={profile.availability_status} deskNote={profile.supporting_statement} />
+        </div>
 
       {/* Bio - Display as paragraphs */}
       {profile.bio && (
