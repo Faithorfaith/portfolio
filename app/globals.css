@@ -286,13 +286,7 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  main > * {
-    animation: pageReveal 600ms cubic-bezier(.22,1,.36,1) both;
-  }
-  main > *:nth-child(2) { animation-delay: 80ms; }
-  main > *:nth-child(3) { animation-delay: 160ms; }
-  main > *:nth-child(4) { animation-delay: 240ms; }
-  main > *:nth-child(5) { animation-delay: 320ms; }
+  /* Route entrance is orchestrated in JS so content below the fold does not animate at load. */
 
   /* Smooth hero transition — already driven by CSS classes */
   .hero-img-1,
@@ -329,8 +323,10 @@
 
   .editorial-title { font-size: 18px; line-height: 1.35; font-weight: 500; letter-spacing: -0.01em; }
   .editorial-label { font-size: 11px; line-height: 1.4; letter-spacing: 0.01em; }
-  .interactive-row { transition: color var(--motion-fast) ease, background-color var(--motion-fast) ease, transform var(--motion-fast) ease; }
-  .interactive-row:hover { transform: translateX(2px); }
+.interactive-row { transition: color var(--motion-fast) ease, background-color var(--motion-fast) ease, transform var(--motion-fast) ease; }
+.interactive-row:hover { transform: translateX(4px); }
+.interactive-row > span:first-child { transition: transform 180ms var(--ease-out), background-color 180ms ease, border-color 180ms ease; }
+.interactive-row:hover > span:first-child, .interactive-row:focus-visible > span:first-child { transform: scale(1.35); background: var(--foreground); border-color: var(--foreground); }
 
   .rail-control {
     display: inline-grid;
@@ -343,10 +339,12 @@
   }
   .rail-control:hover:not(:disabled) { background: var(--muted); }
   .rail-control:disabled { opacity: 0.25; }
-  .case-study-rail { overscroll-behavior-x: contain; }
-  .case-study-rail-card img { transition: transform 240ms var(--ease-out); }
+.case-study-rail { overscroll-behavior-x: contain; }
+.case-study-rail-card { transition: transform 220ms var(--ease-out); }
+.case-study-rail-card img { transition: transform 300ms var(--ease-out), filter 220ms ease; }
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .case-study-rail-card:hover img { transform: scale(1.025); }
+    .case-study-rail-card:hover { transform: translateY(-3px); }
+    .case-study-rail-card:hover img { transform: scale(1.025); filter: brightness(.96); }
   }
   @media (hover: none) {
     .interactive-row:hover { transform: none; }
@@ -428,7 +426,7 @@
 .document-settings::backdrop { background: rgb(0 0 0 / .2); }
 .document-settings summary { cursor: pointer; font-size: 12px; padding: 12px 0; }
 .article-prose { overflow-wrap: anywhere; letter-spacing: .01em; }
-.work-action-label { display: none; }
+.work-action-label { display: inline-flex; opacity: 0; transform: translateY(4px); transition: opacity 180ms ease, transform 220ms var(--ease-out); }
 .homepage-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: color-mix(in oklch, var(--foreground) 70%, transparent); }
 .homepage-contact-question, .homepage-contact-action { color: inherit; }
 .admin-mobile-nav { display: none; }
@@ -451,11 +449,29 @@
 .bio-inline-card small { margin-top: 3px; color: color-mix(in oklch, var(--foreground) 58%, transparent); font-size: 11px; line-height: 1.45; }
 .bio-inline-tag:hover .bio-inline-card, .bio-inline-tag:focus-within .bio-inline-card, .bio-inline-tag:focus .bio-inline-card { opacity: 1; transform: translate(-50%, 0); }
 .portfolio-deferred { content-visibility: visible; }
+.motion-managed { opacity: 0; transform: translateY(14px); transition: opacity 420ms var(--ease-out) var(--reveal-delay, 0ms), transform 420ms var(--ease-out) var(--reveal-delay, 0ms); }
+.motion-managed.is-revealed { opacity: 1; transform: translateY(0); }
+.motion-media { transform-origin: center; }
+.motion-media.motion-managed { transform: translateY(12px) scale(.985); }
+.motion-media.motion-managed.is-revealed { transform: translateY(0) scale(1); }
+
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: 160ms ease both motion-route-out; }
+::view-transition-new(root) { animation: 320ms var(--ease-out) both motion-route-in; }
+@keyframes motion-route-out { to { opacity: .72; transform: translateY(-4px); } }
+@keyframes motion-route-in { from { opacity: .72; transform: translateY(8px); } }
+
+:where(a, button).is-pressing { transform: scale(.975); }
+:where(a, button) { -webkit-tap-highlight-color: transparent; }
 .playground-conveyor { width: min(100%, 1200px); margin-inline: auto; display: grid; gap: 10px; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
-.playground-reference-card { min-width: 0; min-height: 0; overflow: hidden; border-radius: 32px; background: color-mix(in oklch, var(--foreground) 5%, transparent); }
+.playground-reference-card { min-width: 0; min-height: 0; overflow: hidden; border-radius: 32px; background: color-mix(in oklch, var(--foreground) 5%, transparent); transition: transform 260ms var(--ease-out), box-shadow 260ms var(--ease-out); }
+.playground-reference-card:hover { transform: translateY(-3px); box-shadow: 0 16px 38px rgb(0 0 0 / 7%); }
 .playground-reference-card .playground-conveyor-card { width: 100%; height: 100%; min-height: 0; max-height: none; border-radius: 32px; }
 .playground-reference-card .playground-conveyor-card img, .playground-reference-card .playground-conveyor-card video { border-radius: 32px; }
 .playground-full-grid > div { overflow: hidden; border-radius: 28px; background: transparent; }
+.playground-full-grid > div .group { transition: transform 240ms var(--ease-out); }
+.playground-full-grid > div:hover .group { transform: translateY(-3px); }
+.playground-pan-surface { scroll-behavior: smooth; overscroll-behavior-inline: contain; touch-action: pan-x pan-y; }
 .playground-full-grid { grid-auto-flow: row; }
 .playground-full-grid > div > button { height: 100%; }
 .playground-full-grid > div .relative { border-radius: 28px; }
@@ -489,17 +505,20 @@
 }
 .article-index { border-top: 0; }
 .article-index-link { border-bottom: 0; }
-.article-index-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 24px; align-items: baseline; padding: 18px 14px; border-radius: 14px; transition: background-color 160ms ease; }
+.article-index-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 24px; align-items: baseline; padding: 18px 14px; border-radius: 14px; transition: background-color 160ms ease, transform 200ms var(--ease-out); }
 .article-index-link:hover .article-index-row, .article-index-link:focus-visible .article-index-row { background: color-mix(in oklch, var(--foreground) 5%, transparent); }
+.article-index-link:hover .article-index-row, .article-index-link:focus-visible .article-index-row { transform: translateX(4px); }
 .article-index-row h3 { width: fit-content; max-width: 100%; color: color-mix(in oklch, var(--foreground) 88%, transparent); font-size: 14px; font-weight: 400; line-height: 1.6; letter-spacing: .01em; transition: color 160ms ease; }
 .article-index-link:hover .article-index-row h3, .article-index-link:focus-visible .article-index-row h3 { color: var(--foreground); }
 .article-index-row > div > p { display: none; }
-.article-index-time { color: color-mix(in oklch, var(--foreground) 48%, transparent); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.article-index-time { color: color-mix(in oklch, var(--foreground) 48%, transparent); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; transition: color 160ms ease; }
+.article-index-link:hover .article-index-time, .article-index-link:focus-visible .article-index-time { color: color-mix(in oklch, var(--foreground) 72%, transparent); }
 .article-index-year { grid-column: 1; color: color-mix(in oklch, var(--foreground) 40%, transparent); font-size: 10px; line-height: 1; font-variant-numeric: tabular-nums; }
 .writing-handwritten-section { font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; font-size: 1.12em; line-height: 1.75; letter-spacing: .005em; }
 .writing-handwritten-article .article-prose, .writing-handwritten-article blockquote { font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; font-size: 1.12em; line-height: 1.75; }
 .writing-page-shell { min-height: 100dvh; width: 100%; }
 .detail-navigation { position: fixed; }
+.detail-navigation a, .detail-navigation button { transition: color 160ms ease, background-color 160ms ease, transform 180ms var(--ease-out); }
 .detail-navigation::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100vw; height: 1px; background: color-mix(in oklch, var(--foreground) 8%, transparent); }
 .writing-content-rail { width: min(100%, 600px); margin-inline: auto; }
 .writing-page-shell article > header { position: relative; border-bottom: 0 !important; }
@@ -508,14 +527,19 @@
 .workflow-file-list { border: 0; }
 .workflow-file-dialog .workflow-dialog-close { border: 0 !important; outline: none !important; box-shadow: none !important; background: transparent; }
 .workflow-file-dialog .workflow-dialog-close:focus-visible { outline: none !important; box-shadow: none !important; }
-.workflow-file-row { width: 100%; display: grid; grid-template-columns: 36px minmax(0,1fr) auto; align-items: center; gap: 14px; padding: 14px 0; border: 0; text-align: left; }
+.workflow-file-row { width: 100%; display: grid; grid-template-columns: 36px minmax(0,1fr) auto; align-items: center; gap: 14px; padding: 14px 8px; border: 0; border-radius: 10px; text-align: left; transition: background-color 160ms ease, transform 220ms var(--ease-out); }
+.workflow-file-row:hover, .workflow-file-row:focus-visible { background: color-mix(in oklch, var(--foreground) 4%, transparent); transform: translateY(-2px); }
+.workflow-file-row .workflow-file-glyph { transition: transform 220ms var(--ease-out); }
+.workflow-file-row:hover .workflow-file-glyph, .workflow-file-row:focus-visible .workflow-file-glyph { transform: translateY(-2px) rotate(-2deg); }
 .workflow-version-history { border-top: 0; }
 .workflow-version-history > div { grid-template-columns: 48px 1fr auto; border-bottom: 0; padding: 10px 0; align-items: start; }
 .workflow-version-history > div > span { display: grid; gap: 3px; }.workflow-version-history > div > span small { color: color-mix(in oklch, var(--foreground) 42%, transparent); font-size: 10px; }.workflow-version-history > div > span strong { font-size: 12px; font-weight: 400; }
 .workflow-file-row:last-child { border-bottom: 0; }
 .workflow-file-row strong { display: block; font-size: 14px; font-weight: 400; }.workflow-file-row small { display: block; margin-top: 2px; color: color-mix(in oklch, var(--foreground) 48%, transparent); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }.workflow-file-row em { color: color-mix(in oklch, var(--foreground) 45%, transparent); font-size: 11px; font-style: normal; }
 .workflow-file-glyph { position: relative; width: 28px; height: 34px; display: grid; place-items: end center; padding-bottom: 5px; border: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent); border-radius: 3px; background: var(--background); }.workflow-file-glyph::after { content: ''; position: absolute; right: -1px; top: -1px; width: 9px; height: 9px; border-left: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent); border-bottom: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent); background: var(--background); }.workflow-file-glyph i { font-size: 7px; font-style: normal; }
-.workflow-file-dialog { margin: auto; width: min(560px, calc(100% - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--border); border-radius: 10px; background: var(--background); color: var(--foreground); box-shadow: 0 24px 90px #0002; }.workflow-file-dialog::backdrop { background: #0003; backdrop-filter: blur(4px); }.workflow-file-dialog > div { padding: 24px; }.workflow-file-dialog header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 28px; }.workflow-file-dialog header button { width: 32px; height: 32px; border-radius: 50%; font-size: 18px; color: color-mix(in oklch, var(--foreground) 55%, transparent); }.workflow-file-dialog h2 { margin-top: 6px; font-size: 18px; font-weight: 500; }.workflow-file-dialog h2 + p { margin-top: 10px; color: color-mix(in oklch, var(--foreground) 60%, transparent); font-size: 14px; line-height: 1.7; }.workflow-download { position: sticky; top: 0; display: inline-flex; margin-top: 22px; padding: 9px 12px; border-radius: 7px; background: var(--foreground); color: var(--background); font-size: 12px; }.workflow-version-history { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border); }.workflow-version-history h3 { margin-bottom: 8px; font-size: 12px; font-weight: 500; }.workflow-version-history > div { display: grid; grid-template-columns: 30px 1fr auto 18px; gap: 8px; padding: 10px 0; border-bottom: 1px solid color-mix(in oklch, var(--foreground) 8%, transparent); font-size: 11px; }.workflow-version-history time { color: color-mix(in oklch, var(--foreground) 42%, transparent); }
+.workflow-file-dialog { margin: auto; width: min(560px, calc(100% - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--border); border-radius: 10px; background: var(--background); color: var(--foreground); box-shadow: 0 24px 90px #0002; animation: motion-dialog-in 300ms var(--ease-out) both; }.workflow-file-dialog::backdrop { background: #0003; backdrop-filter: blur(4px); animation: motion-backdrop-in 220ms ease both; }.workflow-file-dialog > div { padding: 24px; }.workflow-file-dialog header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 28px; }.workflow-file-dialog header button { width: 32px; height: 32px; border-radius: 50%; font-size: 18px; color: color-mix(in oklch, var(--foreground) 55%, transparent); }.workflow-file-dialog h2 { margin-top: 6px; font-size: 18px; font-weight: 500; }.workflow-file-dialog h2 + p { margin-top: 10px; color: color-mix(in oklch, var(--foreground) 60%, transparent); font-size: 14px; line-height: 1.7; }.workflow-download { position: sticky; top: 0; display: inline-flex; margin-top: 22px; padding: 9px 12px; border-radius: 7px; background: var(--foreground); color: var(--background); font-size: 12px; }.workflow-version-history { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border); }.workflow-version-history h3 { margin-bottom: 8px; font-size: 12px; font-weight: 500; }.workflow-version-history > div { display: grid; grid-template-columns: 30px 1fr auto 18px; gap: 8px; padding: 10px 0; border-bottom: 1px solid color-mix(in oklch, var(--foreground) 8%, transparent); font-size: 11px; }.workflow-version-history time { color: color-mix(in oklch, var(--foreground) 42%, transparent); }
+@keyframes motion-dialog-in { from { opacity: 0; transform: translateY(12px) scale(.975); } }
+@keyframes motion-backdrop-in { from { opacity: 0; } }
 .writing-appearance-panel { display: grid; gap: 18px; padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: color-mix(in oklch, var(--background) 96%, var(--foreground)); }
 .writing-appearance-panel h3 { font-size: 13px; font-weight: 500; }
 .writing-appearance-panel h3 + p { margin-top: 3px; color: color-mix(in oklch, var(--foreground) 48%, transparent); font-size: 11px; }
@@ -691,6 +715,7 @@
 .train-viewport { height: 620px; border: 0; }
 .train-sky { background: #fafafa; }
 .train-sky::before { background-position: center 52%; opacity: .86; }
+.train-footer.is-visible .train-sky::before { animation: train-cloud-drift 52s ease-in-out infinite alternate; }
 .train-scenery { opacity: .09; }
 .train-drawn-motion { width: 1000px; bottom: 33px; }
 .train-drawn-consist { position: relative; display: flex; align-items: end; }
@@ -701,6 +726,7 @@
 .train-real-door::before { content: ''; position: absolute; inset: 0; background: #cb3029; transform-origin: left; transition: transform 240ms ease, background 240ms ease; }
 .train-real-door i { position: absolute; top: 18%; left: 25%; width: 50%; height: 31%; background: #6e9bac; border: 1px solid #263c46; pointer-events: none; transition: opacity 180ms ease; }
 .train-real-door:hover::before, .train-real-door:focus-visible::before { transform: rotateY(-65deg); background: #e7493d; }
+.train-real-door:hover, .train-real-door:focus-visible { box-shadow: 0 0 0 3px rgb(255 255 255 / 48%), 0 0 22px rgb(255 221 148 / 52%); }
 .train-real-door:hover i, .train-real-door:focus-visible i { opacity: 0; }
 .train-real-door span { position: absolute; left: 50%; bottom: calc(100% + 12px); transform: translateX(-50%); white-space: nowrap; font-size: 11px; padding: 6px 9px; background: #fff; color: #252525; border-radius: 4px; opacity: 0; box-shadow: 0 2px 12px #00000010; }
 .train-real-door:hover span, .train-real-door:focus-visible span { opacity: 1; }
@@ -712,6 +738,12 @@
 .train-footer:not(.is-visible) .train-sky::after { animation-play-state: paused !important; }
 .train-vapor i:nth-child(2) { animation-delay: -1s; }.train-vapor i:nth-child(3) { animation-delay: -2s; }
 @keyframes train-vapor { from { opacity: 0; transform: translate(0,0) scale(.6); } 20% { opacity: .6; } to { opacity: 0; transform: translate(-80px,-65px) scale(3.5); } }
+@keyframes train-cloud-drift { from { transform: scale(1.05) translateX(-1.5%); } to { transform: scale(1.05) translateX(1.5%); } }
+.image-lightbox { animation: motion-backdrop-in 180ms ease both; }
+.image-lightbox-media { animation: motion-lightbox-in 320ms var(--ease-out) both; }
+@keyframes motion-lightbox-in { from { opacity: 0; transform: scale(.965); } }
+.reading-section { transition-property: opacity, transform; }
+aside nav button[aria-current='location']::before { content: ''; position: absolute; left: -12px; top: 50%; width: 4px; height: 4px; border-radius: 50%; background: currentColor; transform: translateY(-50%); }
 .carriage-experience { width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; border: 0; background: #f7f7f4; color: #242424; }
 .carriage-experience::backdrop { background: #ffffffc0; }
 .carriage-room { height: min(650px, calc(100dvh - 40px)); background: #fafaf7; color: #242424; border: 1px solid #deded6; border-radius: 8px; box-shadow: 0 20px 90px #0000000a; }
@@ -750,7 +782,7 @@
 .carriage-close { border: 0 !important; outline: 0; box-shadow: none !important; font-size: 18px; line-height: 1; padding: 2px 4px !important; }
 .carriage-close:focus-visible { outline: none !important; box-shadow: none !important; }
 }
-.group:hover .work-action-label, .group:focus-visible .work-action-label, .group:focus-within .work-action-label { opacity: 1; }
+.group:hover .work-action-label, .group:focus-visible .work-action-label, .group:focus-within .work-action-label { opacity: 1; transform: translateY(0); }
 @media (hover: none) { .work-action-label { opacity: 1; } }
 .article-prose blockquote { border-left: 2px solid var(--border); padding-left: 16px; margin: 24px 0; }
 .article-prose :last-child { margin-bottom: 0; }
@@ -763,4 +795,5 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  .motion-managed { opacity: 1 !important; transform: none !important; }
 }

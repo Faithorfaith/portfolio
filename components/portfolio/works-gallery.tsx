@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { fetchWithCache } from '@/lib/cache-utils'
 import EmptyState from './empty-state'
@@ -32,6 +32,34 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
   const triggerRef = useRef<HTMLElement | null>(null)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [videoError, setVideoError] = useState(false)
+  const previousCardRects = useRef<Map<string, DOMRect>>(new Map())
+  const wallRef = useRef<HTMLDivElement>(null)
+  const wallDrag = useRef({ active: false, moved: false, x: 0, left: 0 })
+
+  useLayoutEffect(() => {
+    if (variant !== 'full' || !previousCardRects.current.size || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    document.querySelectorAll<HTMLElement>('[data-playground-card]').forEach((card) => {
+      const id = card.dataset.playgroundCard
+      const previous = id ? previousCardRects.current.get(id) : undefined
+      if (!previous) return
+      const next = card.getBoundingClientRect()
+      const dx = previous.left - next.left
+      const dy = previous.top - next.top
+      const sx = previous.width / next.width
+      const sy = previous.height / next.height
+      card.animate([
+        { transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` },
+        { transform: 'translate(0, 0) scale(1)' },
+      ], { duration: 420, easing: 'cubic-bezier(.22,1,.36,1)' })
+    })
+    previousCardRects.current.clear()
+  }, [layout, variant])
+
+  const changeLayout = (nextLayout: 'small' | 'medium' | 'large') => {
+    if (nextLayout === layout) return
+    previousCardRects.current = new Map(Array.from(document.querySelectorAll<HTMLElement>('[data-playground-card]')).map((card) => [card.dataset.playgroundCard || '', card.getBoundingClientRect()]))
+    setLayout(nextLayout)
+  }
   useEffect(() => {
     if (variant !== 'full') return
     try { const saved = Number(sessionStorage.getItem('playground-scroll')); if (saved && !window.location.search) requestAnimationFrame(() => window.scrollTo(0, saved)) } catch {}
@@ -272,13 +300,34 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           </div>
 
           {/* Image wall: Playground media is intentionally label-free. */}
-            <div className="w-full overflow-x-auto pb-5 [scrollbar-width:thin]">
+            <div
+              ref={wallRef}
+              className="playground-pan-surface w-full overflow-x-auto pb-5 cursor-grab active:cursor-grabbing [scrollbar-width:thin]"
+              onPointerDown={(event) => {
+                if (event.pointerType === 'touch' || !wallRef.current) return
+                wallDrag.current = { active: true, moved: false, x: event.clientX, left: wallRef.current.scrollLeft }
+              }}
+              onPointerMove={(event) => {
+                if (!wallDrag.current.active || !wallRef.current) return
+                const distance = event.clientX - wallDrag.current.x
+                if (Math.abs(distance) > 4 && !wallDrag.current.moved) {
+                  wallDrag.current.moved = true
+                  event.currentTarget.setPointerCapture(event.pointerId)
+                }
+                if (wallDrag.current.moved) wallRef.current.scrollLeft = wallDrag.current.left - distance
+              }}
+              onPointerUp={(event) => {
+                wallDrag.current.active = false
+                if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
+              }}
+              onPointerCancel={() => { wallDrag.current.active = false }}
+            >
             <div className={`playground-full-grid grid min-w-[920px] gap-4 md:gap-6 ${layout === 'large' ? 'playground-layout-large' : ''} ${layout === 'small' ? 'grid-cols-6' : layout === 'large' ? 'grid-cols-2' : 'grid-cols-4'}`}>
               {works.map((work, index) => {
                 const coverImage = getCoverImage(work)
                 
                 return (
-                  <div key={work.id}>
+                  <div key={work.id} data-playground-card={work.id} data-motion-section>
                     <div className="group w-full">
                       <div className="relative w-full aspect-[3/4] rounded-md overflow-hidden bg-foreground/5 ring-1 ring-transparent group-hover:ring-foreground/25 transition-[box-shadow,filter] duration-200 group-hover:brightness-[0.98]">
                         {coverImage ? (
@@ -313,7 +362,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
             </div>
             <div className="fixed bottom-5 left-1/2 z-40 -translate-x-1/2 flex items-center gap-1 rounded-full bg-background/90 p-1 shadow-lg backdrop-blur-xl ring-1 ring-foreground/10" aria-label="Playground layout size">
               {(['small', 'medium', 'large'] as const).map((size) => (
-                <button key={size} type="button" onClick={() => setLayout(size)} aria-pressed={layout === size} className={`rounded-full px-3 py-1.5 text-[11px] capitalize transition-colors ${layout === size ? 'bg-foreground text-background' : 'text-foreground/55 hover:text-foreground'}`}>
+                <button key={size} type="button" onClick={() => changeLayout(size)} aria-pressed={layout === size} className={`rounded-full px-3 py-1.5 text-[11px] capitalize transition-colors ${layout === size ? 'bg-foreground text-background' : 'text-foreground/55 hover:text-foreground'}`}>
                   {size}
                 </button>
               ))}

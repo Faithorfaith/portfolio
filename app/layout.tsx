@@ -4,6 +4,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 import SoundControl from '@/components/portfolio/sound-control'
 import { ArticleAudioProvider } from '@/components/article-audio-provider'
+import MotionOrchestrator from '@/components/portfolio/motion-orchestrator'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -46,6 +47,7 @@ export default function RootLayout({
       </head>
       <body>
         <ArticleAudioProvider>
+          <MotionOrchestrator />
           {children}
           <SoundControl />
         </ArticleAudioProvider>

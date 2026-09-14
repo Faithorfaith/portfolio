@@ -235,14 +235,14 @@ export default function CaseStudyClient() {
 
         <div className="min-w-0 py-8 md:py-8">
           <div className="w-full max-w-[600px] mx-auto">
-          <header className="mb-12 w-full max-w-[600px]">
+          <header className="mb-12 w-full max-w-[600px]" data-motion-section>
             <h1 className="text-[18px] font-medium tracking-[-0.01em] leading-snug text-foreground">{caseStudy.title}</h1>
             {caseStudy.excerpt && <p className="mt-6 text-sm text-foreground/65 leading-relaxed max-w-2xl">{caseStudy.excerpt}</p>}
           </header>
 
           {/* Thumbnail */}
           {caseStudy.thumbnail_url && caseStudy.media_type !== 'video' && (
-            <button type="button" onClick={() => setExpandedImage({ src: caseStudy.thumbnail_url!, alt: caseStudy.title })} className="group block w-full mb-16 overflow-hidden bg-foreground/4 cursor-zoom-in" aria-label={`Expand ${caseStudy.title} image`}>
+            <button type="button" onClick={() => setExpandedImage({ src: caseStudy.thumbnail_url!, alt: caseStudy.title })} className="motion-media group block w-full mb-16 overflow-hidden bg-foreground/4 cursor-zoom-in" aria-label={`Expand ${caseStudy.title} image`} data-motion-section>
               <ProgressiveImage
                 src={caseStudy.thumbnail_url}
                 alt={caseStudy.title}
@@ -279,7 +279,7 @@ export default function CaseStudyClient() {
           {/* Sections */}
           <div className="w-full max-w-[600px] space-y-20">
             {sections.map((section) => (
-              <section key={section.id} id={section.id} className="scroll-mt-24">
+              <section key={section.id} id={section.id} className="reading-section scroll-mt-24" data-motion-section>
                 {section.label && (
                   <p className="text-sm text-foreground/45 mb-3">
                     {section.label}
@@ -326,7 +326,7 @@ export default function CaseStudyClient() {
             const content = typeof relatedArticle.content === 'string' ? JSON.parse(relatedArticle.content) : (relatedArticle.content || [])
             const words = content.reduce((total: number, block: { content?: string }) => total + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0)
             return (
-              <section className="w-full max-w-[600px] mt-20 pt-10 border-t border-foreground/8">
+              <section className="w-full max-w-[600px] mt-20 pt-10 border-t border-foreground/8" data-motion-section>
                 <h2 className="text-[11px] text-foreground/45 font-normal mb-8">Related writing</h2>
                 <a href={`/writing/${encodeURIComponent(slugify(relatedArticle.title))}`} className="group grid grid-cols-[112px_1fr_auto] gap-5 items-center">
                   {relatedArticle.cover_image ? <img src={relatedArticle.cover_image} alt="" className="w-28 aspect-[4/3] object-cover" /> : <div className="w-28 aspect-[4/3] bg-foreground/5" />}
@@ -345,9 +345,9 @@ export default function CaseStudyClient() {
         </div>
       </div>
       {expandedImage && (
-        <div className="fixed inset-0 z-[90] bg-black/88 p-4 md:p-8 flex items-center justify-center" role="dialog" aria-modal="true" aria-label="Expanded case study image" onClick={() => setExpandedImage(null)}>
+        <div className="image-lightbox fixed inset-0 z-[90] bg-black/88 p-4 md:p-8 flex items-center justify-center" role="dialog" aria-modal="true" aria-label="Expanded case study image" onClick={() => setExpandedImage(null)}>
           <button type="button" onClick={() => setExpandedImage(null)} className="absolute top-4 right-4 size-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20" aria-label="Close image">×</button>
-          <img src={expandedImage.src} alt={expandedImage.alt} className="max-w-full max-h-full object-contain" onClick={(event) => event.stopPropagation()} />
+          <img src={expandedImage.src} alt={expandedImage.alt} className="image-lightbox-media max-w-full max-h-full object-contain" onClick={(event) => event.stopPropagation()} />
         </div>
       )}
     </main>
