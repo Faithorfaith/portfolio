@@ -31,6 +31,7 @@ export default function CaseStudiesSection() {
             const { data, error } = await supabase
               .from('case_studies')
               .select('*')
+              .order('order_index', { ascending: true })
               .order('created_at', { ascending: false })
             
             if (error) throw error

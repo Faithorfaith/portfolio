@@ -62,6 +62,7 @@ export interface CaseStudy {
   excerpt: string | null
   thumbnail_url: string | null
   published: boolean
+  order_index?: number
   created_at: string
 }
 

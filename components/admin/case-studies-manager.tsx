@@ -81,6 +81,7 @@ const refreshList = async () => {
   const { data } = await supabase
     .from('case_studies')
     .select('*')
+    .order('order_index', { ascending: true })
     .order('created_at', { ascending: false })
   return (data || []).map(cs => ({
     ...cs,
@@ -106,6 +107,8 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
   const draftDirty = useEditorGuard(editing)
   const [showPreview, setShowPreview] = useState(false)
   const [previewMobile, setPreviewMobile] = useState(false)
+  const [draggedCaseStudyId, setDraggedCaseStudyId] = useState<string | null>(null)
+  const [isReordering, setIsReordering] = useState(false)
   useEffect(() => { setHasUnsavedChanges(draftDirty) }, [draftDirty])
 
   useEffect(() => {
@@ -407,6 +410,43 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
     setCaseStudies(await refreshList())
   }
 
+  const moveCaseStudy = (draggedId: string, targetId: string) => {
+    if (draggedId === targetId || listFilter !== 'all' || isReordering) return
+    setCaseStudies((current) => {
+      const from = current.findIndex((item) => item.id === draggedId)
+      const to = current.findIndex((item) => item.id === targetId)
+      if (from < 0 || to < 0) return current
+      const next = [...current]
+      const [moved] = next.splice(from, 1)
+      next.splice(to, 0, moved)
+      return next.map((item, order_index) => ({ ...item, order_index }))
+    })
+  }
+
+  const saveCaseStudyOrder = async () => {
+    if (!draggedCaseStudyId || listFilter !== 'all') return
+    const previous = await refreshList()
+    setDraggedCaseStudyId(null)
+    setIsReordering(true)
+    setError(null)
+    try {
+      const response = await fetch('/api/case-studies', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderedIds: caseStudies.map((item) => item.id) }),
+      })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || 'Failed to save order')
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 2000)
+    } catch (reorderError) {
+      setCaseStudies(previous)
+      setError(reorderError instanceof Error ? reorderError.message : 'Failed to save order')
+    } finally {
+      setIsReordering(false)
+    }
+  }
+
   // ── Upload Progress Banner ───────────────────────────────────────────────
   const UploadProgress = () => isUploading ? (
     <div className="flex items-center gap-3 p-3 bg-foreground/5 border border-border rounded-lg">
@@ -453,6 +493,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
         <div>
           <h2 className="text-lg font-semibold text-foreground">Case Studies</h2>
           <p className="text-sm text-foreground/50 mt-0.5">{caseStudies.length} total &mdash; {caseStudies.filter(c => c.published).length} published</p>
+          <p className="hidden md:block text-xs text-foreground/40 mt-1">{listFilter === 'all' ? 'Drag the handle to change the public display order.' : 'Choose All content to reorder.'}</p>
         </div>
         <button
           onClick={createNewCaseStudy}
@@ -485,7 +526,23 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3">
           {caseStudies.filter((item) => listFilter === 'all' || item.published === (listFilter === 'published')).map((cs, index) => (
-            <div key={cs.id} className="group border border-border rounded-lg overflow-hidden hover:border-foreground/25 transition-colors bg-background">
+            <div
+              key={cs.id}
+              draggable={listFilter === 'all' && !isReordering}
+              onDragStart={(event) => {
+                setDraggedCaseStudyId(cs.id)
+                event.dataTransfer.effectAllowed = 'move'
+                event.dataTransfer.setData('text/plain', cs.id)
+              }}
+              onDragOver={(event) => {
+                if (!draggedCaseStudyId || listFilter !== 'all') return
+                event.preventDefault()
+                event.dataTransfer.dropEffect = 'move'
+                moveCaseStudy(draggedCaseStudyId, cs.id)
+              }}
+              onDragEnd={saveCaseStudyOrder}
+              className={`group border rounded-lg overflow-hidden transition-all bg-background ${draggedCaseStudyId === cs.id ? 'border-foreground/40 opacity-55 scale-[0.99]' : 'border-border hover:border-foreground/25'}`}
+            >
               {/* Thumbnail */}
               <div className="aspect-[2/1] bg-muted/30 relative overflow-hidden">
                 {cs.thumbnail_url ? (
@@ -506,7 +563,10 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
                   </span>
                 </div>
                 <div className="absolute top-2.5 left-2.5">
-                  <span className="text-xs bg-black/30 text-white px-2 py-0.5 rounded-full tabular-nums">#{index + 1}</span>
+                  <span className="hidden md:inline-flex cursor-grab active:cursor-grabbing items-center gap-1.5 text-xs bg-black/55 text-white px-2 py-1 rounded-full tabular-nums" title="Drag to reorder">
+                    <svg className="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="3" cy="3" r="1"/><circle cx="9" cy="3" r="1"/><circle cx="3" cy="9" r="1"/><circle cx="9" cy="9" r="1"/></svg>
+                    {index + 1}
+                  </span>
                 </div>
               </div>
 

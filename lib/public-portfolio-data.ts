@@ -52,7 +52,7 @@ export const getHomepagePortfolioData = unstable_cache(async (): Promise<Homepag
   const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
   const [profileResult, caseStudiesResult, projectsResult, worksResult, writingsResult, workflowResult] = await Promise.all([
     supabase.from('profiles').select('id, username, full_name, bio, avatar_url, hero_image_1, hero_image_2, hero_image_3, gallery_images, bio_references, contact_email, train_music_url, train_video_1, train_video_2, train_video_3, train_video_4').limit(1).maybeSingle(),
-    supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, created_at').eq('published', true).order('created_at', { ascending: false }).limit(50),
+    supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, order_index, created_at').eq('published', true).order('order_index', { ascending: true }).order('created_at', { ascending: false }).limit(50),
     supabase.from('projects').select('id, title, year, type, link, description, created_at').order('created_at', { ascending: false }).limit(30),
     supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type', { count: 'exact' }).order('created_at', { ascending: false }).limit(18),
     supabase.from('writings').select('id, title, slug, excerpt, cover_image, created_at, content').order('created_at', { ascending: false }).limit(4),
@@ -78,7 +78,7 @@ export const getPublicPortfolioData = unstable_cache(async (): Promise<Portfolio
   const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
   const [profileResult, caseStudiesResult, projectsResult, worksResult, writingsResult] = await Promise.all([
     supabase.from('profiles').select('*').limit(1).maybeSingle(),
-    supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, created_at').eq('published', true).order('created_at', { ascending: false }),
+    supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, order_index, created_at').eq('published', true).order('order_index', { ascending: true }).order('created_at', { ascending: false }),
     supabase.from('projects').select('id, title, year, type, link, description, created_at').order('created_at', { ascending: false }),
     supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type').order('created_at', { ascending: false }),
     supabase.from('writings').select('*').order('created_at', { ascending: false }),
