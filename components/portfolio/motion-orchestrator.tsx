@@ -25,6 +25,13 @@ export default function MotionOrchestrator() {
       sessionStorage.setItem('portfolio-returning', 'true')
     }
     document.addEventListener('click', rememberHomePosition)
+    const easterEgg = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() !== 'h' || ['INPUT', 'TEXTAREA'].includes((event.target as HTMLElement)?.tagName)) return
+      let toast = document.querySelector<HTMLElement>('[data-home-easter-egg]')
+      if (!toast) { toast = document.createElement('div'); toast.dataset.homeEasterEgg = 'true'; toast.className = 'home-easter-egg'; toast.textContent = 'You found the quiet corner.'; document.body.appendChild(toast) }
+      toast.classList.add('is-visible'); window.setTimeout(() => toast?.classList.remove('is-visible'), 2200)
+    }
+    document.addEventListener('keydown', easterEgg)
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const sections = Array.from(document.querySelectorAll<HTMLElement>(revealSelector))
 
@@ -72,6 +79,7 @@ export default function MotionOrchestrator() {
       observer.disconnect()
       document.removeEventListener('pointerdown', press)
       document.removeEventListener('click', rememberHomePosition)
+      document.removeEventListener('keydown', easterEgg)
     }
   }, [pathname])
 

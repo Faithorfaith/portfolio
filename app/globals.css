@@ -816,6 +816,17 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .home-presence-meta i { width: 5px; height: 5px; border-radius: 50%; background: #57a36a; box-shadow: 0 0 0 3px color-mix(in oklch, #57a36a 12%, transparent); }
 .home-presence p { margin-top: 10px; color: color-mix(in oklch, var(--foreground) 69%, transparent); font-size: 13px; line-height: 1.55; }
 .home-presence p > span { display: block; margin-bottom: 2px; color: color-mix(in oklch, var(--foreground) 38%, transparent); font-size: 9px; letter-spacing: .11em; text-transform: uppercase; }
+.home-presence-listening { margin-top: 8px !important; }
+.random-note-button { color: color-mix(in oklch, var(--foreground) 45%, transparent); font-size: 11px; transition: color 160ms ease; }
+.random-note-button:hover { color: var(--foreground); }
+.random-note { display: block; margin: -12px 0 16px; padding: 10px 12px; border-radius: 9px; background: color-mix(in oklch, var(--foreground) 3%, transparent); font-size: 13px; }
+.random-note span { display: block; margin-bottom: 3px; color: color-mix(in oklch, var(--foreground) 38%, transparent); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+.home-easter-egg { position: fixed; right: 18px; bottom: 18px; z-index: 120; padding: 10px 13px; border-radius: 999px; color: var(--background); background: var(--foreground); font-size: 11px; opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity 180ms ease, transform 180ms ease; }
+.home-easter-egg.is-visible { opacity: 1; transform: translateY(0); }
+.digital-home { background-image: radial-gradient(color-mix(in oklch, var(--foreground) 3%, transparent) .5px, transparent .5px); background-size: 5px 5px; }
+.profile-heading-row .home-presence { transition: background-color 300ms ease; }
+:root[data-time-of-day='morning'] .digital-home { background-color: color-mix(in oklch, #dfeef4 9%, var(--background)); }
+:root[data-time-of-day='evening'] .digital-home { background-color: color-mix(in oklch, #f1dfc8 8%, var(--background)); }
 .home-new-marker { display: inline-block; margin: 0 0 5px; color: color-mix(in oklch, var(--foreground) 42%, transparent); font-size: 9px; font-weight: 400; letter-spacing: .07em; text-transform: uppercase; }
 .article-index-row h3 .home-new-marker { margin: 0 0 0 9px; vertical-align: 1px; }
 

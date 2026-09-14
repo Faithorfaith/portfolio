@@ -203,7 +203,7 @@ export default function ProfileSection({
 
         <div className="profile-heading-row">
           <h1 className="mb-4 text-sm font-medium tracking-tight text-foreground md:text-lg">{profile.full_name || profile.username}</h1>
-          <HomePresence currentFocus={profile.availability_status} deskNote={profile.supporting_statement} />
+          <HomePresence currentFocus={profile.availability_status} deskNote={profile.supporting_statement} listening={Boolean(profile.train_music_url)} />
         </div>
 
       {/* Bio - Display as paragraphs */}

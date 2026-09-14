@@ -108,7 +108,7 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
         </div>
         <div className="train-track" aria-hidden="true" />
       </div>
-      <div className="train-footer-meta"><span>FA · 2026</span><span>A little journey.</span></div>
+      <div className="train-footer-meta"><span>FA · 2026</span><span>A little journey · until next time.</span></div>
     </footer>
 
     {active && <dialog ref={dialogRef} className="carriage-experience" aria-labelledby="carriage-title" onCancel={() => setActive(null)} onClose={() => stopAmbience()} onMouseDown={(event) => event.target === event.currentTarget && setActive(null)}>
