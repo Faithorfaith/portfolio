@@ -201,7 +201,7 @@ export default function ProfileSection({
           </div>
         )}
 
-        <h1 className="mb-4 text-2xl font-medium tracking-tight text-foreground md:text-3xl">{profile.full_name || profile.username}</h1>
+        <h1 className="mb-4 text-xl font-medium tracking-tight text-foreground md:text-2xl">{profile.full_name || profile.username}</h1>
 
         <HomePresence currentFocus={profile.availability_status} deskNote={profile.supporting_statement} />
 
