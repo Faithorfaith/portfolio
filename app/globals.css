@@ -489,7 +489,7 @@
 .playground-viewer-media { min-height: min(68vh, 640px); }
 .playground-viewer-media img, .playground-viewer-media video { max-width: 100%; max-height: min(64vh, 600px); width: auto; height: auto; object-fit: contain; }
 .playground-viewer-shell > div { position: relative; display: block !important; min-height: min(720px, calc(100dvh - 86px)); }
-.playground-viewer-media { width: 100% !important; height: min(720px, calc(100dvh - 86px)); display: flex; }
+.playground-viewer-media { width: 100% !important; height: calc(88dvh - 92px); min-height: 420px; display: flex; }
 .playground-viewer-controls { position: absolute; inset: auto 0 0; z-index: 3; width: 100% !important; height: 92px; min-height: 0 !important; padding: 12px 20px !important; display: flex; align-items: center; justify-content: center; background: linear-gradient(transparent, color-mix(in oklch, var(--background) 96%, transparent)); overflow: visible !important; }
 .playground-viewer-controls > .flex-1 { display: none; }
 .playground-viewer-shell .md\:w-1\/3 { background: var(--background); }

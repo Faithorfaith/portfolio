@@ -291,7 +291,6 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
 
   return (
     <div id="top" className="w-full px-5 md:px-10 pt-[84px] pb-28 md:pb-32">
-      <DetailNavigation title="Playground" showCopy={false} />
       <div className="flex justify-center">
         <div className="w-full">
           {/* Section Header */}
@@ -459,7 +458,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                 <div className="flex max-w-full items-center gap-2 overflow-x-auto pb-1">
                   {works.map((work) => {
                     const thumb = getCoverImage(work) || work.media_url
-                    return <button key={work.id} type="button" onClick={() => setSelectedWork(work)} aria-label={`Open ${work.title}`} className={`size-12 shrink-0 overflow-hidden rounded-md ${work.id === selectedWork!.id ? 'ring-2 ring-white' : 'opacity-60 hover:opacity-100'}`}>
+                    return <button key={work.id} type="button" onClick={() => setSelectedWork(work)} aria-label={`Open ${work.title}`} className={`size-16 shrink-0 overflow-hidden rounded-lg ${work.id === selectedWork!.id ? 'ring-2 ring-white' : 'opacity-60 hover:opacity-100'}`}>
                       {thumb ? <img src={thumb} alt="" className="h-full w-full object-cover" /> : <span className="block h-full w-full bg-white/10" />}
                     </button>
                   })}
