@@ -456,6 +456,9 @@
 .motion-media.motion-managed.is-revealed { transform: translateY(0) scale(1); }
 
 @view-transition { navigation: auto; }
+.page-paper-transition { position: fixed; inset: 0; z-index: 200; pointer-events: none; background: #f5f0e6; transform: translateY(100%); opacity: 0; }
+.page-paper-transition.is-active { animation: paper-sheet-reveal 360ms cubic-bezier(.22,1,.36,1) both; }
+@keyframes paper-sheet-reveal { 0% { opacity: 0; transform: translateY(100%); } 18% { opacity: .96; } 70% { opacity: .96; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-3%); } }
 ::view-transition-old(root) { animation: 160ms ease both motion-route-out; }
 ::view-transition-new(root) { animation: 320ms var(--ease-out) both motion-route-in; }
 @keyframes motion-route-out { to { opacity: .72; transform: translateY(-4px); } }
@@ -466,6 +469,7 @@
 .playground-conveyor { width: min(100%, 1200px); margin-inline: auto; display: grid; gap: 10px; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
 .playground-reference-card { min-width: 0; min-height: 0; overflow: hidden; border-radius: 32px; background: color-mix(in oklch, var(--foreground) 5%, transparent); transition: transform 260ms var(--ease-out), box-shadow 260ms var(--ease-out); }
 .playground-reference-card .playground-conveyor-card { aspect-ratio: auto; }
+.playground-reference-card { aspect-ratio: 3 / 4; }
 .playground-reference-card:hover { transform: translateY(-3px); box-shadow: 0 16px 38px rgb(0 0 0 / 7%); }
 .playground-reference-card .playground-conveyor-card { width: 100%; height: 100%; min-height: 0; max-height: none; border-radius: 32px; }
 .playground-reference-card .playground-conveyor-card img, .playground-reference-card .playground-conveyor-card video { border-radius: 32px; }
@@ -797,6 +801,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; animation-iteration-count: 1 !important; }
   .motion-managed { opacity: 1 !important; transform: none !important; }
+  .page-paper-transition { display: none; }
 }
 
 /* A lived-in homepage: quiet signals of place, time and continuity. */
@@ -821,13 +826,14 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .random-note-button:hover { color: var(--foreground); }
 .random-note { display: block; margin: -12px 0 16px; padding: 10px 12px; border-radius: 9px; background: color-mix(in oklch, var(--foreground) 3%, transparent); font-size: 13px; }
 .random-note span { display: block; margin-bottom: 3px; color: color-mix(in oklch, var(--foreground) 38%, transparent); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
-.home-easter-egg { position: fixed; right: 18px; bottom: 18px; z-index: 120; padding: 10px 13px; border-radius: 999px; color: var(--background); background: var(--foreground); font-size: 11px; opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity 180ms ease, transform 180ms ease; }
-.home-easter-egg.is-visible { opacity: 1; transform: translateY(0); }
 .digital-home { background-image: radial-gradient(color-mix(in oklch, var(--foreground) 3%, transparent) .5px, transparent .5px); background-size: 5px 5px; }
 .profile-heading-row .home-presence { transition: background-color 300ms ease; }
 :root[data-time-of-day='morning'] .digital-home { background-color: color-mix(in oklch, #dfeef4 9%, var(--background)); }
 :root[data-time-of-day='evening'] .digital-home { background-color: color-mix(in oklch, #f1dfc8 8%, var(--background)); }
 .home-new-marker { display: inline-block; margin: 0 0 5px; color: color-mix(in oklch, var(--foreground) 42%, transparent); font-size: 9px; font-weight: 400; letter-spacing: .07em; text-transform: uppercase; }
+.back-to-top { position: fixed; right: 18px; bottom: 18px; z-index: 40; display: inline-flex; align-items: center; gap: 5px; padding: 8px 10px; border-radius: 999px; color: color-mix(in oklch, var(--foreground) 60%, transparent); background: color-mix(in oklch, var(--background) 86%, transparent); box-shadow: 0 4px 18px rgb(0 0 0 / 6%); font-size: 12px; opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity 180ms ease, transform 180ms ease, color 180ms ease; }
+.back-to-top.is-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.back-to-top:hover { color: var(--foreground); }
 .article-index-row h3 .home-new-marker { margin: 0 0 0 9px; vertical-align: 1px; }
 
 @media (max-width: 760px) {

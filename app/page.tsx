@@ -5,6 +5,7 @@ import HomePlaygroundPreview from '@/components/portfolio/home-playground-previe
 import TrainFooter from '@/components/portfolio/train-footer'
 import WorkflowFilesSection from '@/components/portfolio/workflow-files-section'
 import { getHomepagePortfolioData } from '@/lib/public-portfolio-data'
+import BackToTop from '@/components/portfolio/back-to-top'
 
 export const revalidate = 300
 
@@ -22,5 +23,6 @@ export default async function PortfolioPage() {
       writing: data.writings.slice(0, 4).map(item => ({ title: item.title, description: item.excerpt, image: item.cover_image, href: `/writing/${item.slug}` })),
       workflow: data.workflowFiles.slice(0, 4).map(item => ({ title: item.name, description: item.description })),
     }} />
+    <BackToTop />
   </main>
 }

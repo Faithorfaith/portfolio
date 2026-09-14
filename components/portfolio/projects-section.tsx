@@ -54,18 +54,6 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                     }
                   }}
                   className={`interactive-row relative block w-full text-left group pl-6 ${project.link ? 'cursor-pointer' : ''}`}
-                  onMouseEnter={(event) => {
-                    if (!project.link || !cursorLabelRef.current || window.matchMedia('(hover: none)').matches) return
-                    cursorLabelRef.current.style.opacity = '1'
-                    cursorLabelRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
-                  }}
-                  onMouseMove={(event) => {
-                    if (!project.link || !cursorLabelRef.current) return
-                    cursorLabelRef.current.style.transform = `translate3d(${event.clientX + 14}px, ${event.clientY + 14}px, 0)`
-                  }}
-                  onMouseLeave={() => {
-                    if (cursorLabelRef.current) cursorLabelRef.current.style.opacity = '0'
-                  }}
                 >
                     <span className="absolute left-0 top-[21px] size-[7px] rounded-full bg-background border border-foreground/25 transition-colors group-hover:bg-foreground group-hover:border-foreground" aria-hidden="true" />
                     <div className="flex items-start justify-between gap-6 py-3">

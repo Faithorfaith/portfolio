@@ -166,7 +166,7 @@ export default function ProfileSection({
                 fill
                 sizes="84px"
                 priority
-                className={`object-cover transition-[filter] duration-300 ${galleryOpen ? 'grayscale-0' : 'grayscale'}`}
+                className={`object-cover transition-[filter,transform] duration-500 ${galleryOpen ? 'grayscale-0' : 'grayscale'} group-hover:scale-[1.04]`}
               />
             </button>
 
@@ -331,7 +331,6 @@ export default function ProfileSection({
 
                 {/* Card Content */}
                 <div className="pt-3 pr-1">
-                  {index === 0 && <span className="home-new-marker">Recently added</span>}
                   {/* Title */}
                   <h3 className="text-foreground/85 text-sm font-normal leading-relaxed tracking-[0.01em] mb-1.5 group-hover:text-foreground transition-colors">
                     {caseStudy.title}

@@ -9,6 +9,12 @@ export default function MotionOrchestrator() {
   const pathname = usePathname()
 
   useLayoutEffect(() => {
+    const paper = document.createElement('div')
+    paper.className = 'page-paper-transition'
+    paper.setAttribute('aria-hidden', 'true')
+    document.body.appendChild(paper)
+    requestAnimationFrame(() => paper.classList.add('is-active'))
+    const paperTimer = window.setTimeout(() => paper.remove(), 420)
     if (pathname === '/' && sessionStorage.getItem('portfolio-returning') === 'true') {
       const saved = Number(sessionStorage.getItem('portfolio-home-scroll') || 0)
       sessionStorage.removeItem('portfolio-returning')
@@ -25,13 +31,6 @@ export default function MotionOrchestrator() {
       sessionStorage.setItem('portfolio-returning', 'true')
     }
     document.addEventListener('click', rememberHomePosition)
-    const easterEgg = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() !== 'h' || ['INPUT', 'TEXTAREA'].includes((event.target as HTMLElement)?.tagName)) return
-      let toast = document.querySelector<HTMLElement>('[data-home-easter-egg]')
-      if (!toast) { toast = document.createElement('div'); toast.dataset.homeEasterEgg = 'true'; toast.className = 'home-easter-egg'; toast.textContent = 'You found the quiet corner.'; document.body.appendChild(toast) }
-      toast.classList.add('is-visible'); window.setTimeout(() => toast?.classList.remove('is-visible'), 2200)
-    }
-    document.addEventListener('keydown', easterEgg)
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const sections = Array.from(document.querySelectorAll<HTMLElement>(revealSelector))
 
@@ -76,10 +75,11 @@ export default function MotionOrchestrator() {
     }
     document.addEventListener('pointerdown', press, { passive: true })
     return () => {
+      window.clearTimeout(paperTimer)
+      paper.remove()
       observer.disconnect()
       document.removeEventListener('pointerdown', press)
       document.removeEventListener('click', rememberHomePosition)
-      document.removeEventListener('keydown', easterEgg)
     }
   }, [pathname])
 
