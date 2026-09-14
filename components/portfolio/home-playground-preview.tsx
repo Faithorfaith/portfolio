@@ -35,7 +35,6 @@ export default function HomePlaygroundPreview({ works, hiddenCount }: { works: W
     </div>
     <div className="playground-reference-grid mx-auto grid w-full max-w-5xl grid-cols-2 gap-4 px-5 sm:gap-6 sm:px-8 lg:grid-cols-3 lg:grid-rows-[360px_360px]" aria-label="Playground highlights">
       {visible.slice(0, 6).map((work, index) => <div key={work.id} className="playground-reference-card"><ConveyorCard work={work} index={index} /></div>)}
-      <Link href="/playground" className="col-span-full mt-2 text-center text-xs text-foreground/50 hover:text-foreground">Explore all{hiddenCount > 0 ? ` +${hiddenCount}` : ''} ↗</Link>
     </div>
   </section>
 }

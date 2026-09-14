@@ -197,6 +197,7 @@ export default function ProfileSection({
             >
               {galleryOpen ? 'Close gallery' : 'View gallery'}
             </div>
+            <span className="mt-2 block text-[10px] text-foreground/40">{galleryImages.length} photos</span>
           </div>
         )}
 

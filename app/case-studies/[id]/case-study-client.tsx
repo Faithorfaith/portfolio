@@ -98,7 +98,7 @@ export default function CaseStudyClient() {
     const fetchCaseStudy = async () => {
       try {
         const supabase = createClient()
-        const bySlug = await supabase.from('case_studies').select('*').eq('slug', id).maybeSingle()
+        const bySlug = await supabase.from('case_studies').select('*').eq('slug', id).eq('published', true).maybeSingle()
         const byTitle = !bySlug.data && !/^[0-9a-f-]{36}$/i.test(id)
           ? await supabase.from('case_studies').select('*').eq('published', true)
           : null
