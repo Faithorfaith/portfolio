@@ -29,11 +29,11 @@ export default function HomePlaygroundPreview({ works, hiddenCount }: { works: W
   if (!works.length) return null
   const visible = works.slice(0, 14)
   return <section id="playground" className="portfolio-deferred w-full pt-8 pb-16 scroll-mt-20" aria-labelledby="playground-preview-title">
-    <div className="mx-auto mb-8 flex w-full max-w-2xl items-baseline justify-between px-5 sm:px-8">
+    <div className="mx-auto mb-8 flex w-full max-w-4xl items-baseline justify-between px-5 sm:px-8">
       <h2 id="playground-preview-title" className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Playground</h2>
       <Link href="/playground" className="text-[11px] text-foreground/50 transition-colors hover:text-foreground">Explore all{hiddenCount > 0 ? ` +${hiddenCount}` : ''} ↗</Link>
     </div>
-    <div className="playground-reference-grid mx-auto grid w-full max-w-5xl grid-cols-2 gap-4 px-5 sm:gap-6 sm:px-8 lg:grid-cols-3 lg:grid-rows-[360px_360px]" aria-label="Playground highlights">
+    <div className="playground-reference-grid mx-auto grid w-full max-w-4xl grid-cols-2 gap-4 px-5 sm:gap-6 sm:px-8 lg:grid-cols-3 lg:grid-rows-[400px_400px]" aria-label="Playground highlights">
       {visible.slice(0, 6).map((work, index) => <div key={work.id} className="playground-reference-card"><ConveyorCard work={work} index={index} /></div>)}
     </div>
   </section>
