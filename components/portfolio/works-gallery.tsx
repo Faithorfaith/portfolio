@@ -294,8 +294,9 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
       <div className="flex justify-center">
         <div className="w-full">
           {/* Section Header */}
-          <div className="mb-10 max-w-xl">
-            <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Playground</h2>
+          <div className="mb-10 max-w-2xl">
+            <h1 className="text-3xl md:text-5xl font-normal leading-tight tracking-[-0.03em] text-foreground">Playground</h1>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-foreground/60">A visual archive of experiments, interfaces, and small ideas.</p>
           </div>
 
           {/* Image wall: Playground media is intentionally label-free. */}
@@ -455,10 +456,10 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                   <button type="button" className="rail-control" aria-label="Next project" disabled={works.at(-1)?.id === selectedWork!.id} onClick={() => stepWork(1)}>→</button>
                 </div>
                 <div className="flex-1" />
-                <div className="flex max-w-full items-center gap-2 overflow-x-auto pb-1">
+                <div className="playground-viewer-thumbnails flex max-w-full items-center gap-1.5 overflow-x-auto pb-1">
                   {works.map((work) => {
                     const thumb = getCoverImage(work) || work.media_url
-                    return <button key={work.id} type="button" onClick={() => setSelectedWork(work)} aria-label={`Open ${work.title}`} className={`size-16 shrink-0 overflow-hidden rounded-lg ${work.id === selectedWork!.id ? 'ring-2 ring-white' : 'opacity-60 hover:opacity-100'}`}>
+                    return <button key={work.id} type="button" onClick={() => setSelectedWork(work)} aria-label={`Open ${work.title}`} className={`h-20 w-16 shrink-0 overflow-hidden rounded-lg ${work.id === selectedWork!.id ? 'ring-2 ring-white' : 'opacity-60 hover:opacity-100'}`}>
                       {thumb ? <img src={thumb} alt="" className="h-full w-full object-cover" /> : <span className="block h-full w-full bg-white/10" />}
                     </button>
                   })}
