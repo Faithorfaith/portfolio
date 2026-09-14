@@ -450,7 +450,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
               </div>
 
               {/* Minimal controls; Playground stays media-first. */}
-              <div className="md:w-1/3 p-6 md:p-8 flex flex-col overflow-y-auto">
+              <div className="playground-viewer-controls md:w-1/3 p-6 md:p-8 flex flex-col overflow-y-auto">
                 {/* Spacer */}
                 <div className="flex items-center gap-2 mb-4">
                   <button type="button" className="rail-control" aria-label="Previous project" disabled={works[0]?.id === selectedWork!.id} onClick={() => stepWork(-1)}>←</button>
