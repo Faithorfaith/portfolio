@@ -191,7 +191,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
   if (works.length === 0) {
     return <EmptyState 
       title="Playground"
-      description="Coming soon..."
+      description="Nothing pinned to this wall yet."
     />
   }
 

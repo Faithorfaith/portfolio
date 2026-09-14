@@ -16,7 +16,7 @@ export default function WorkflowFilesSection({ files = [], compact = false }: { 
   const visible = compact ? files.slice(0, 4) : files
   const close = () => { dialog.current?.close(); setActive(null) }
   return <section id="workflow-files" className="portfolio-deferred w-full max-w-2xl mx-auto px-5 sm:px-8 py-12" aria-labelledby="workflow-files-title">
-    <div className="mb-8 flex items-baseline justify-between"><h2 id="workflow-files-title" className="text-sm font-normal tracking-[.01em]">Workflow files</h2>{compact && files.length > 4 && <Link href="/workflows" className="text-[11px] text-foreground/50 hover:text-foreground">View directory ↗</Link>}</div>
+    <div className="mb-8 flex items-baseline justify-between"><h2 id="workflow-files-title" className="text-sm font-normal tracking-[.01em]">Tools from my desk</h2>{compact && files.length > 4 && <Link href="/workflows" className="text-[11px] text-foreground/50 hover:text-foreground">View directory ↗</Link>}</div>
     <div className="workflow-file-list">{visible.map(file => {
       const latest = file.workflow_file_versions[0]
       return <button key={file.id} onClick={() => setActive(file)} className="workflow-file-row">

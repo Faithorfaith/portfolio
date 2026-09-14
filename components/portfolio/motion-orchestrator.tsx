@@ -9,6 +9,22 @@ export default function MotionOrchestrator() {
   const pathname = usePathname()
 
   useLayoutEffect(() => {
+    if (pathname === '/' && sessionStorage.getItem('portfolio-returning') === 'true') {
+      const saved = Number(sessionStorage.getItem('portfolio-home-scroll') || 0)
+      sessionStorage.removeItem('portfolio-returning')
+      requestAnimationFrame(() => window.scrollTo({ top: saved, behavior: 'instant' }))
+    }
+
+    const rememberHomePosition = (event: MouseEvent) => {
+      if (pathname !== '/') return
+      const link = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>('a[href]')
+      if (!link) return
+      const href = link.getAttribute('href') || ''
+      if (!/^\/(case-studies|writing|playground|workflows)(\/|\?|$)/.test(href)) return
+      sessionStorage.setItem('portfolio-home-scroll', String(window.scrollY))
+      sessionStorage.setItem('portfolio-returning', 'true')
+    }
+    document.addEventListener('click', rememberHomePosition)
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const sections = Array.from(document.querySelectorAll<HTMLElement>(revealSelector))
 
@@ -55,6 +71,7 @@ export default function MotionOrchestrator() {
     return () => {
       observer.disconnect()
       document.removeEventListener('pointerdown', press)
+      document.removeEventListener('click', rememberHomePosition)
     }
   }, [pathname])
 

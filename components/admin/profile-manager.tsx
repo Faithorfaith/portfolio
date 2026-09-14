@@ -306,6 +306,20 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
         </div>
       </SectionCard>
 
+      <SectionCard title="Home presence" description="Small, current details that make the homepage feel lived in.">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium text-foreground/50">Currently</label>
+            <input type="text" value={formData.availability_status} onChange={e => set('availability_status', e.target.value)} placeholder="Designing a calmer way to…" className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
+            <p className="text-[11px] text-foreground/40">A short status beside your Lagos time.</p>
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium text-foreground/50">On my desk</label>
+            <textarea value={formData.supporting_statement} onChange={e => set('supporting_statement', e.target.value)} placeholder="A thought, obsession, or thing you are exploring." rows={3} className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm" />
+          </div>
+        </div>
+      </SectionCard>
+
       <SectionCard title="Footer experience" description="Manage the optional audio and train media used in the footer.">
         <div className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">

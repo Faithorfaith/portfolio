@@ -9,6 +9,7 @@ import { slugify } from '@/lib/slugify'
 import { track } from '@vercel/analytics'
 import { cleanInlineText, normalizeExternalUrl } from '@/lib/content-utils'
 import { imageFocus } from '@/lib/image-focus'
+import HomePresence from './home-presence'
 
 export interface Profile {
   id: string
@@ -202,6 +203,8 @@ export default function ProfileSection({
 
         <h1 className="mb-4 text-2xl font-medium tracking-tight text-foreground md:text-3xl">{profile.full_name || profile.username}</h1>
 
+        <HomePresence currentFocus={profile.availability_status} deskNote={profile.supporting_statement} />
+
       {/* Bio - Display as paragraphs */}
       {profile.bio && (
         <div className="mb-6">
@@ -227,7 +230,7 @@ export default function ProfileSection({
             className="inline-flex h-9 min-h-9 items-center gap-1.5 rounded-lg border border-foreground/15 px-3 text-xs font-medium text-foreground/70 transition-colors hover:border-foreground/30 hover:bg-foreground/[0.035]"
             title={`Email ${contactEmail}`}
           >
-            Send me a message
+            Leave me a note
           </a>
           <span className="homepage-contact-closing">— I&apos;d love to hear from you</span>
         </div>
@@ -327,6 +330,7 @@ export default function ProfileSection({
 
                 {/* Card Content */}
                 <div className="pt-3 pr-1">
+                  {index === 0 && <span className="home-new-marker">Recently added</span>}
                   {/* Title */}
                   <h3 className="text-foreground/85 text-sm font-normal leading-relaxed tracking-[0.01em] mb-1.5 group-hover:text-foreground transition-colors">
                     {caseStudy.title}

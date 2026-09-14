@@ -64,7 +64,7 @@ export default function CaseStudiesSection() {
       <div className="p-6 md:p-8 max-w-2xl">
         {caseStudies.length === 0 ? (
           <div className="flex items-center justify-center py-16">
-            <p className="text-foreground/50">No case studies yet</p>
+            <p className="text-foreground/50">The worktable is quiet for now.</p>
           </div>
         ) : (
           <StaggerContainer delay={0.2}>
