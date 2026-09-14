@@ -322,7 +322,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
               }}
               onPointerCancel={() => { wallDrag.current.active = false }}
             >
-            <div className={`playground-full-grid grid min-w-[920px] gap-4 md:gap-6 ${layout === 'large' ? 'playground-layout-large' : ''} ${layout === 'small' ? 'grid-cols-6' : layout === 'large' ? 'grid-cols-2' : 'grid-cols-4'}`}>
+            <div className={`playground-full-grid grid min-w-full md:min-w-[920px] gap-4 md:gap-6 ${layout === 'large' ? 'playground-layout-large' : ''} ${layout === 'small' ? 'grid-cols-2 md:grid-cols-6' : layout === 'large' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-2 md:grid-cols-4'}`}>
               {works.map((work, index) => {
                 const coverImage = getCoverImage(work)
                 
