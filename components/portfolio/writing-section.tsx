@@ -247,6 +247,10 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
 
             <div className="w-full max-w-[600px] mx-auto">
               <div className="writing-content-rail"><ArticleBody blocks={articleBlocks} typeface={appearance.typeface} /></div>
+              <div className="writing-next-actions">
+                <Link href="/writing">Back to writing</Link>
+                {writings.find((writing) => writing.id !== selectedWriting.id) && <Link href={`/writing/${slugify(writings.find((writing) => writing.id !== selectedWriting.id)!.title)}`}>Next note →</Link>}
+              </div>
             </div>
           </article>
       </div>

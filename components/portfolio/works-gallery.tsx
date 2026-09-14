@@ -371,7 +371,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
       </div>
 
       {/* Modal - Work Detail */}
-      {selectedWork && false && (
+      {selectedWork && (
         <dialog
           ref={dialogRef}
           aria-label="Playground media preview"

@@ -168,7 +168,7 @@ export default function CaseStudyClient() {
   }, [caseStudy, navItems.length])
 
   if (isLoading) {
-    return <main className="relative min-h-screen bg-background" aria-busy="true"><span className="fixed bottom-6 right-7 text-7xl md:text-9xl font-medium tracking-tight tabular-nums text-foreground/80" role="status">{loadPercent}%</span></main>
+    return <main className="relative min-h-screen bg-background px-6 pt-28 md:px-10" aria-busy="true"><div className="mx-auto max-w-[600px] animate-pulse"><div className="h-5 w-2/3 rounded bg-foreground/8" /><div className="mt-6 h-3 w-full rounded bg-foreground/6" /><div className="mt-2 h-3 w-4/5 rounded bg-foreground/6" /><div className="mt-14 aspect-[4/3] w-full rounded-lg bg-foreground/6" /><div className="mt-12 space-y-3"><div className="h-3 w-full rounded bg-foreground/5" /><div className="h-3 w-11/12 rounded bg-foreground/5" /><div className="h-3 w-4/5 rounded bg-foreground/5" /></div></div><span className="fixed bottom-6 right-7 text-5xl md:text-7xl font-medium tracking-tight tabular-nums text-foreground/65" role="status">{loadPercent}%</span></main>
   }
 
   if (!caseStudy) return <main className="max-w-[664px] mx-auto px-8 py-24"><h1 className="text-[18px]">Case study unavailable</h1><p className="text-sm text-foreground/60 my-4">It may have moved, or the connection failed.</p><a href="/" className="underline min-h-11 inline-flex items-center">Back to work</a><button type="button" onClick={() => window.location.reload()} className="ml-6 underline">Retry</button></main>
