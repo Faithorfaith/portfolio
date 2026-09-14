@@ -481,6 +481,13 @@
 .playground-full-grid { grid-auto-flow: row; }
 .playground-full-grid > div > button { height: 100%; }
 .playground-full-grid > div .relative { height: 100%; aspect-ratio: 1 / 1; border-radius: 28px; }
+.playground-viewer-dialog { background: rgb(12 13 14 / 86%) !important; }
+.playground-viewer-shell { max-width: 1000px !important; max-height: calc(100dvh - 32px) !important; background: #111 !important; color: #fff; border: 0 !important; border-radius: 14px !important; overflow: hidden !important; }
+.playground-viewer-shell > div { min-height: min(720px, calc(100dvh - 86px)); }
+.playground-viewer-media { background: #0c0d0e !important; max-height: none !important; }
+.playground-viewer-shell .md\:w-1\/3 { background: #111; }
+.playground-viewer-shell .rail-control { color: #fff; }
+.playground-viewer-shell .rail-control:hover:not(:disabled) { background: rgb(255 255 255 / 12%); }
 @media (min-width: 1024px) {
   .playground-full-grid { grid-template-rows: none; }
   .playground-full-grid > div:nth-child(1) { transform: scale(1.04); z-index: 2; }

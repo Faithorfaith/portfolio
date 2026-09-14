@@ -9,7 +9,6 @@ import { slugify } from '@/lib/slugify'
 import { track } from '@vercel/analytics'
 import { cleanInlineText, normalizeExternalUrl } from '@/lib/content-utils'
 import { imageFocus } from '@/lib/image-focus'
-import HomePresence from './home-presence'
 
 export interface Profile {
   id: string
@@ -219,7 +218,6 @@ export default function ProfileSection({
         </div>
       )}
 
-      <HomePresence deskNote={profile.supporting_statement} listening={Boolean(profile.train_music_url)} />
 
       <div className="homepage-contact mb-20 pt-2">
         <p className="homepage-contact-question">Got something in mind?</p>

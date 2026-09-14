@@ -380,7 +380,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
             if ((event.target as HTMLElement).closest('video, input, textarea, select')) return
             if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); stepWork(event.key === 'ArrowRight' ? 1 : -1) }
           }}
-          className="fixed inset-0 m-0 max-w-none max-h-none w-full h-full z-50 flex items-center justify-center p-4 md:p-8 backdrop-blur-md"
+          className="playground-viewer-dialog fixed inset-0 m-0 max-w-none max-h-none w-full h-full z-50 flex items-center justify-center p-4 md:p-8 backdrop-blur-md"
           style={{
             background: `rgba(0,0,0,${modalVisible ? 0.32 : 0})`,
             transition: 'background 0.2s ease',
@@ -388,7 +388,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           onClick={closeWork}
         >
           <div
-            className="bg-background rounded-lg max-w-5xl w-full max-h-[90dvh] overflow-y-auto relative shadow-2xl shadow-black/10"
+            className="playground-viewer-shell bg-background rounded-lg max-w-5xl w-full max-h-[90dvh] overflow-y-auto relative shadow-2xl shadow-black/10"
             onClick={(e) => e.stopPropagation()}
             style={{
               border: '0.5px solid rgba(0,0,0,0.1)',
@@ -410,7 +410,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
 
             <div className="flex flex-col md:flex-row h-full">
               {/* Left - Media (2/3) */}
-              <div className="md:w-2/3 bg-foreground/[0.035] flex items-center justify-center p-4 md:p-8 max-h-[50vh] md:max-h-[80vh] overflow-hidden">
+              <div className="playground-viewer-media md:w-2/3 bg-foreground/[0.035] flex items-center justify-center p-4 md:p-8 max-h-[50vh] md:max-h-[80vh] overflow-hidden">
                 {selectedWork!.media_url ? (
                   selectedWork!.media_type?.startsWith('image') ? (
                     <ProgressiveImage
