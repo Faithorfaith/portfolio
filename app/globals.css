@@ -483,7 +483,7 @@
 .playground-full-grid > div > button { height: 100%; }
 .playground-full-grid > div .relative { height: 100%; aspect-ratio: 1 / 1; border-radius: 28px; }
 .playground-viewer-dialog { background: rgb(12 13 14 / 86%) !important; }
-.playground-viewer-shell { max-width: 1000px !important; max-height: calc(100dvh - 32px) !important; background: #111 !important; color: #fff; border: 0 !important; border-radius: 14px !important; overflow: hidden !important; }
+.playground-viewer-shell { max-width: none !important; max-height: none !important; background: #111 !important; color: #fff; border: 0 !important; border-radius: 0 !important; overflow: hidden !important; }
 .playground-viewer-shell > div { min-height: min(720px, calc(100dvh - 86px)); }
 .playground-viewer-media { background: #0c0d0e !important; max-height: none !important; }
 .playground-viewer-media { min-height: min(68vh, 640px); }

@@ -388,7 +388,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           onClick={closeWork}
         >
           <div
-            className="playground-viewer-shell bg-background rounded-lg max-w-5xl w-full max-h-[90dvh] overflow-y-auto relative shadow-2xl shadow-black/10"
+            className="playground-viewer-shell bg-background w-full h-full relative shadow-2xl shadow-black/10"
             onClick={(e) => e.stopPropagation()}
             style={{
               border: '0.5px solid rgba(0,0,0,0.1)',
@@ -408,9 +408,9 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
               </svg>
             </button>
 
-            <div className="flex flex-col md:flex-row h-full">
+            <div className="flex h-full">
               {/* Left - Media (2/3) */}
-              <div className="playground-viewer-media md:w-2/3 bg-foreground/[0.035] flex items-center justify-center p-4 md:p-8 max-h-[50vh] md:max-h-[80vh] overflow-hidden">
+              <div className="playground-viewer-media w-full bg-foreground/[0.035] flex items-center justify-center p-4 md:p-10 overflow-hidden">
                 {selectedWork!.media_url ? (
                   selectedWork!.media_type?.startsWith('image') ? (
                     <ProgressiveImage
@@ -450,14 +450,21 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
               </div>
 
               {/* Minimal controls; Playground stays media-first. */}
-              <div className="playground-viewer-controls md:w-1/3 p-6 md:p-8 flex flex-col overflow-y-auto">
-                {/* Spacer */}
-                <div className="flex items-center gap-2 mb-4">
+              <div className="playground-viewer-controls p-4 md:p-6 flex flex-col">
+                <div className="flex items-center gap-5 mb-3">
                   <button type="button" className="rail-control" aria-label="Previous project" disabled={works[0]?.id === selectedWork!.id} onClick={() => stepWork(-1)}>←</button>
                   <span className="text-xs text-foreground/60 tabular-nums">{works.findIndex((work) => work.id === selectedWork!.id) + 1} / {works.length}</span>
                   <button type="button" className="rail-control" aria-label="Next project" disabled={works.at(-1)?.id === selectedWork!.id} onClick={() => stepWork(1)}>→</button>
                 </div>
                 <div className="flex-1" />
+                <div className="flex max-w-full items-center gap-2 overflow-x-auto pb-1">
+                  {works.map((work) => {
+                    const thumb = getCoverImage(work) || work.media_url
+                    return <button key={work.id} type="button" onClick={() => setSelectedWork(work)} aria-label={`Open ${work.title}`} className={`size-12 shrink-0 overflow-hidden rounded-md ${work.id === selectedWork!.id ? 'ring-2 ring-white' : 'opacity-60 hover:opacity-100'}`}>
+                      {thumb ? <img src={thumb} alt="" className="h-full w-full object-cover" /> : <span className="block h-full w-full bg-white/10" />}
+                    </button>
+                  })}
+                </div>
 
               </div>
             </div>
