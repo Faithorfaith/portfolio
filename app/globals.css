@@ -726,8 +726,9 @@
 }
 /* Side-view coaches share one wheel baseline with the rails. */
 .train-viewport { height: 620px; border: 0; }
-.train-sky { background: #fafafa; }
-.train-sky::before { background-position: center 52%; opacity: .86; }
+.train-sky { background: linear-gradient(180deg, #b9e6f4 0%, #e9f6f4 54%, #c7c6b9 55%, #9f9d8b 100%); }
+.train-sky::before { inset: 0 0 45% 0; background-position: center 52%; opacity: .86; }
+.train-sky::after { background: linear-gradient(180deg, transparent 0 48%, rgb(118 119 103 / 14%) 58%, rgb(87 88 73 / 28%) 100%); }
 .train-footer.is-visible .train-sky::before { animation: train-cloud-drift 52s ease-in-out infinite alternate; }
 .train-scenery { opacity: .09; }
 .train-drawn-motion { width: 1000px; bottom: 33px; }
