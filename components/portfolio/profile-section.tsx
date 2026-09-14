@@ -288,7 +288,7 @@ export default function ProfileSection({
             }}
             className="case-study-rail flex w-full gap-4 md:gap-5 overflow-x-auto snap-x snap-mandatory pb-6 pr-8 cursor-grab active:cursor-grabbing select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            {caseStudies.map((caseStudy) => (
+            {caseStudies.map((caseStudy, index) => (
               <a
                 key={caseStudy.id}
                 href={`/case-studies/${slugify(caseStudy.title) || caseStudy.slug || caseStudy.id}`}
@@ -316,6 +316,9 @@ export default function ProfileSection({
                       alt={caseStudy.title}
                       fill
                       sizes="(max-width: 640px) 72vw, (max-width: 1100px) 36vw, 400px"
+                      priority={index === 0}
+                      fetchPriority={index === 0 ? 'high' : 'auto'}
+                      quality={72}
                       className="object-cover"
                     />
                     <span className="work-action-label absolute bottom-2 right-2 rounded-full bg-background/95 px-2.5 py-1.5 text-[11px]">View case study ↗</span>

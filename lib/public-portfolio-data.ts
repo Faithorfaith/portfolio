@@ -54,7 +54,7 @@ export const getHomepagePortfolioData = unstable_cache(async (): Promise<Homepag
     supabase.from('profiles').select('id, username, full_name, bio, avatar_url, hero_image_1, hero_image_2, hero_image_3, gallery_images, bio_references, contact_email, train_music_url, train_video_1, train_video_2, train_video_3, train_video_4').limit(1).maybeSingle(),
     supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, order_index, created_at').eq('published', true).order('order_index', { ascending: true }).order('created_at', { ascending: false }).limit(50),
     supabase.from('projects').select('id, title, year, type, link, description, created_at').order('created_at', { ascending: false }).limit(30),
-    supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type', { count: 'exact' }).order('created_at', { ascending: false }).limit(18),
+    supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type', { count: 'exact' }).order('created_at', { ascending: false }).limit(6),
     supabase.from('writings').select('id, title, slug, excerpt, cover_image, created_at, content').order('created_at', { ascending: false }).limit(4),
     supabase.from('workflow_files').select('*, workflow_file_versions(*)').eq('published', true).order('updated_at', { ascending: false }).limit(4),
   ])
@@ -64,7 +64,7 @@ export const getHomepagePortfolioData = unstable_cache(async (): Promise<Homepag
     caseStudies: (caseStudiesResult.data as CaseStudy[] | null) ?? [],
     projects: (projectsResult.data as Project[] | null) ?? [],
     works,
-    hiddenWorkCount: Math.max(0, (worksResult.count || works.length) - 14),
+    hiddenWorkCount: Math.max(0, (worksResult.count || works.length) - works.length),
     writings: (writingsResult.data || []).map(({ content, ...writing }) => ({ ...writing, readingMinutes: Math.max(1, Math.ceil(wordCount(content) / 200)) })) as HomeWriting[],
     workflowFiles: ((workflowResult.data || []).map(file => ({ ...file, workflow_file_versions: [...(file.workflow_file_versions || [])].sort((a, b) => b.version_number - a.version_number) })) as WorkflowFile[]),
   }
