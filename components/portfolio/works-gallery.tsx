@@ -324,11 +324,11 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
             >
             <div className={`playground-full-grid grid min-w-full md:min-w-[920px] gap-4 md:gap-6 ${layout === 'large' ? 'playground-layout-large' : ''} ${layout === 'small' ? 'grid-cols-2 md:grid-cols-6' : layout === 'large' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-2 md:grid-cols-4'}`}>
               {works.map((work, index) => {
-                const coverImage = getCoverImage(work)
+                const coverImage = (work.media_url && work.media_type?.startsWith('image')) ? work.media_url : getCoverImage(work)
                 
                 return (
                   <div key={work.id} data-playground-card={work.id} data-motion-section>
-                    <div className="group w-full">
+                    <button type="button" onClick={() => openWork(work)} aria-label={`Preview ${work.title}`} className="group block w-full text-left">
                       <div className="relative w-full aspect-[3/4] rounded-md overflow-hidden bg-foreground/5 ring-1 ring-transparent group-hover:ring-foreground/25 transition-[box-shadow,filter] duration-200 group-hover:brightness-[0.98]">
                         {coverImage ? (
                           <ProgressiveImage
@@ -353,8 +353,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                           </div>
                         )}
                       </div>
-
-                    </div>
+                    </button>
                   </div>
                 )
               })}
@@ -382,7 +381,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
           }}
           className="playground-viewer-dialog fixed inset-0 m-0 max-w-none max-h-none w-full h-full z-50 flex items-center justify-center p-4 md:p-8 backdrop-blur-md"
           style={{
-            background: `rgba(0,0,0,${modalVisible ? 0.32 : 0})`,
+            background: `rgba(20,20,20,${modalVisible ? 0.16 : 0})`,
             transition: 'background 0.2s ease',
           }}
           onClick={closeWork}
@@ -432,9 +431,9 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                       className="max-w-full max-h-full rounded-lg"
                     />
                   )
-                ) : getCoverImage(selectedWork!) ? (
+                ) : ((selectedWork!.media_url && selectedWork!.media_type?.startsWith('image')) || getCoverImage(selectedWork!)) ? (
                   <ProgressiveImage
-                    src={getCoverImage(selectedWork!)!}
+                    src={(selectedWork!.media_url && selectedWork!.media_type?.startsWith('image')) ? selectedWork!.media_url : getCoverImage(selectedWork!)!}
                     alt={selectedWork!.title}
                     className="max-w-full max-h-full object-contain rounded-lg"
                     containerClassName="max-w-full max-h-full rounded-lg"
