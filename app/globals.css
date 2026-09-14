@@ -208,7 +208,7 @@
   .article-prose li p { margin-bottom: 0.25rem; }
   .article-prose a { color: var(--foreground); text-decoration: underline; text-underline-offset: 4px; }
   .article-prose h1, .article-prose h2, .article-prose h3 { font-size: 14px; font-weight: 500; margin: 2rem 0 1rem; scroll-margin-top: 100px; }
-  .article-prose pre { overflow-x: auto; padding: 1rem; background: var(--muted); }
+.article-prose pre { overflow-x: hidden; overflow-wrap: anywhere; white-space: pre-wrap; padding: 1rem; background: var(--muted); }
   .rich-text-editor { font-size: 14px; line-height: 1.8; }
   .rich-text-editor p { margin-bottom: 0.75rem; }
   .rich-text-editor ul { list-style: disc outside; padding-left: 1.5rem; margin: 1rem 0; }

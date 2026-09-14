@@ -154,11 +154,11 @@ export default function CaseStudyClient() {
     let frame = 0
     const update = () => {
       frame = 0
-      let current = elements[0]
+      let current: HTMLElement | undefined
       for (const element of elements) {
         if (element.getBoundingClientRect().top <= 110) current = element
       }
-      if (current) setActiveNavItem(current.id)
+      setActiveNavItem(current?.id || null)
     }
     const schedule = () => { if (!frame) frame = requestAnimationFrame(update) }
     window.addEventListener('scroll', schedule, { passive: true })
@@ -236,22 +236,16 @@ export default function CaseStudyClient() {
         <div className="min-w-0 py-8 md:py-8">
           <div className="w-full max-w-[600px] mx-auto">
           <header className="mb-12 w-full max-w-[600px]" data-motion-section>
+            {caseStudy.thumbnail_url && caseStudy.media_type !== 'video' && (
+              <button type="button" onClick={() => setExpandedImage({ src: caseStudy.thumbnail_url!, alt: caseStudy.title })} className="motion-media group block w-full mb-10 overflow-hidden bg-foreground/4 cursor-zoom-in" aria-label={`Expand ${caseStudy.title} image`} data-motion-section>
+                <ProgressiveImage src={caseStudy.thumbnail_url} alt={caseStudy.title} className="w-full h-auto" />
+              </button>
+            )}
             <h1 className="text-[18px] font-medium tracking-[-0.01em] leading-snug text-foreground">{caseStudy.title}</h1>
             {caseStudy.excerpt && <p className="mt-6 text-sm text-foreground/65 leading-relaxed max-w-2xl">{caseStudy.excerpt}</p>}
           </header>
 
           {/* Thumbnail */}
-          {caseStudy.thumbnail_url && caseStudy.media_type !== 'video' && (
-            <button type="button" onClick={() => setExpandedImage({ src: caseStudy.thumbnail_url!, alt: caseStudy.title })} className="motion-media group block w-full mb-16 overflow-hidden bg-foreground/4 cursor-zoom-in" aria-label={`Expand ${caseStudy.title} image`} data-motion-section>
-              <ProgressiveImage
-                src={caseStudy.thumbnail_url}
-                alt={caseStudy.title}
-                className="w-full h-auto"
-              />
-              <span className="sr-only">Open full-size image</span>
-            </button>
-          )}
-
           {caseStudy.media_type === 'video' && caseStudy.video_url && (
             <div className="mb-16 overflow-hidden bg-black">
               <ViewportVideo
