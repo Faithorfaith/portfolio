@@ -16,12 +16,23 @@ const publicClient = () => {
   return url && key ? createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }) : null
 }
 
-export const getPublicWritings = unstable_cache(async (): Promise<Writing[]> => {
+export const getPublicWritings = async (): Promise<Writing[]> => {
   const supabase = publicClient()
   if (!supabase) return []
-  const { data } = await supabase.from('writings').select('*').order('created_at', { ascending: false })
-  return ((data || []).map(writing => ({ ...writing, content: typeof writing.content === 'string' ? JSON.parse(writing.content) : (writing.content || []) })) as Writing[])
-}, ['public-writings-v4'], { revalidate: 60 })
+  const { data, error } = await supabase
+    .from('writings')
+    .select('*')
+    .eq('published', true)
+    .order('created_at', { ascending: false })
+  if (error) throw new Error(`Unable to load public writings: ${error.message}`)
+  return ((data || []).map(writing => {
+    let content = writing.content || []
+    if (typeof content === 'string') {
+      try { content = JSON.parse(content) } catch { content = [] }
+    }
+    return { ...writing, content }
+  }) as Writing[])
+}
 
 export const getPublicWorks = unstable_cache(async (): Promise<Work[]> => {
   const supabase = publicClient()
