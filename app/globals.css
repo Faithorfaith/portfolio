@@ -54,6 +54,16 @@
 }
 
 :root {
+  /* One typographic system for every public-facing page. */
+  --type-body: 14px;
+  --type-body-leading: 1.62;
+  --type-body-tracking: -0.012em;
+  --type-label: 11px;
+  --type-label-leading: 1.45;
+  --type-label-tracking: -0.006em;
+  --type-heading-tracking: -0.032em;
+  --type-display: clamp(26px, 2.55vw, 36px);
+  --type-display-leading: 1.36;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -187,9 +197,10 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-size: 14px;
-    line-height: 1.65;
-    letter-spacing: 0.01em;
+    font-family: var(--font-sans);
+    font-size: var(--type-body);
+    line-height: var(--type-body-leading);
+    letter-spacing: var(--type-body-tracking);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
@@ -853,15 +864,15 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .digital-home { background-image: radial-gradient(color-mix(in oklch, var(--foreground) 3%, transparent) .5px, transparent .5px); background-size: 5px 5px; }
 .homepage-opening { padding-top: clamp(72px, 10vw, 132px); }
 .homepage-name { color: color-mix(in oklch, var(--foreground) 72%, transparent); }
-.homepage-narrative { max-width: 780px; }
+.homepage-narrative { max-width: 680px; }
 .home-narrative-line { color: var(--foreground); }
 .home-narrative-segment {
   --reading-opacity: .16;
   opacity: var(--reading-opacity);
-  font-size: clamp(24px, 3.2vw, 42px);
+  font-size: var(--type-display);
   font-weight: 500;
-  letter-spacing: -.036em;
-  line-height: 1.28;
+  letter-spacing: var(--type-heading-tracking);
+  line-height: var(--type-display-leading);
   text-wrap: pretty;
   transition: opacity 110ms linear;
 }
@@ -884,9 +895,9 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .home-narrative-line .bio-inline-tag-label {
   border-bottom-color: color-mix(in oklch, currentColor 28%, transparent);
 }
-.homepage-contact { max-width: 780px; }
+.homepage-contact { max-width: 680px; }
 @media (max-width: 639px) {
-  .home-narrative-segment { font-size: clamp(22px, 7.2vw, 30px); line-height: 1.32; }
+  .home-narrative-segment { font-size: clamp(24px, 7vw, 29px); line-height: 1.38; }
 }
 @media (prefers-reduced-motion: reduce) {
   .home-narrative-segment { --reading-opacity: .85; transition: none; }
@@ -906,17 +917,18 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .public-page :where(h1, h2, h3),
 .digital-home :where(h1, h2, h3) {
   font-weight: 500;
-  letter-spacing: -.025em;
+  letter-spacing: var(--type-heading-tracking);
+  line-height: 1.3;
   text-wrap: balance;
 }
 .public-page :where(p, li),
 .digital-home :where(p, li) {
-  letter-spacing: -.012em;
+  letter-spacing: var(--type-body-tracking);
   text-wrap: pretty;
 }
 .public-page :where(p, li, a, button),
 .digital-home :where(p, li, a, button) {
-  line-height: 1.62;
+  line-height: var(--type-body-leading);
 }
 .public-page :where(a, button),
 .digital-home :where(a, button) {
@@ -928,14 +940,19 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   outline-offset: 4px;
 }
 .public-page :where([class*='text-foreground/60'], [class*='text-foreground/50'], [class*='text-foreground/45']) {
-  letter-spacing: -.01em;
+  letter-spacing: var(--type-body-tracking);
+}
+.public-page :where(.text-xs, .text-\[11px\], .text-\[10px\], .text-\[9px\]),
+.digital-home :where(.text-xs, .text-\[11px\], .text-\[10px\], .text-\[9px\]) {
+  line-height: var(--type-label-leading);
+  letter-spacing: var(--type-label-tracking);
 }
 .public-page .article-prose {
   font-family: var(--font-sans);
   font-size: 15px;
   font-weight: 400;
-  line-height: 1.78;
-  letter-spacing: -.014em;
+  line-height: 1.76;
+  letter-spacing: var(--type-body-tracking);
 }
 .public-page .article-prose :where(p, ul, ol) { margin-block: 0 1.65rem; }
 .public-page .article-prose :where(h1, h2, h3) {
@@ -944,14 +961,14 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   font-size: 18px;
   font-weight: 500;
   line-height: 1.35;
-  letter-spacing: -.025em;
+  letter-spacing: var(--type-heading-tracking);
 }
 .public-page .article-prose blockquote {
   margin-block: 2.5rem;
   padding-left: 20px;
   font-size: 18px;
   line-height: 1.55;
-  letter-spacing: -.022em;
+  letter-spacing: -.024em;
 }
 .public-page .article-prose :where(figcaption, small) {
   font-size: 11px;
@@ -959,7 +976,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   letter-spacing: -.005em;
 }
 @media (min-width: 768px) {
-  .public-page .article-prose { font-size: 16px; line-height: 1.82; }
+  .public-page .article-prose { font-size: 16px; line-height: 1.76; }
   .public-page .article-prose :where(h1, h2, h3) { font-size: 20px; }
 }
 .public-page.writing-handwritten-article .article-prose,
