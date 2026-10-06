@@ -136,7 +136,7 @@
 }
 
 @theme inline {
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: var(--font-inter), Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --line-height: 1.4;
   --color-background: var(--background);
@@ -854,26 +854,117 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .homepage-opening { padding-top: clamp(72px, 10vw, 132px); }
 .homepage-name { color: color-mix(in oklch, var(--foreground) 72%, transparent); }
 .homepage-narrative { max-width: 780px; }
-.home-narrative-line {
-  --reading-opacity: .42;
-  color: var(--foreground);
+.home-narrative-line { color: var(--foreground); }
+.home-narrative-segment {
+  --reading-opacity: .16;
   opacity: var(--reading-opacity);
   font-size: clamp(24px, 3.2vw, 42px);
-  font-weight: 450;
-  letter-spacing: -.032em;
-  line-height: 1.23;
+  font-weight: 500;
+  letter-spacing: -.036em;
+  line-height: 1.28;
   text-wrap: pretty;
   transition: opacity 110ms linear;
 }
+.home-narrative-segment + .home-narrative-segment::before { content: ' '; }
+.bio-inline-orb {
+  display: inline-grid;
+  width: .95em;
+  height: .95em;
+  margin-inline: .14em .08em;
+  vertical-align: -.13em;
+  overflow: hidden;
+  border-radius: .23em;
+  box-shadow: 0 7px 20px rgb(0 0 0 / 12%);
+  transform: translateY(.18em) rotate(-4deg) scale(.7);
+  opacity: 0;
+  transition: transform 420ms cubic-bezier(.22,1,.36,1), opacity 260ms ease;
+}
+.bio-inline-orb img { width: 100%; height: 100%; object-fit: cover; }
+.home-narrative-segment.is-reading .bio-inline-orb { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
 .home-narrative-line .bio-inline-tag-label {
   border-bottom-color: color-mix(in oklch, currentColor 28%, transparent);
 }
 .homepage-contact { max-width: 780px; }
 @media (max-width: 639px) {
-  .home-narrative-line { font-size: clamp(22px, 7.2vw, 30px); line-height: 1.28; }
+  .home-narrative-segment { font-size: clamp(22px, 7.2vw, 30px); line-height: 1.32; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .home-narrative-line { --reading-opacity: .85; transition: none; }
+  .home-narrative-segment { --reading-opacity: .85; transition: none; }
+  .bio-inline-orb { opacity: 1; transform: none; transition: none; }
+}
+
+/* Shared editorial typography for the public portfolio. */
+.digital-home,
+.public-page {
+  font-family: var(--font-sans);
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.public-page :where(h1, h2, h3),
+.digital-home :where(h1, h2, h3) {
+  font-weight: 500;
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+.public-page :where(p, li),
+.digital-home :where(p, li) {
+  letter-spacing: -.012em;
+  text-wrap: pretty;
+}
+.public-page :where(p, li, a, button),
+.digital-home :where(p, li, a, button) {
+  line-height: 1.62;
+}
+.public-page :where(a, button),
+.digital-home :where(a, button) {
+  transition-timing-function: cubic-bezier(.22,1,.36,1);
+}
+.public-page :where(a, button):focus-visible,
+.digital-home :where(a, button):focus-visible {
+  outline: 1px solid color-mix(in oklch, var(--foreground) 62%, transparent);
+  outline-offset: 4px;
+}
+.public-page :where([class*='text-foreground/60'], [class*='text-foreground/50'], [class*='text-foreground/45']) {
+  letter-spacing: -.01em;
+}
+.public-page .article-prose {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.78;
+  letter-spacing: -.014em;
+}
+.public-page .article-prose :where(p, ul, ol) { margin-block: 0 1.65rem; }
+.public-page .article-prose :where(h1, h2, h3) {
+  margin-block: 3rem 1rem;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -.025em;
+}
+.public-page .article-prose blockquote {
+  margin-block: 2.5rem;
+  padding-left: 20px;
+  font-size: 18px;
+  line-height: 1.55;
+  letter-spacing: -.022em;
+}
+.public-page .article-prose :where(figcaption, small) {
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: -.005em;
+}
+@media (min-width: 768px) {
+  .public-page .article-prose { font-size: 16px; line-height: 1.82; }
+  .public-page .article-prose :where(h1, h2, h3) { font-size: 20px; }
+}
+.public-page.writing-handwritten-article .article-prose,
+.public-page.writing-handwritten-article .article-prose blockquote {
+  font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive;
 }
 .profile-heading-row .home-presence { transition: background-color 300ms ease; }
 :root[data-time-of-day='morning'] .digital-home { background-color: color-mix(in oklch, #dfeef4 9%, var(--background)); }

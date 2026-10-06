@@ -7,5 +7,5 @@ export const metadata = { title: 'Workflow files — Faith Awokunle', descriptio
 
 export default async function WorkflowsPage() {
   const files = await getPublicWorkflowFiles()
-  return <main className="min-h-screen"><DetailNavigation title="Workflow files" backHref="/"/><div className="pt-20"><WorkflowFilesSection files={files}/></div></main>
+  return <main className="public-page min-h-screen"><DetailNavigation title="Workflow files" backHref="/"/><div className="pt-20"><WorkflowFilesSection files={files}/></div></main>
 }

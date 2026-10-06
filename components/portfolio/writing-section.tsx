@@ -154,7 +154,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
     const appearance = getWritingAppearance(selectedWriting.content)
     const articleBlocks = selectedWriting.content.filter(block => block.type !== 'appearance')
     return (
-      <div className="writing-page-shell" style={{ backgroundColor: writingBackgroundColor(appearance.background) }}>
+      <div className="public-page writing-page-shell" style={{ backgroundColor: writingBackgroundColor(appearance.background) }}>
       <div className="writing-reading-progress" style={{ width: `${readingProgress}%` }} aria-hidden="true" />
       <div id="top" className="w-full min-h-screen max-w-[920px] mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20">
         <DetailNavigation title={selectedWriting.title} backHref={initialSlug ? '/writing' : '/#writing'} backgroundColor={writingBackgroundColor(appearance.background)} />
@@ -295,7 +295,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
 
   // Writings List - Medium-style card grid
   return (
-    <div id="top" className="w-full min-h-screen mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20 bg-background">
+    <div id="top" className="public-page w-full min-h-screen mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20 bg-background">
       {/* Centered Content Container */}
       <div className="flex justify-center">
         <div className="max-w-5xl w-full">

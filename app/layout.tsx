@@ -5,6 +5,9 @@ import './globals.css'
 import SoundControl from '@/components/portfolio/sound-control'
 import { ArticleAudioProvider } from '@/components/article-audio-provider'
 import MotionOrchestrator from '@/components/portfolio/motion-orchestrator'
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -45,7 +48,7 @@ export default function RootLayout({
         {/* Preconnect to critical domains — reduces TLS handshake time */}
         <link rel="preconnect" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" crossOrigin="anonymous" />
       </head>
-      <body>
+      <body className={inter.variable}>
         <ArticleAudioProvider>
           <MotionOrchestrator />
           {children}

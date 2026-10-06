@@ -184,7 +184,7 @@ export default function CaseStudyClient() {
   }
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="public-page min-h-screen bg-background">
       <div className="fixed top-0 left-0 z-[60] h-px bg-foreground/70 transition-[width] duration-100" style={{ width: `${readingProgress}%` }} aria-hidden="true" />
       <header className="fixed top-0 inset-x-0 z-50 h-[52px] border-b border-foreground/8 bg-background/95 backdrop-blur-xl">
         <div className="h-full max-w-[1440px] mx-auto px-5 md:px-8 flex items-center justify-between">

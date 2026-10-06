@@ -95,7 +95,7 @@ export default function ProfileSection({
   useEffect(() => {
     const narrative = narrativeRef.current
     if (!narrative || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const lines = Array.from(narrative.querySelectorAll<HTMLElement>('.home-narrative-line'))
+    const lines = Array.from(narrative.querySelectorAll<HTMLElement>('.home-narrative-segment'))
     let frame = 0
     const update = () => {
       frame = 0
@@ -105,7 +105,8 @@ export default function ProfileSection({
         const rect = line.getBoundingClientRect()
         const center = rect.top + rect.height / 2
         const proximity = Math.max(0, 1 - Math.abs(center - focus) / range)
-        line.style.setProperty('--reading-opacity', (0.22 + proximity * 0.78).toFixed(3))
+        line.style.setProperty('--reading-opacity', (0.14 + proximity * 0.86).toFixed(3))
+        line.classList.toggle('is-reading', proximity > 0.62)
       })
     }
     const requestUpdate = () => {
@@ -141,7 +142,7 @@ export default function ProfileSection({
       if (!reference) return part
       const description = cleanInlineText(reference.description)
       const url = normalizeExternalUrl(reference.url)
-      const tag = <span className="bio-inline-tag-label">{part}</span>
+      const tag = <><span className="bio-inline-tag-label">{part}</span>{reference.image && <span className="bio-inline-orb" aria-hidden="true"><img src={reference.image} alt="" /></span>}</>
       return <span key={`${reference.id}-${index}`} className="bio-inline-tag group" tabIndex={0}>
         {url ? <a href={url} target="_blank" rel="noopener noreferrer">{tag}</a> : tag}
         <span className="bio-inline-card" role="tooltip">
@@ -241,7 +242,9 @@ export default function ProfileSection({
                 key={index}
                 className="home-narrative-line"
               >
-                {renderBioText(paragraph)}
+                {paragraph.split(/(?<=[.!?])\s+/).filter(Boolean).map((sentence, sentenceIndex) => (
+                  <span key={`${index}-${sentenceIndex}`} className="home-narrative-segment">{renderBioText(sentence)}</span>
+                ))}
               </p>
             ))}
           </div>

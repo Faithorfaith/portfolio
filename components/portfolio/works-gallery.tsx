@@ -290,7 +290,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
   }
 
   return (
-    <div id="top" className="w-full px-5 md:px-10 pt-[84px] pb-28 md:pb-32">
+    <div id="top" className="public-page w-full px-5 md:px-10 pt-[84px] pb-28 md:pb-32">
       <div className="flex justify-center">
         <div className="w-full">
           {/* Section Header */}
