@@ -11,7 +11,6 @@ import CopyLinkButton from '@/components/copy-link-button'
 import SafeEmbed from '@/components/safe-embed'
 import { slugify } from '@/lib/slugify'
 import ViewportVideo from '@/components/viewport-video'
-import { playFeedback } from '@/lib/interaction-feedback'
 
 interface Section {
   id: string
@@ -25,12 +24,6 @@ interface Section {
   media_width?: 'reading' | 'wide' | 'full'
 }
 
-interface NavItem {
-  id: string
-  label: string
-  toc: string
-}
-
 interface CaseStudy {
   id: string
   title: string
@@ -39,7 +32,7 @@ interface CaseStudy {
   video_url: string | null
   media_type: 'image' | 'video' | null
   sections: Section[] | string | null
-  nav_items: NavItem[] | string | null
+  nav_items: unknown
   slug: string | null
   published: boolean
   created_at: string
@@ -65,7 +58,6 @@ export default function CaseStudyClient() {
   const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadPercent, setLoadPercent] = useState(8)
-  const [activeNavItem, setActiveNavItem] = useState<string | null>(null)
   const [readingProgress, setReadingProgress] = useState(0)
   const [relatedArticle, setRelatedArticle] = useState<RelatedArticle | null>(null)
   const [expandedImage, setExpandedImage] = useState<{ src: string; alt: string } | null>(null)
@@ -73,11 +65,6 @@ export default function CaseStudyClient() {
     ? caseStudy.sections
     : typeof caseStudy?.sections === 'string'
     ? JSON.parse(caseStudy.sections)
-    : [], [caseStudy])
-  const navItems: NavItem[] = useMemo(() => Array.isArray(caseStudy?.nav_items)
-    ? caseStudy.nav_items
-    : typeof caseStudy?.nav_items === 'string'
-    ? JSON.parse(caseStudy.nav_items)
     : [], [caseStudy])
 
   useEffect(() => {
@@ -148,40 +135,11 @@ export default function CaseStudyClient() {
     return () => window.removeEventListener('scroll', updateProgress)
   }, [])
 
-  useEffect(() => {
-    if (!caseStudy) return
-    const elements = navItems.map((item) => document.getElementById(item.id)).filter(Boolean) as HTMLElement[]
-    let frame = 0
-    const update = () => {
-      frame = 0
-      let current: HTMLElement | undefined
-      for (const element of elements) {
-        if (element.getBoundingClientRect().top <= 110) current = element
-      }
-      setActiveNavItem(current?.id || null)
-    }
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(update) }
-    window.addEventListener('scroll', schedule, { passive: true })
-    window.addEventListener('resize', schedule)
-    update()
-    return () => { cancelAnimationFrame(frame); window.removeEventListener('scroll', schedule); window.removeEventListener('resize', schedule) }
-  }, [caseStudy, navItems.length])
-
   if (isLoading) {
     return <main className="relative min-h-screen bg-background px-6 pt-28 md:px-10" aria-busy="true"><div className="mx-auto max-w-[600px] animate-pulse"><div className="h-5 w-2/3 rounded bg-foreground/8" /><div className="mt-6 h-3 w-full rounded bg-foreground/6" /><div className="mt-2 h-3 w-4/5 rounded bg-foreground/6" /><div className="mt-14 aspect-[4/3] w-full rounded-lg bg-foreground/6" /><div className="mt-12 space-y-3"><div className="h-3 w-full rounded bg-foreground/5" /><div className="h-3 w-11/12 rounded bg-foreground/5" /><div className="h-3 w-4/5 rounded bg-foreground/5" /></div></div><span className="fixed bottom-6 right-7 text-5xl md:text-7xl font-medium tracking-tight tabular-nums text-foreground/65" role="status">{loadPercent}%</span></main>
   }
 
   if (!caseStudy) return <main className="max-w-[664px] mx-auto px-8 py-24"><h1 className="text-[18px]">Case study unavailable</h1><p className="text-sm text-foreground/60 my-4">It may have moved, or the connection failed.</p><a href="/" className="underline min-h-11 inline-flex items-center">Back to work</a><button type="button" onClick={() => window.location.reload()} className="ml-6 underline">Retry</button></main>
-
-  const handleNavClick = (sectionId: string) => {
-    playFeedback('tap')
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
-      window.history.replaceState(null, '', `#${sectionId}`)
-      setActiveNavItem(sectionId)
-    }
-  }
 
   return (
     <main className="public-page min-h-screen bg-background">
@@ -209,30 +167,7 @@ export default function CaseStudyClient() {
         </div>
       </header>
 
-      <div className={`pt-[52px] w-full max-w-[920px] mx-auto px-6 md:px-10 lg:px-12 ${navItems.length > 0 ? 'lg:grid lg:grid-cols-[180px_minmax(0,600px)] lg:gap-10 xl:gap-12' : ''}`}>
-        {navItems.length > 0 && (
-          <aside className="hidden lg:block min-w-0 pt-8 pb-14">
-            <div className="sticky top-[68px] max-h-[calc(100vh-84px)] overflow-y-auto pr-4">
-              <nav className="space-y-3" aria-label="Case study sections">
-                {navItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => handleNavClick(item.id)}
-                    className={`relative block min-h-7 text-left text-xs leading-5 w-full transition-[color,font-weight] ${
-                      activeNavItem === item.id
-                        ? 'text-foreground font-medium'
-                        : 'text-foreground/50 font-normal hover:text-foreground/80'
-                    }`}
-                    aria-current={activeNavItem === item.id ? 'location' : undefined}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </nav>
-            </div>
-          </aside>
-        )}
-
+      <div className="pt-[52px] w-full max-w-[760px] mx-auto px-6 md:px-10 lg:px-12">
         <div className="min-w-0 py-8 md:py-8">
           <div className="w-full max-w-[600px] mx-auto">
           <header className="mb-12 w-full max-w-[600px]" data-motion-section>
@@ -241,8 +176,8 @@ export default function CaseStudyClient() {
                 <ProgressiveImage src={caseStudy.thumbnail_url} alt={caseStudy.title} className="w-full h-auto" />
               </button>
             )}
-            <h1 className="text-[18px] font-medium tracking-[-0.01em] leading-snug text-foreground">{caseStudy.title}</h1>
-            {caseStudy.excerpt && <p className="mt-6 text-sm text-foreground/65 leading-relaxed max-w-2xl">{caseStudy.excerpt}</p>}
+            <h1 className="editorial-display text-foreground">{caseStudy.title}</h1>
+            {caseStudy.excerpt && <p className="editorial-lede mt-7 text-foreground/65 max-w-2xl">{caseStudy.excerpt}</p>}
           </header>
 
           {/* Thumbnail */}
@@ -281,7 +216,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.title && (
-                  <h2 className="text-[18px] font-medium tracking-[-0.01em] text-foreground mb-6">
+                  <h2 className="editorial-section-title text-foreground mb-6">
                     {section.title}
                   </h2>
                 )}

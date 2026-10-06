@@ -63,8 +63,8 @@ export default function ProjectClient() {
         <section className="grid gap-10 border-t border-foreground/10 pt-10 md:grid-cols-[1fr_260px] md:gap-16">
           <div>
             <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">Project overview</p>
-            <h2 className="mt-4 max-w-xl text-2xl font-medium tracking-tight text-foreground md:text-3xl">Making the experience clearer, calmer, and more useful.</h2>
-            {project.description && <p className="mt-6 max-w-2xl text-base leading-relaxed text-foreground/60">{project.description}</p>}
+            <h2 className="editorial-display mt-4 max-w-xl text-foreground">Making the experience clearer, calmer, and more useful.</h2>
+            {project.description && <p className="editorial-lede mt-7 max-w-2xl text-foreground/60">{project.description}</p>}
           </div>
           <aside className="h-fit rounded-2xl bg-foreground/[0.045] p-5">
             <p className="text-[10px] uppercase tracking-[0.16em] text-foreground/40">At a glance</p>

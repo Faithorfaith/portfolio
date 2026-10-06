@@ -59,11 +59,11 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                     <div className="flex items-start justify-between gap-6 py-3">
                     {/* Left - Title & Description */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm leading-relaxed tracking-[0.01em] text-foreground/85 font-normal group-hover:text-foreground transition-colors duration-200">
+                      <h3 className="editorial-card-title text-foreground/85 group-hover:text-foreground transition-colors duration-200">
                         {project.title}
                       </h3>
                       {project.description && (
-                        <p className="text-sm text-foreground/60 leading-relaxed mt-1 line-clamp-2">
+                        <p className="editorial-card-copy text-foreground/60 mt-2 line-clamp-2">
                           {project.description}
                         </p>
                       )}

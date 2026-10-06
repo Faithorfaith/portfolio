@@ -272,7 +272,7 @@ export default function ProfileSection({
       {caseStudies.length > 0 && (
         <div id="work" className="portfolio-deferred mt-16 scroll-mt-20">
           <div className="flex items-baseline justify-between mb-8">
-            <h2 className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground">Selected case studies</h2>
+            <h2 className="editorial-section-title text-foreground">Selected case studies</h2>
             {caseStudies.length > 1 && (
               <div className="flex items-center gap-1" aria-label="Browse work">
                 <button type="button" aria-label="Previous work" aria-controls="work-rail" disabled={railEdges.start} onClick={() => browseWork(-1)} className="rail-control">←</button>
@@ -362,13 +362,13 @@ export default function ProfileSection({
                 {/* Card Content */}
                 <div className="pt-3 pr-1">
                   {/* Title */}
-                  <h3 className="text-foreground/85 text-sm font-normal leading-relaxed tracking-[0.01em] mb-1.5 group-hover:text-foreground transition-colors">
+                  <h3 className="editorial-card-title text-foreground/85 mb-2 group-hover:text-foreground transition-colors">
                     {caseStudy.title}
                   </h3>
 
                   {/* Excerpt */}
                   {caseStudy.excerpt && (
-                    <p className="text-foreground/60 text-sm leading-relaxed line-clamp-2">
+                    <p className="editorial-card-copy text-foreground/60 line-clamp-2">
                       {caseStudy.excerpt}
                     </p>
                   )}

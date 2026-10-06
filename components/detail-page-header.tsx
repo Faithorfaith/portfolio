@@ -34,11 +34,11 @@ export default function DetailPageHeader({
       <DetailNavigation title={title} />
     <header id="top" className="mb-12 md:mb-16 pt-[84px]">
       {eyebrow && <p className="text-[11px] text-foreground/40 mb-3">{eyebrow}</p>}
-      <h1 className="text-[18px] font-medium tracking-[-0.01em] text-foreground max-w-2xl">
+      <h1 className="editorial-display text-foreground max-w-2xl">
         {title}
       </h1>
       {description && (
-        <p className="mt-5 max-w-xl text-sm text-foreground/60 leading-relaxed">
+        <p className="editorial-lede mt-6 max-w-2xl text-foreground/60">
           {description}
         </p>
       )}

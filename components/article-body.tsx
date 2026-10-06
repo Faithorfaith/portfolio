@@ -6,12 +6,12 @@ import ProgressiveImage from './progressive-image'
 export interface ArticleBlock { id: string; type: string; content: string; level?: 1 | 2 | 3 }
 
 export default function ArticleBody({ blocks, typeface = 'sans' }: { blocks: ArticleBlock[]; typeface?: 'sans' | 'handwritten' }) {
-  return <div className={`w-full max-w-[600px] text-sm ${typeface === 'handwritten' ? 'writing-handwritten-article' : ''}`}>
+  return <div className={`w-full max-w-[600px] ${typeface === 'handwritten' ? 'writing-handwritten-article' : ''}`}>
     {blocks.map((block) => {
       if (block.type === 'appearance') return null
       if (block.type === 'heading') {
         const Heading = block.level === 1 ? 'h2' : block.level === 2 ? 'h3' : 'h4'
-        return <Heading key={block.id} id={`block-${block.id}`} className="article-motion-block scroll-mt-20 text-sm font-medium leading-relaxed tracking-[0.01em] mt-10 mb-4">{block.content.replace(/<[^>]*>/g, '')}</Heading>
+        return <Heading key={block.id} id={`block-${block.id}`} className="article-motion-block editorial-section-title scroll-mt-20 mt-14 mb-6">{block.content.replace(/<[^>]*>/g, '')}</Heading>
       }
       if (block.type === 'image') return block.content ? <figure key={block.id} className="article-motion-block motion-media my-10"><ProgressiveImage src={block.content} alt="" className="w-full h-auto" containerClassName="w-full" /></figure> : null
       if (block.type === 'divider') return <hr key={block.id} className="my-10 border-foreground/10" />

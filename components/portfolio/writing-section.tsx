@@ -162,11 +162,11 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
         {/* Article Content */}
         <article>
             <header className="writing-article-header mb-8 pb-6 border-b border-foreground/8 max-w-[600px] mx-auto">
-              <h1 className="text-[18px] font-medium tracking-[-0.01em] text-foreground mb-5 leading-snug">
+              <h1 className="editorial-display text-foreground mb-6">
                 {selectedWriting.title}
               </h1>
               {selectedWriting.excerpt && (
-                <p className="text-foreground/60 leading-relaxed mb-7 text-sm font-normal">
+                <p className="editorial-lede text-foreground/60 mb-8 font-normal">
                   {selectedWriting.excerpt}
                 </p>
               )}
@@ -302,7 +302,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
           {/* Section Header */}
           <div className="mb-10 max-w-xl">
             <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">Notes, essays, and experiments</p>
-            <h2 className="mt-3 text-xl font-medium tracking-tight text-foreground">Writing</h2>
+            <h2 className="editorial-display mt-3 text-foreground">Writing</h2>
           </div>
 
           {!filteredWritings.length && <p role="status" className="py-8 text-sm text-foreground/60">No articles match. Try another search or year.</p>}
