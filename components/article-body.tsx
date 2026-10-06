@@ -6,7 +6,7 @@ import ProgressiveImage from './progressive-image'
 export interface ArticleBlock { id: string; type: string; content: string; level?: 1 | 2 | 3 }
 
 export default function ArticleBody({ blocks, typeface = 'sans' }: { blocks: ArticleBlock[]; typeface?: 'sans' | 'handwritten' }) {
-  return <div className={`w-full max-w-[600px] ${typeface === 'handwritten' ? 'writing-handwritten-article' : ''}`}>
+  return <div className={`w-full max-w-[1080px] ${typeface === 'handwritten' ? 'writing-handwritten-article' : ''}`}>
     {blocks.map((block) => {
       if (block.type === 'appearance') return null
       if (block.type === 'heading') {

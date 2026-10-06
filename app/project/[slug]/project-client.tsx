@@ -58,7 +58,7 @@ export default function ProjectClient() {
 
   return (
     <main className="public-page min-h-screen w-full bg-background">
-      <div className="mx-auto w-full max-w-5xl px-5 pb-20 sm:px-8 md:pb-32">
+      <div className="mx-auto w-full max-w-[1080px] px-5 pb-20 sm:px-8 md:pb-32">
         <DetailPageHeader title={project.title} eyebrow={project.year} description={project.description} />
         <section className="grid gap-10 border-t border-foreground/10 pt-10 md:grid-cols-[1fr_260px] md:gap-16">
           <div>

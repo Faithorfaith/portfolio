@@ -156,12 +156,12 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
     return (
       <div className="public-page writing-page-shell" style={{ backgroundColor: writingBackgroundColor(appearance.background) }}>
       <div className="writing-reading-progress" style={{ width: `${readingProgress}%` }} aria-hidden="true" />
-      <div id="top" className="w-full min-h-screen max-w-[920px] mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20">
+      <div id="top" className="w-full min-h-screen max-w-[1080px] mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20">
         <DetailNavigation title={selectedWriting.title} backHref={initialSlug ? '/writing' : '/#writing'} backgroundColor={writingBackgroundColor(appearance.background)} />
 
         {/* Article Content */}
         <article>
-            <header className="writing-article-header mb-8 pb-6 border-b border-foreground/8 max-w-[600px] mx-auto">
+            <header className="writing-article-header mb-8 pb-6 border-b border-foreground/8 max-w-[1080px] mx-auto">
               <h1 className="editorial-display text-foreground mb-6">
                 {selectedWriting.title}
               </h1>
@@ -241,7 +241,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
 
               {/* Thumbnail Image - After metadata */}
               {selectedWriting.cover_image && (
-                <div className="w-full max-w-[600px] overflow-hidden">
+                <div className="w-full max-w-[1080px] overflow-hidden">
                   <ProgressiveImage
                     src={selectedWriting.cover_image}
                     alt={selectedWriting.title}
@@ -252,7 +252,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
               )}
             </header>
 
-            <div className="w-full max-w-[600px] mx-auto">
+            <div className="w-full max-w-[1080px] mx-auto">
               <div className="writing-content-rail"><ArticleBody blocks={articleBlocks} typeface={appearance.typeface} /></div>
               <div className="writing-next-actions">
                 <Link href="/writing">Back to writing</Link>
@@ -267,7 +267,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
 
   if (variant === 'home') {
     return (
-      <section id="writing" className="w-full max-w-2xl mx-auto px-5 sm:px-8 py-12 scroll-mt-20" aria-labelledby="home-writing-title">
+      <section id="writing" className="w-full max-w-[1080px] mx-auto px-5 sm:px-8 py-12 scroll-mt-20" aria-labelledby="home-writing-title">
         <h2 id="home-writing-title" className="text-sm font-normal leading-relaxed tracking-[0.01em] text-foreground mb-8">My articles</h2>
         <div className="space-y-2">
           {writings.slice(0, 4).map((writing) => {
@@ -298,7 +298,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
     <div id="top" className="public-page w-full min-h-screen mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20 bg-background">
       {/* Centered Content Container */}
       <div className="flex justify-center">
-        <div className="max-w-5xl w-full">
+        <div className="max-w-[1080px] w-full mx-auto">
           {/* Section Header */}
           <div className="mb-10 max-w-xl">
             <p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">Notes, essays, and experiments</p>

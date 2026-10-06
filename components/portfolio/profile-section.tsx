@@ -166,7 +166,7 @@ export default function ProfileSection({
 
   return (
     <div className="relative w-full">
-      <div className="homepage-opening w-full max-w-4xl mx-auto px-5 sm:px-8 py-16 md:py-24 relative z-10">
+      <div className="homepage-opening w-full max-w-[1080px] mx-auto px-5 sm:px-8 py-16 md:py-24 relative z-10">
         {/* One quiet cover reveals the gallery in place. */}
         {galleryImages.length > 0 && (
           <div className="mb-8">

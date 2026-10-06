@@ -145,7 +145,7 @@ export default function CaseStudyClient() {
     <main className="public-page min-h-screen bg-background">
       <div className="fixed top-0 left-0 z-[60] h-px bg-foreground/70 transition-[width] duration-100" style={{ width: `${readingProgress}%` }} aria-hidden="true" />
       <header className="fixed top-0 inset-x-0 z-50 h-[52px] border-b border-foreground/8 bg-background/95 backdrop-blur-xl">
-        <div className="h-full max-w-[1440px] mx-auto px-5 md:px-8 flex items-center justify-between">
+        <div className="h-full max-w-[1080px] mx-auto px-5 md:px-8 flex items-center justify-between">
           <div className="flex items-center gap-4 md:gap-7 min-w-0">
             <button
               onClick={() => router.push('/')}
@@ -167,10 +167,10 @@ export default function CaseStudyClient() {
         </div>
       </header>
 
-      <div className="pt-[52px] w-full max-w-[760px] mx-auto px-6 md:px-10 lg:px-12">
+      <div className="pt-[52px] w-full max-w-[1080px] mx-auto px-6 md:px-10 lg:px-12">
         <div className="min-w-0 py-8 md:py-8">
-          <div className="w-full max-w-[600px] mx-auto">
-          <header className="mb-12 w-full max-w-[600px]" data-motion-section>
+          <div className="w-full max-w-[1080px] mx-auto">
+          <header className="mb-12 w-full max-w-[1080px]" data-motion-section>
             {caseStudy.thumbnail_url && caseStudy.media_type !== 'video' && (
               <button type="button" onClick={() => setExpandedImage({ src: caseStudy.thumbnail_url!, alt: caseStudy.title })} className="motion-media group block w-full mb-10 overflow-hidden bg-foreground/4 cursor-zoom-in" aria-label={`Expand ${caseStudy.title} image`} data-motion-section>
                 <ProgressiveImage src={caseStudy.thumbnail_url} alt={caseStudy.title} className="w-full h-auto" />
@@ -206,7 +206,7 @@ export default function CaseStudyClient() {
           )}
 
           {/* Sections */}
-          <div className="w-full max-w-[600px] space-y-20">
+          <div className="w-full max-w-[1080px] space-y-20">
             {sections.map((section) => (
               <section key={section.id} id={section.id} className="reading-section scroll-mt-24" data-motion-section>
                 {section.label && (
@@ -222,7 +222,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.image && (
-                  <button type="button" onClick={() => setExpandedImage({ src: section.image!, alt: section.title || section.label || 'Section image' })} className="block w-full max-w-[600px] mb-10 overflow-hidden bg-foreground/4 cursor-zoom-in" aria-label={`Expand ${section.title || section.label || 'section'} image`}>
+                  <button type="button" onClick={() => setExpandedImage({ src: section.image!, alt: section.title || section.label || 'Section image' })} className="block w-full max-w-[1080px] mb-10 overflow-hidden bg-foreground/4 cursor-zoom-in" aria-label={`Expand ${section.title || section.label || 'section'} image`}>
                     <ProgressiveImage
                       src={section.image}
                       alt={section.title || section.label || 'Section image'}
@@ -232,7 +232,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.video_url && (
-                  <div className="w-full max-w-[600px] mb-10 overflow-hidden bg-black">
+                  <div className="w-full max-w-[1080px] mb-10 overflow-hidden bg-black">
                     <ViewportVideo
                       src={section.video_url}
                       decorative
@@ -241,7 +241,7 @@ export default function CaseStudyClient() {
                 )}
 
                 {section.embed_url && (
-                  <div className="w-full max-w-[600px] mb-10">
+                  <div className="w-full max-w-[1080px] mb-10">
                     <SafeEmbed url={section.embed_url} title={section.title || section.label || 'Embedded content'} />
                   </div>
                 )}
@@ -255,7 +255,7 @@ export default function CaseStudyClient() {
             const content = typeof relatedArticle.content === 'string' ? JSON.parse(relatedArticle.content) : (relatedArticle.content || [])
             const words = content.reduce((total: number, block: { content?: string }) => total + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0)
             return (
-              <section className="w-full max-w-[600px] mt-20 pt-10 border-t border-foreground/8" data-motion-section>
+              <section className="w-full max-w-[1080px] mt-20 pt-10 border-t border-foreground/8" data-motion-section>
                 <h2 className="text-[11px] text-foreground/45 font-normal mb-8">Related writing</h2>
                 <a href={`/writing/${encodeURIComponent(slugify(relatedArticle.title))}`} className="group grid grid-cols-[112px_1fr_auto] gap-5 items-center">
                   {relatedArticle.cover_image ? <img src={relatedArticle.cover_image} alt="" className="w-28 aspect-[4/3] object-cover" /> : <div className="w-28 aspect-[4/3] bg-foreground/5" />}

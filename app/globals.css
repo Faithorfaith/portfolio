@@ -867,7 +867,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .digital-home { background-image: radial-gradient(color-mix(in oklch, var(--foreground) 3%, transparent) .5px, transparent .5px); background-size: 5px 5px; }
 .homepage-opening { padding-top: clamp(72px, 10vw, 132px); }
 .homepage-name { color: color-mix(in oklch, var(--foreground) 72%, transparent); }
-.homepage-narrative { max-width: 680px; }
+.homepage-narrative { max-width: 1080px; }
 .home-narrative-line { color: var(--foreground); }
 .home-narrative-segment {
   --reading-opacity: .16;
@@ -898,7 +898,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .home-narrative-line .bio-inline-tag-label {
   border-bottom-color: color-mix(in oklch, currentColor 28%, transparent);
 }
-.homepage-contact { max-width: 680px; }
+.homepage-contact { max-width: 1080px; }
 @media (max-width: 639px) {
   .home-narrative-segment { font-size: clamp(24px, 7vw, 29px); line-height: 1.38; }
 }
