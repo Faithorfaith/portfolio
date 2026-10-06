@@ -851,6 +851,30 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .random-note { display: block; margin: -12px 0 16px; padding: 10px 12px; border-radius: 9px; background: color-mix(in oklch, var(--foreground) 3%, transparent); font-size: 13px; }
 .random-note span { display: block; margin-bottom: 3px; color: color-mix(in oklch, var(--foreground) 38%, transparent); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
 .digital-home { background-image: radial-gradient(color-mix(in oklch, var(--foreground) 3%, transparent) .5px, transparent .5px); background-size: 5px 5px; }
+.homepage-opening { padding-top: clamp(72px, 10vw, 132px); }
+.homepage-name { color: color-mix(in oklch, var(--foreground) 72%, transparent); }
+.homepage-narrative { max-width: 780px; }
+.home-narrative-line {
+  --reading-opacity: .42;
+  color: var(--foreground);
+  opacity: var(--reading-opacity);
+  font-size: clamp(24px, 3.2vw, 42px);
+  font-weight: 450;
+  letter-spacing: -.032em;
+  line-height: 1.23;
+  text-wrap: pretty;
+  transition: opacity 110ms linear;
+}
+.home-narrative-line .bio-inline-tag-label {
+  border-bottom-color: color-mix(in oklch, currentColor 28%, transparent);
+}
+.homepage-contact { max-width: 780px; }
+@media (max-width: 639px) {
+  .home-narrative-line { font-size: clamp(22px, 7.2vw, 30px); line-height: 1.28; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-narrative-line { --reading-opacity: .85; transition: none; }
+}
 .profile-heading-row .home-presence { transition: background-color 300ms ease; }
 :root[data-time-of-day='morning'] .digital-home { background-color: color-mix(in oklch, #dfeef4 9%, var(--background)); }
 :root[data-time-of-day='evening'] .digital-home { background-color: color-mix(in oklch, #f1dfc8 8%, var(--background)); }

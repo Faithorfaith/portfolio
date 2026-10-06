@@ -75,6 +75,7 @@ export default function ProfileSection({
 }) {
   const [galleryOpen, setGalleryOpen] = useState(false)
   const railRef = useRef<HTMLDivElement>(null)
+  const narrativeRef = useRef<HTMLDivElement>(null)
   const cursorLabelRef = useRef<HTMLDivElement>(null)
   const galleryCursorLabelRef = useRef<HTMLDivElement>(null)
   const dragState = useRef({ active: false, moved: false, x: 0, scrollLeft: 0 })
@@ -90,6 +91,35 @@ export default function ProfileSection({
     rail.addEventListener('scroll', update, { passive: true })
     return () => { observer.disconnect(); rail.removeEventListener('scroll', update) }
   }, [caseStudies, profile])
+
+  useEffect(() => {
+    const narrative = narrativeRef.current
+    if (!narrative || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const lines = Array.from(narrative.querySelectorAll<HTMLElement>('.home-narrative-line'))
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const focus = window.innerHeight * 0.44
+      const range = window.innerHeight * 0.42
+      lines.forEach((line) => {
+        const rect = line.getBoundingClientRect()
+        const center = rect.top + rect.height / 2
+        const proximity = Math.max(0, 1 - Math.abs(center - focus) / range)
+        line.style.setProperty('--reading-opacity', (0.22 + proximity * 0.78).toFixed(3))
+      })
+    }
+    const requestUpdate = () => {
+      if (!frame) frame = window.requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', requestUpdate, { passive: true })
+    window.addEventListener('resize', requestUpdate)
+    return () => {
+      window.removeEventListener('scroll', requestUpdate)
+      window.removeEventListener('resize', requestUpdate)
+      if (frame) window.cancelAnimationFrame(frame)
+    }
+  }, [profile?.bio])
 
   const browseWork = (direction: number) => {
     const rail = railRef.current
@@ -135,7 +165,7 @@ export default function ProfileSection({
 
   return (
     <div className="relative w-full">
-      <div className="w-full max-w-4xl mx-auto px-5 sm:px-8 py-16 md:py-24 relative z-10">
+      <div className="homepage-opening w-full max-w-4xl mx-auto px-5 sm:px-8 py-16 md:py-24 relative z-10">
         {/* One quiet cover reveals the gallery in place. */}
         {galleryImages.length > 0 && (
           <div className="mb-8">
@@ -200,16 +230,16 @@ export default function ProfileSection({
           </div>
         )}
 
-        <h1 className="mb-4 text-sm font-medium tracking-tight text-foreground md:text-lg">{profile.full_name || profile.username}</h1>
+        <h1 className="homepage-name mb-6 text-sm font-medium tracking-tight text-foreground">{profile.full_name || profile.username}</h1>
 
       {/* Bio - Display as paragraphs */}
       {profile.bio && (
-        <div className="mb-6">
-          <div className="space-y-4">
+        <div className="homepage-narrative mb-8" ref={narrativeRef}>
+          <div className="space-y-7 md:space-y-9">
             {profile.bio.split('\n\n').map((paragraph, index) => (
               <p
                 key={index}
-                className="text-foreground/70 leading-relaxed"
+                className="home-narrative-line"
               >
                 {renderBioText(paragraph)}
               </p>
