@@ -1079,7 +1079,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .figma-home [data-home-reveal][data-visible="true"] { opacity: 1; transform: none; }
 .new-hero { min-height: 1290px; padding: 32px max(32px, calc((100vw - var(--home-width)) / 2)); position: relative; background: #fff; }
 .new-home-nav { position: fixed; z-index: 50; top: 24px; left: max(20px, calc((100vw - var(--home-width)) / 2)); right: max(20px, calc((100vw - var(--home-width)) / 2)); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; font-size: 24px; line-height: 1; text-transform: lowercase; transition: transform .45s cubic-bezier(.22,1,.36,1), font-size .45s ease; }
-.home-nav-compact .new-home-nav { transform: scale(.78); transform-origin: top center; }
+.home-nav-compact .new-home-nav { transform: none; font-size: 16px; }
 .new-home-nav a:last-child { justify-self: end; }
 .new-hero-grid { display: grid; grid-template-columns: 1fr 310px 1fr; gap: 108px; align-items: center; margin-top: 124px; }
 .new-hero-grid h1 { font-size: 64px; line-height: 1.02; text-align: center; }

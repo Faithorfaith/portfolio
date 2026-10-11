@@ -90,7 +90,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
       <div className="new-featured-grid">
         {visibleStudies.slice(0, 6).map((study, index) => <article key={study.id} className={`new-featured-card card-${index + 1} is-locked`} data-home-reveal aria-label={`${study.title}, locked case study`}>
           {study.thumbnail_url ? <img src={study.thumbnail_url} alt={study.title} loading={index < 2 ? 'eager' : 'lazy'} /> : <span />}
-          <div><small>{String(index + 1).padStart(2, '0')}</small><strong>{study.title}</strong>{study.excerpt && <p>{study.excerpt}</p>}<span className="featured-lock" aria-hidden="true">🔒</span></div>
+          <span className="featured-lock" aria-hidden="true">🔒</span><div><small>{String(index + 1).padStart(2, '0')}</small><strong>{study.title}</strong>{study.excerpt && <p>{study.excerpt}</p>}</div>
         </article>)}
       </div>
     </section>
