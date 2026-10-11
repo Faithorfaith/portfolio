@@ -1101,7 +1101,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .new-featured-card:hover { transform: none; }
 .new-featured-card:nth-child(even):hover { transform: none; }
 .new-featured-card img, .new-featured-card > span { position: relative; display: block; width: 100%; height: 401px; object-fit: cover; border-radius: 48px; background: #fff; transition: transform .45s cubic-bezier(.22,1,.36,1), filter .3s ease; }
-.new-featured-card > div { position: absolute; z-index: 4; top: 100%; left: 0; right: 0; display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; max-height: 0; overflow: hidden; padding: 0; opacity: 0; transform: translateY(-8px); transition: max-height .4s ease, padding-top .4s ease, opacity .3s ease, transform .4s ease; }
+.new-featured-card > div { position: absolute; z-index: 4; top: 100%; left: 0; right: 0; display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; max-height: 0; overflow: hidden; padding: 0; background: #000; opacity: 0; transform: translateY(-8px); transition: max-height .4s ease, padding-top .4s ease, opacity .3s ease, transform .4s ease; }
 .new-featured-card:hover img, .new-featured-card:hover > span, .new-featured-card:focus-visible img, .new-featured-card:focus-visible > span { transform: none; filter: brightness(.92); }
 .new-featured-card:hover > div, .new-featured-card:focus-visible > div { max-height: 100px; padding-top: 14px; opacity: 1; transform: none; }
 .new-featured-card.is-locked { cursor: not-allowed; }
