@@ -24,6 +24,26 @@ export function validateAndOptimizeVideo(file: File): { valid: boolean; message:
   return { valid: true, message: 'Video is valid', optimizedFile: file }
 }
 
+export async function compressVideo(file: File): Promise<File> {
+  if (file.size < 20 * 1024 * 1024 || typeof MediaRecorder === 'undefined') return file
+  const source = document.createElement('video')
+  source.src = URL.createObjectURL(file)
+  source.muted = true
+  source.playsInline = true
+  await new Promise<void>((resolve, reject) => { source.onloadedmetadata = () => resolve(); source.onerror = () => reject(new Error('Could not read video')) })
+  const scale = Math.min(1, 720 / source.videoHeight)
+  const canvas = document.createElement('canvas'); canvas.width = Math.round(source.videoWidth * scale); canvas.height = Math.round(source.videoHeight * scale)
+  const context = canvas.getContext('2d')!
+  const stream = canvas.captureStream(30)
+  const recorder = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : 'video/webm', videoBitsPerSecond: 2_500_000 })
+  const chunks: Blob[] = []
+  recorder.ondataavailable = event => { if (event.data.size) chunks.push(event.data) }
+  const finished = new Promise<File>((resolve) => { recorder.onstop = () => { const blob = new Blob(chunks, { type: recorder.mimeType }); resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.webm'), { type: recorder.mimeType })) } })
+  recorder.start(250); await source.play()
+  const draw = () => { if (source.ended) { recorder.stop(); URL.revokeObjectURL(source.src); return }; context.drawImage(source, 0, 0, canvas.width, canvas.height); requestAnimationFrame(draw) }; draw()
+  return finished
+}
+
 // Compress image before upload
 export async function compressImage(
   file: File,
@@ -95,6 +115,7 @@ export async function uploadFileWithProgress(
       }
     }
     
+    const uploadFile = file.type.startsWith('video/') ? await compressVideo(file) : file
     const { data: { session } } = await supabase.auth.getSession()
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     if (!session?.access_token || !supabaseUrl) return { success: false, error: 'Your session expired. Please sign in again.' }
@@ -114,7 +135,7 @@ export async function uploadFileWithProgress(
       }
       xhr.onerror = () => reject(new Error('Network error while uploading'))
       xhr.onload = () => xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(xhr.responseText || `Upload failed (${xhr.status})`))
-      xhr.send(file)
+      xhr.send(uploadFile)
     })
     
     const { data } = supabase.storage.from(bucket).getPublicUrl(filePath)
