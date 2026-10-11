@@ -401,6 +401,13 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
     setCaseStudies(await refreshList())
   }
 
+  const toggleLocked = async (caseStudy: CaseStudy) => {
+    const nextPublished = !caseStudy.published
+    const response = await fetch('/api/case-studies', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...caseStudy, published: nextPublished, isUpdate: true }) })
+    if (!response.ok) { setError('Could not update project access'); return }
+    setCaseStudies(await refreshList())
+  }
+
   const moveCaseStudy = (draggedId: string, targetId: string) => {
     if (draggedId === targetId || listFilter !== 'all' || isReordering) return
     setCaseStudies((current) => {
@@ -607,6 +614,14 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                   </a>
+                  <button
+                    onClick={() => toggleLocked(cs)}
+                    className={`p-1.5 border rounded-lg transition-colors ${cs.published ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100' : 'border-green-200 bg-green-50 text-green-700 hover:bg-green-100'}`}
+                    aria-label={cs.published ? 'Lock project' : 'Unlock project'}
+                    title={cs.published ? 'Lock project' : 'Unlock project'}
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={cs.published ? 'M7 11V8a5 5 0 0110 0v3M5 11h14v10H5z' : 'M7 11V8a5 5 0 019.5-3.5M5 11h14v10H5z'} /></svg>
+                  </button>
                   <button
                     onClick={() => handleDelete(cs.id)}
                     className="p-1.5 border border-red-200 bg-red-50 rounded-lg hover:bg-red-100 transition-colors text-red-500"
