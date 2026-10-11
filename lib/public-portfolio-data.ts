@@ -64,7 +64,7 @@ export const getHomepagePortfolioData = unstable_cache(async (): Promise<Homepag
   const [profileResult, caseStudiesResult, projectsResult, worksResult, writingsResult, workflowResult] = await Promise.all([
     supabase.from('profiles').select('*').limit(1).maybeSingle(),
     supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, order_index, created_at').order('order_index', { ascending: true }).order('created_at', { ascending: false }).limit(50),
-    supabase.from('projects').select('id, title, year, type, link, description, created_at').order('created_at', { ascending: false }).limit(30),
+    supabase.from('projects').select('id, title, year, type, link, description, cover_image, created_at').order('created_at', { ascending: false }).limit(30),
     supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type', { count: 'exact' }).order('created_at', { ascending: false }).limit(6),
     supabase.from('writings').select('id, title, slug, excerpt, cover_image, created_at, content').order('created_at', { ascending: false }).limit(4),
     supabase.from('workflow_files').select('*, workflow_file_versions(*)').eq('published', true).order('updated_at', { ascending: false }).limit(4),
@@ -90,7 +90,7 @@ export const getPublicPortfolioData = unstable_cache(async (): Promise<Portfolio
   const [profileResult, caseStudiesResult, projectsResult, worksResult, writingsResult] = await Promise.all([
     supabase.from('profiles').select('*').limit(1).maybeSingle(),
     supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, order_index, created_at').eq('published', true).order('order_index', { ascending: true }).order('created_at', { ascending: false }),
-    supabase.from('projects').select('id, title, year, type, link, description, created_at').order('created_at', { ascending: false }),
+    supabase.from('projects').select('id, title, year, type, link, description, cover_image, created_at').order('created_at', { ascending: false }),
     supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type').order('created_at', { ascending: false }),
     supabase.from('writings').select('*').order('created_at', { ascending: false }),
   ])

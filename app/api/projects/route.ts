@@ -38,6 +38,7 @@ export async function POST(request: Request) {
         title: body.title,
         slug: body.slug,
         description: body.description || null,
+        cover_image: body.cover_image || null,
         link: body.link || null,
         type: body.type || null,
         year: body.year || null,

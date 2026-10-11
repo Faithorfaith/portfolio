@@ -1130,6 +1130,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .new-archive-card { flex: 0 0 260px; width: 260px; display: block; }
 .archive-art { height: 293px; display: grid; place-items: center; overflow: hidden; border: 2px solid #f4f3f3; border-radius: 48px; background: #ececec; transition: transform .35s cubic-bezier(.22,1,.36,1); }
 .archive-art span { font-family: var(--home-rounded); font-size: 82px; color: rgb(0 0 0 / 8%); }
+.archive-art img { width: 100%; height: 100%; object-fit: cover; }
 .archive-art.art-1 { background: #e6ebef; }.archive-art.art-2 { background: #ece8e1; }.archive-art.art-3 { background: #e7e7e7; }
 .new-archive-card:hover .archive-art { transform: translateY(-5px); }
 .archive-art { position: relative; overflow: hidden; }

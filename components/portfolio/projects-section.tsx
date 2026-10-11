@@ -11,6 +11,7 @@ export interface Project {
   type: string | null
   link: string | null
   description: string | null
+  cover_image?: string | null
   created_at: string
 }
 

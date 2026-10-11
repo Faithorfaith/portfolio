@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import FileUpload from './file-upload'
 
 interface Project {
   id: string
@@ -10,6 +11,7 @@ interface Project {
   type: string | null
   link: string | null
   description: string | null
+  cover_image: string | null
 }
 
 export default function ProjectsManager() {
@@ -20,6 +22,7 @@ export default function ProjectsManager() {
     type: '',
     link: '',
     description: '',
+    cover_image: '',
   })
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -70,6 +73,7 @@ export default function ProjectsManager() {
           type: formData.type || null,
           link: formData.link || null,
           description: formData.description || null,
+          cover_image: formData.cover_image || null,
         }),
       })
 
@@ -78,7 +82,7 @@ export default function ProjectsManager() {
 
       setSuccess(true)
       setIsAdding(false)
-      setFormData({ title: '', year: String(new Date().getFullYear()), type: '', link: '', description: '' })
+      setFormData({ title: '', year: String(new Date().getFullYear()), type: '', link: '', description: '', cover_image: '' })
       setTimeout(() => setSuccess(false), 3000)
       await fetchProjects()
     } catch (err) {
@@ -168,6 +172,7 @@ export default function ProjectsManager() {
             <label className={labelCls} style={labelStyle}>Description <span style={{ opacity: 0.5 }}>(optional)</span></label>
             <textarea placeholder="Brief description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className={`${inputCls} resize-none`} style={inputStyle} rows={3} />
           </div>
+          <div className="space-y-1.5"><label className={labelCls} style={labelStyle}>Cover image <span style={{ opacity: 0.5 }}>(optional)</span></label><FileUpload userId="admin" folder="project-covers" accept="image/*" onUpload={url => setFormData(current => ({ ...current, cover_image: url }))} />{formData.cover_image && <img src={formData.cover_image} alt="Cover preview" className="mt-2 h-32 w-full rounded-xl object-cover" />}</div>
           <div className="flex justify-end pt-1">
             <button
               onClick={handleSave}
