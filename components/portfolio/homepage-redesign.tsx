@@ -61,7 +61,6 @@ function VideoCard({ work, onOpen }: { work: Work; onOpen: (work: Work) => void 
   const toggle = () => {
     if (!ref.current) return
     ref.current.preload = 'auto'
-    ref.current.load()
     if (ref.current.paused) { if (activeVideo && activeVideo !== ref.current) { activeVideo.pause(); activeVideo.muted = true }; activeVideo = ref.current; ref.current.muted = false; void ref.current.play(); setPlaying(true) }
     else { ref.current.pause(); ref.current.muted = true; setPlaying(false) }
   }
