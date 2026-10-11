@@ -324,7 +324,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
         <div className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5"><label className="block">Footer sound</label><FileUpload userId={userId} folder="train-audio" accept="audio/*" onUpload={url => set('train_music_url', url)} /><input type="url" value={formData.train_music_url} onChange={e => set('train_music_url', e.target.value)} placeholder="Or paste an audio URL" className="w-full px-3 py-2" /><p className="text-[11px] text-foreground/45">Upload MP3, WAV, or OGG. Leave blank to use the built-in Japanese-inspired loop.</p></div>
-            <div className="space-y-3"><label className="block">Coach videos</label>{[1,2,3,4].map(n => <div key={n} className="space-y-1"><span className="text-[11px] text-foreground/50">Coach {n} video URL</span><input type="url" value={(formData as any)[`train_video_${n}`]} onChange={e => set(`train_video_${n}`, e.target.value)} placeholder="Paste uploaded video URL" className="w-full px-3 py-2" /></div>)}</div>
+            <div className="space-y-3"><label className="block">Coach videos</label>{[1,2,3,4].map(n => <div key={n} className="space-y-1.5"><span className="text-[11px] text-foreground/50">Coach {n}</span><FileUpload userId={userId} folder={`coach-video-${n}`} accept="video/*" directStorage onUpload={url => set(`train_video_${n}`, url)} /><input type="url" value={(formData as any)[`train_video_${n}`]} onChange={e => set(`train_video_${n}`, e.target.value)} placeholder="Or paste a video URL" className="w-full px-3 py-2" /></div>)}</div>
           </div>
         </div>
       </SectionCard>
