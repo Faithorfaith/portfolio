@@ -105,7 +105,7 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
 
     try {
       const supabase = createClient()
-      const { data, error: insertError } = await supabase
+      const { error: insertError } = await supabase
         .from('portfolio_works')
         .insert([{
           user_id: userId,
@@ -117,7 +117,7 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
           type: formData.type || null,
           order_index: formData.order_index,
         }])
-        .select()
+        .select('id')
 
       if (insertError) throw insertError
 
@@ -136,7 +136,10 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
       setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
       console.error('[v0] Error saving work:', err)
-      setError(err instanceof Error ? err.message : 'Failed to save work')
+      const message = err instanceof Error ? err.message : 'Failed to save work'
+      setError(message.includes('column') || message.includes('schema cache')
+        ? `${message}. Run scripts/18-sync-current-admin-schema.sql in Supabase, then try again.`
+        : message)
     }
   }
 
@@ -248,12 +251,12 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
   }
 
   return (
-    <div className="space-y-8">
+      <div className="space-y-8">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/40">Media library</p>
           <h2 className="mt-2 text-2xl font-medium tracking-tight text-foreground">{mode === 'beyond' ? 'Beyond the frames' : 'Playground'}</h2>
-          <p className="mt-1 text-sm text-foreground/50">A visual archive of experiments, interfaces, and small ideas.</p>
+          <p className="mt-1 text-sm text-foreground/50">{mode === 'beyond' ? 'Video work and moving-image studies.' : 'A visual archive of experiments, interfaces, and small ideas.'}</p>
         </div>
         {!isAdding && <Button onClick={() => setIsAdding(true)} className="rounded-full px-5">Add media <span className="ml-1 text-base">＋</span></Button>}
       </div>
@@ -347,9 +350,9 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
 
       {/* Works List */}
       <div>
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-3"><h3 className="text-sm font-medium text-foreground">All media</h3><span className="text-xs text-foreground/40">Newest first</span></div><div className="flex items-center gap-2"><button type="button" onClick={() => setSelectedIds(selectedIds.length === works.length ? [] : works.map(work => work.id))} className="text-xs text-foreground/50 hover:text-foreground">{selectedIds.length === works.length ? 'Clear all' : 'Select all'}</button>{selectedIds.length > 0 && <button type="button" onClick={handleBulkDelete} className="rounded-full bg-red-500 px-3 py-1.5 text-[11px] text-white">Delete {selectedIds.length}</button>}</div></div>
-        {works.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-border p-12 text-center"><p className="text-sm text-foreground/50">Your Playground is empty.</p><button type="button" onClick={() => setIsAdding(true)} className="mt-3 text-xs underline underline-offset-4">Upload your first experiment</button></div>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-3"><h3 className="text-sm font-medium text-foreground">All media</h3><span className="text-xs text-foreground/40">Newest first</span></div><div className="flex items-center gap-2"><button type="button" onClick={() => setSelectedIds(selectedIds.length === visibleWorks.length ? [] : visibleWorks.map(work => work.id))} className="text-xs text-foreground/50 hover:text-foreground">{selectedIds.length === visibleWorks.length && visibleWorks.length > 0 ? 'Clear all' : 'Select all'}</button>{selectedIds.length > 0 && <button type="button" onClick={handleBulkDelete} className="rounded-full bg-red-500 px-3 py-1.5 text-[11px] text-white">Delete {selectedIds.length}</button>}</div></div>
+        {visibleWorks.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-border p-12 text-center"><p className="text-sm text-foreground/50">{mode === 'beyond' ? 'No video work yet.' : 'Your Playground is empty.'}</p><button type="button" onClick={() => setIsAdding(true)} className="mt-3 text-xs underline underline-offset-4">Upload media</button></div>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {visibleWorks.map((work) => (
