@@ -1075,6 +1075,9 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   letter-spacing: 0;
 }
 .figma-home h1, .figma-home h2, .figma-home h3, .figma-home strong, .figma-home nav { font-family: var(--home-rounded); font-weight: 400; letter-spacing: -.02em; }
+.home-opening { position:fixed; z-index:100; inset:0; display:grid; place-content:center; gap:18px; background:#fff; color:#111; animation:home-opening-in .22s ease both; }.home-opening strong { font-size:18px; text-transform:lowercase; }.home-opening > span { width:140px; height:2px; overflow:hidden; border-radius:999px; background:#ececea; }.home-opening > span i { display:block; width:45%; height:100%; border-radius:inherit; background:#111; animation:home-opening-progress 1s ease-in-out infinite; }
+@keyframes home-opening-in { from { opacity:0; } to { opacity:1; } }
+@keyframes home-opening-progress { from { transform:translateX(-110%); } to { transform:translateX(330%); } }
 .figma-home [data-home-reveal] { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
 .figma-home [data-home-reveal][data-visible="true"] { opacity: 1; transform: none; }
 .new-hero { min-height: 1290px; padding: 32px max(32px, calc((100vw - var(--home-width)) / 2)); position: relative; background: #fff; }
