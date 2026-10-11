@@ -1208,6 +1208,12 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .case-story-media.is-soft { background: #f7f7f7; }
 .case-story-media-inner { width: min(100%, 1248px); height: 100%; min-height: min(58vw, 610px); display: grid; place-items: center; }
 .case-story-image, .case-story-video, .case-story-embed { display: block; width: 100%; height: 100%; min-height: min(58vw, 610px); overflow: hidden; }
+.case-story-gallery { width: 100%; display: grid; gap: 16px; }
+.case-story-gallery .case-story-image { min-height: 0; aspect-ratio: 1 / 1; border-radius: 24px; background: #f3f3f3; }
+.case-story-gallery-feature-split { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.case-story-gallery-feature-split .is-feature { grid-column: 1 / -1; aspect-ratio: 16 / 8; }
+.case-story-gallery-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.case-story-gallery-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .case-story-video, .case-story-embed { background: #111; }.case-story-video video { width: 100%; height: 100%; object-fit: contain; }
 .case-story-copy { width: min(100% - 40px, var(--case-copy)); margin: 0 auto; padding: clamp(72px, 9vw, 128px) 0; text-align: center; }
 .case-story-label { margin-bottom: 18px; font-size: 14px; color: rgb(17 17 17 / 48%); }
@@ -1221,6 +1227,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   .case-story-back { position: absolute; top: 16px; left: 16px; }
   .case-story-hero { padding: 74px 0 72px; }.case-story-cover { margin-top: 34px; border-radius: 20px; }.case-story-intro { margin-top: 38px; }
   .case-story-media { min-height: 66vw; padding: 24px 16px; }.case-story-media-inner, .case-story-image, .case-story-video, .case-story-embed { min-height: 58vw; }
+  .case-story-gallery { grid-template-columns: 1fr; gap: 10px; }.case-story-gallery .case-story-image, .case-story-gallery-feature-split .is-feature { aspect-ratio: 4 / 3; }.case-story-gallery .case-story-image { min-height: 0; border-radius: 18px; }
   .case-story-copy { padding-block: 68px; }.case-story-pagination { padding-block: 70px 90px; }
 }
 

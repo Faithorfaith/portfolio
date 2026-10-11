@@ -13,6 +13,8 @@ interface Section {
   id: string; label: string; title: string | null; body: string; toc: string | null
   image: string | null; video_url?: string | null; embed_url?: string | null
   media_width?: 'reading' | 'wide' | 'full'
+  image_layout?: 'single' | 'feature-split' | 'grid-2' | 'grid-3'
+  gallery_images?: string[]
 }
 interface CaseStudy {
   id: string; title: string; excerpt: string | null; thumbnail_url: string | null
@@ -110,8 +112,8 @@ export default function CaseStudyClient() {
 
       <div className="case-story-sections">
         {sections.map((section, index) => <section key={section.id} id={section.id} className="case-story-section reading-section" data-motion-section>
-          {(section.image || section.video_url || section.embed_url) && <div className={`case-story-media ${index % 2 ? 'is-soft' : ''}`}><div className="case-story-media-inner">
-            {section.image && <button type="button" onClick={() => setExpandedImage({ src: section.image!, alt: section.title || section.label || 'Section image' })} className="case-story-image cursor-zoom-in" aria-label={`Expand ${section.title || section.label || 'section'} image`}><ProgressiveImage src={section.image} alt={section.title || section.label || 'Section image'} className="h-full w-full object-contain" /></button>}
+          {(section.image || section.gallery_images?.length || section.video_url || section.embed_url) && <div className={`case-story-media ${index % 2 ? 'is-soft' : ''}`}><div className="case-story-media-inner">
+            {(section.gallery_images?.length || section.image) && <div className={`case-story-gallery case-story-gallery-${section.image_layout || 'single'}`}>{(section.gallery_images?.length ? section.gallery_images : [section.image!]).map((src, imageIndex) => <button key={src} type="button" onClick={() => setExpandedImage({ src, alt: section.title || section.label || 'Section image' })} className={`case-story-image cursor-zoom-in ${imageIndex === 0 ? 'is-feature' : ''}`} aria-label={`Expand ${section.title || section.label || 'section'} image ${imageIndex + 1}`}><ProgressiveImage src={src} alt={section.title || section.label || 'Section image'} className="h-full w-full object-cover" /></button>)}</div>}
             {section.video_url && <div className="case-story-video"><ViewportVideo src={section.video_url} decorative /></div>}
             {section.embed_url && <div className="case-story-embed"><SafeEmbed url={section.embed_url} title={section.title || section.label || 'Embedded content'} /></div>}
           </div></div>}

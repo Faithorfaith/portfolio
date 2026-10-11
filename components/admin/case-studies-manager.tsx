@@ -37,6 +37,8 @@ interface Section {
   video_url?: string | null
   embed_url?: string | null
   media_width?: 'reading' | 'wide' | 'full'
+  image_layout?: 'single' | 'feature-split' | 'grid-2' | 'grid-3'
+  gallery_images?: string[]
   blocks?: ContentBlock[]
 }
 
@@ -135,7 +137,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
       video_url: null,
       media_type: 'image',
       excerpt: null,
-      sections: [{ id: firstSectionId, label: '', title: null, body: '', toc: null, image: null, embed_url: null, media_width: 'wide', blocks: [] }],
+      sections: [{ id: firstSectionId, label: '', title: null, body: '', toc: null, image: null, embed_url: null, media_width: 'wide', image_layout: 'single', gallery_images: [], blocks: [] }],
       blocks: [],
       published: false,
       cta_text: null,
@@ -158,6 +160,8 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
       image: null,
       embed_url: null,
       media_width: 'wide',
+      image_layout: 'single',
+      gallery_images: [],
       blocks: []
     }
     setEditing({
@@ -351,6 +355,25 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
     }
   }
 
+  const handleSectionGalleryUpload = async (sectionId: string, files: FileList) => {
+    if (!editing || !files.length) return
+    setIsUploading(true); setUploadProgress(0); setError(null)
+    try {
+      const supabase = createClient()
+      const urls: string[] = []
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const compressed = await compressImage(file, 2400, 1800, 0.86)
+        const result = await uploadFileWithProgress(supabase, 'portfolio-uploads', `case-studies/sections/gallery/${Date.now()}-${i}-${file.name}`, compressed, progress => setUploadProgress(Math.round(((i + progress / 100) / files.length) * 100)))
+        if (!result.success || !result.publicUrl) throw new Error(result.error || 'Upload failed')
+        urls.push(result.publicUrl)
+      }
+      const section = editing.sections.find(item => item.id === sectionId)
+      updateSection(sectionId, { gallery_images: [...(section?.gallery_images || []), ...urls], image: null })
+    } catch (err) { setError((err as Error).message) }
+    finally { setIsUploading(false); setUploadProgress(0) }
+  }
+
   const handleSave = async () => {
     if (!editing || !editing.title.trim()) {
       setError('Title is required')
@@ -485,7 +508,12 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
                 <input value={section.title || ''} onChange={e => updateSection(section.id, { title: e.target.value || null })} placeholder="Chapter title" />
               </div>
               <div className="case-admin-media-stage">
-                {section.image ? <><img src={section.image} alt="" /><button type="button" onClick={() => updateSection(section.id, { image: null })}>Remove image</button></> : section.video_url ? <><video src={section.video_url} controls /><button type="button" onClick={() => updateSection(section.id, { video_url: null })}>Remove video</button></> : <div><p>Full-width visual stage</p><span>Upload the image or video shown before this chapter’s text.</span><label>Image<input type="file" accept="image/*" onChange={e => e.target.files?.[0] && handleSectionImageUpload(section.id, e.target.files[0])} /></label><label>Video<input type="file" accept="video/*" onChange={e => e.target.files?.[0] && handleSectionVideoUpload(section.id, e.target.files[0])} /></label></div>}
+                <label>Image layout<select value={section.image_layout || 'single'} onChange={e => updateSection(section.id, { image_layout: e.target.value as Section['image_layout'] })}><option value="single">Single image</option><option value="feature-split">Feature + two columns</option><option value="grid-2">Two-column grid</option><option value="grid-3">Three-column grid</option></select></label>
+                {(section.image_layout && section.image_layout !== 'single') ? <>
+                  <div className="case-admin-gallery-preview">{(section.gallery_images || []).map((src, imageIndex) => <div key={src}><img src={src} alt="" /><button type="button" onClick={() => updateSection(section.id, { gallery_images: (section.gallery_images || []).filter((_, i) => i !== imageIndex) })}>Remove</button></div>)}</div>
+                  <label>Add gallery images<input type="file" accept="image/*" multiple onChange={e => e.target.files && handleSectionGalleryUpload(section.id, e.target.files)} /></label>
+                  <small>Use 3 images for the feature + two-column layout.</small>
+                </> : section.image ? <><img src={section.image} alt="" /><button type="button" onClick={() => updateSection(section.id, { image: null })}>Remove image</button></> : section.video_url ? <><video src={section.video_url} controls /><button type="button" onClick={() => updateSection(section.id, { video_url: null })}>Remove video</button></> : <div><p>Full-width visual stage</p><span>Upload the image or video shown before this chapter’s text.</span><label>Image<input type="file" accept="image/*" onChange={e => e.target.files?.[0] && handleSectionImageUpload(section.id, e.target.files[0])} /></label><label>Video<input type="file" accept="video/*" onChange={e => e.target.files?.[0] && handleSectionVideoUpload(section.id, e.target.files[0])} /></label></div>}
               </div>
               <div className="case-admin-richtext"><RTFEditor value={section.body} onChange={body => updateSection(section.id, { body })} userId={userId} /></div>
             </section>)}
