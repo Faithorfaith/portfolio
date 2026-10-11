@@ -1204,12 +1204,6 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   .new-featured-card, .new-media-card, .archive-art { transition: none; }
 }
 
-/* Adjacent homepage sections contribute 32px each, giving a 64px content gap. */
-.figma-home > .new-hero { min-height: auto; padding-bottom: 32px; }
-.figma-home > .new-featured { min-height: auto; padding-block: 32px; }
-.figma-home > .new-white-section { padding-block: 32px; }
-.figma-home > .new-train-section { padding-top: 32px; }
-
 /* Case studies: centered editorial narrative with full-width visual chapters. */
 .case-story { --case-copy: 720px; position: relative; overflow-x: clip; color: #111; }
 .case-story-back { position: fixed; z-index: 50; top: 22px; left: max(22px, calc((100vw - 1248px) / 2)); display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid rgb(17 17 17 / 10%); border-radius: 50%; background: rgb(255 255 255 / 84%); font-size: 16px; backdrop-filter: blur(12px); transition: transform 180ms ease, background 180ms ease; }
