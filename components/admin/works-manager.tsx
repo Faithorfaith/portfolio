@@ -20,11 +20,12 @@ interface Work {
 
 interface WorksManagerProps {
   userId: string
+  mode?: 'playground' | 'beyond'
 }
 
 const newestFirst = (items: Work[]) => [...items].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
-export default function WorksManager({ userId }: WorksManagerProps) {
+export default function WorksManager({ userId, mode = 'playground' }: WorksManagerProps) {
   const [works, setWorks] = useState<Work[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -41,6 +42,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
     type: '',
     order_index: 0,
   })
+  const visibleWorks = works.filter(work => mode === 'beyond' ? work.media_type === 'video' : work.media_type !== 'video')
 
   // Fetch works
   useEffect(() => {
@@ -250,14 +252,14 @@ export default function WorksManager({ userId }: WorksManagerProps) {
       <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/40">Media library</p>
-          <h2 className="mt-2 text-2xl font-medium tracking-tight text-foreground">Playground</h2>
+          <h2 className="mt-2 text-2xl font-medium tracking-tight text-foreground">{mode === 'beyond' ? 'Beyond the frames' : 'Playground'}</h2>
           <p className="mt-1 text-sm text-foreground/50">A visual archive of experiments, interfaces, and small ideas.</p>
         </div>
         {!isAdding && <Button onClick={() => setIsAdding(true)} className="rounded-full px-5">Add media <span className="ml-1 text-base">＋</span></Button>}
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {[['Items', works.length], ['Images', works.filter(work => work.media_type !== 'video').length], ['Videos', works.filter(work => work.media_type === 'video').length], ['Latest', works[0] ? new Date(works[0].created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ',']].map(([label, value]) => (
+        {[['Items', visibleWorks.length], ['Images', visibleWorks.filter(work => work.media_type !== 'video').length], ['Videos', visibleWorks.filter(work => work.media_type === 'video').length], ['Latest', visibleWorks[0] ? new Date(visibleWorks[0].created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ',']].map(([label, value]) => (
           <div key={String(label)} className="rounded-2xl border border-border/70 bg-foreground/[0.025] px-4 py-3">
             <p className="text-[11px] text-foreground/45">{label}</p><p className="mt-1 text-lg font-medium text-foreground">{value}</p>
           </div>
@@ -350,7 +352,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
           <div className="rounded-3xl border border-dashed border-border p-12 text-center"><p className="text-sm text-foreground/50">Your Playground is empty.</p><button type="button" onClick={() => setIsAdding(true)} className="mt-3 text-xs underline underline-offset-4">Upload your first experiment</button></div>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {works.map((work) => (
+          {visibleWorks.map((work) => (
             <div
               key={work.id}
               className="group relative aspect-square overflow-hidden rounded-2xl border border-border/70 bg-foreground/[0.04]"
