@@ -1078,8 +1078,8 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .figma-home [data-home-reveal] { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
 .figma-home [data-home-reveal][data-visible="true"] { opacity: 1; transform: none; }
 .new-hero { min-height: 1290px; padding: 32px max(32px, calc((100vw - var(--home-width)) / 2)); position: relative; background: #fff; }
-.new-home-nav { position: fixed; z-index: 50; top: 24px; left: max(20px, calc((100vw - var(--home-width)) / 2)); right: max(20px, calc((100vw - var(--home-width)) / 2)); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; font-size: 24px; line-height: 1; text-transform: lowercase; transition: transform .45s cubic-bezier(.22,1,.36,1), font-size .45s ease; }
-.home-nav-compact .new-home-nav { grid-template-columns: repeat(3, auto); justify-content: center; gap: 48px; transform: none; font-size: 16px; }
+.new-home-nav { position: fixed; z-index: 50; top: 24px; left: max(20px, calc((100vw - var(--home-width)) / 2)); right: max(20px, calc((100vw - var(--home-width)) / 2)); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; font-size: 24px; line-height: 1; text-transform: lowercase; transition: left .5s cubic-bezier(.22,1,.36,1), right .5s cubic-bezier(.22,1,.36,1), transform .5s cubic-bezier(.22,1,.36,1), font-size .5s ease, gap .5s ease; }
+.home-nav-compact .new-home-nav { left: 50%; right: auto; grid-template-columns: repeat(3, auto); justify-content: center; gap: 48px; transform: translateX(-50%); font-size: 16px; }
 .home-nav-compact .new-home-nav a:last-child { justify-self: center; }
 .new-home-nav a:last-child { justify-self: end; }
 .new-hero-grid { display: grid; grid-template-columns: 1fr 310px 1fr; gap: 32px; align-items: center; margin: 124px auto 0; }
