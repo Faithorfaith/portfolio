@@ -137,7 +137,6 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
       <div className="new-section-intro" data-home-reveal><h2>playground</h2><p>Random ideas, creative experiments, and explorations that don&apos;t always need a reason to exist.</p></div>
       <div className="new-horizontal-gallery" aria-label="Playground gallery">
         {playground.map(work => <VideoCard key={work.id} work={work} onOpen={setViewer} />)}
-        <Link href="/playground" className="new-gallery-more">View all<br />experiments →</Link>
       </div>
     </section>
 
