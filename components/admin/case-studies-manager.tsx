@@ -391,7 +391,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
           id: editing.id,
           title: editing.title,
           slug,
-          thumbnail_url: firstSectionImage || editing.thumbnail_url,
+          thumbnail_url: editing.thumbnail_url || firstSectionImage,
           video_url: editing.video_url,
           media_type: editing.media_type,
           excerpt: editing.excerpt,
