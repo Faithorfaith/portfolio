@@ -3,7 +3,7 @@ import { DetailNavigation } from '@/components/detail-page-header'
 import { getPublicWorkflowFiles } from '@/lib/public-portfolio-data'
 
 export const revalidate = 60
-export const metadata = { title: 'Workflow files — Faith Awokunle', description: 'Reusable AGENTS.md files and workflow tools.' }
+export const metadata = { title: 'Workflow files , Faith Awokunle', description: 'Reusable AGENTS.md files and workflow tools.' }
 
 export default async function WorkflowsPage() {
   const files = await getPublicWorkflowFiles()

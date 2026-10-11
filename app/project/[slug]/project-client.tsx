@@ -69,7 +69,7 @@ export default function ProjectClient() {
           <aside className="h-fit rounded-2xl bg-foreground/[0.045] p-5">
             <p className="text-[10px] uppercase tracking-[0.16em] text-foreground/40">At a glance</p>
             <dl className="mt-5 space-y-4 text-sm">
-              <div className="flex items-center justify-between gap-4"><dt className="text-foreground/45">Year</dt><dd className="text-foreground">{project.year || '—'}</dd></div>
+              <div className="flex items-center justify-between gap-4"><dt className="text-foreground/45">Year</dt><dd className="text-foreground">{project.year || ','}</dd></div>
               <div className="flex items-center justify-between gap-4"><dt className="text-foreground/45">Status</dt><dd className="inline-flex items-center gap-1.5 text-foreground"><span className="size-1.5 rounded-full bg-emerald-500" /> Published</dd></div>
             </dl>
           </aside>

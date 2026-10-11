@@ -71,7 +71,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
   const playground = visibleWorks.filter(work => !isVideoUrl(work.media_url)).slice(0, 8)
   const heroMedia = profile?.train_video_1 || profile?.hero_image_1 || null
   const intro = profile?.bio?.split('\n\n')[0] || 'A multidisciplinary designer focused primarily on Product Design, with experience across visual design, graphics, and video production.'
-  const supporting = profile?.supporting_statement || 'Four years designing digital products across AI, fitness, SaaS, and marketplaces — turning complex challenges into intuitive experiences and ambitious ideas into products built for real-world impact.'
+  const supporting = profile?.supporting_statement || 'Four years designing digital products across AI, fitness, SaaS, and marketplaces , turning complex challenges into intuitive experiences and ambitious ideas into products built for real-world impact.'
 
   return <main id="top" className="figma-home">
     <section className="new-hero" aria-labelledby="hero-title">
@@ -104,14 +104,14 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
     </section>
 
     <section id="frames" className="new-white-section">
-      <div className="new-section-intro" data-home-reveal><h2>beyond the frames</h2><p>i don&apos;t just design experiences, i bring ideas to life through video editing, storytelling, and visual direction — creating compelling visuals that capture attention and communicate ideas.</p></div>
+      <div className="new-section-intro" data-home-reveal><h2>beyond the frames</h2><p>i don&apos;t just design experiences, i bring ideas to life through video editing, storytelling, and visual direction , creating compelling visuals that capture attention and communicate ideas.</p></div>
       <div className="new-horizontal-gallery" aria-label="Video and visual work">
         {beyond.map(work => <VideoCard key={work.id} work={work} onOpen={setViewer} />)}
       </div>
     </section>
 
     <section id="archives" className="new-white-section new-archives">
-      <div className="new-section-intro" data-home-reveal><h2>my archives</h2><p>A collection of tools, experiments, and side projects I&apos;ve brought to life — turning ideas into things people can actually use.</p></div>
+      <div className="new-section-intro" data-home-reveal><h2>my archives</h2><p>A collection of tools, experiments, and side projects I&apos;ve brought to life , turning ideas into things people can actually use.</p></div>
       <div className="new-archive-scroll">
         {Object.entries(visibleProjects.slice(0, 6).reduce<Record<string, Project[]>>((groups, project) => {
           const year = project.year || String(new Date(project.created_at).getFullYear())

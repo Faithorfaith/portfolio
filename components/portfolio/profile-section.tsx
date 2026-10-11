@@ -263,7 +263,7 @@ export default function ProfileSection({
           >
             Leave me a note
           </a>
-          <span className="homepage-contact-closing">— I&apos;d love to hear from you</span>
+          <span className="homepage-contact-closing">, I&apos;d love to hear from you</span>
         </div>
       </div>
 

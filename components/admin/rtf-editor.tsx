@@ -91,7 +91,7 @@ export default function RTFEditor({ value, onChange, placeholder = 'Start writin
       {button('Insert media', '▧', () => setPanel(panel === 'media' ? null : 'media'))}
       {button('Embed', '<>', () => { setUrl(''); setPanel(panel === 'embed' ? null : 'embed') })}
       {button('Code block', '{}', () => { editor.chain().focus().toggleCodeBlock().run() }, editor.isActive('codeBlock'))}
-      {button('Divider', '—', () => { editor.chain().focus().setHorizontalRule().run() })}
+      {button('Divider', ',', () => { editor.chain().focus().setHorizontalRule().run() })}
       {toc && editor.isActive('heading') && <label className="document-toc-control"><input type="checkbox" checked={Boolean(editor.getAttributes('heading').toc)} onChange={e => editor.chain().focus().updateAttributes('heading', { toc: e.target.checked, id: editor.getAttributes('heading').id || 'heading-' + crypto.randomUUID() }).run()} />Add to TOC</label>}
     </div>
     {panel && <div className="document-insert-panel">

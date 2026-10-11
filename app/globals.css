@@ -303,7 +303,7 @@
 
   /* Route entrance is orchestrated in JS so content below the fold does not animate at load. */
 
-  /* Smooth hero transition — already driven by CSS classes */
+  /* Smooth hero transition , already driven by CSS classes */
   .hero-img-1,
   .hero-img-2,
   .hero-img-3,
@@ -597,7 +597,7 @@
   .article-index-time { font-size: 11px; }
 }
 
-/* Portfolio train — a restrained footer that becomes an optional spatial experience. */
+/* Portfolio train , a restrained footer that becomes an optional spatial experience. */
 .train-footer { width: 100%; margin-top: 48px; padding: 0; overflow: hidden; color: var(--foreground); background: linear-gradient(180deg, #fafafa 0%, #f7fbfc 18%, #eaf7fb 100%); }
 .train-footer-heading, .train-footer-meta { width: min(100% - 40px, 672px); margin-inline: auto; display: flex; justify-content: space-between; gap: 16px; font-size: 11px; color: color-mix(in oklch, var(--foreground) 52%, transparent); }
 .train-footer-heading { margin-bottom: 18px; }
@@ -1062,7 +1062,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .home-new-marker { display: inline-block; margin: 0 0 5px; color: color-mix(in oklch, var(--foreground) 42%, transparent); font-size: 9px; font-weight: 400; letter-spacing: .07em; text-transform: uppercase; }
 .back-to-top { position: fixed; right: 18px; bottom: 18px; z-index: 40; display: inline-flex; align-items: center; gap: 5px; padding: 8px 10px; border-radius: 999px; color: color-mix(in oklch, var(--foreground) 60%, transparent); background: color-mix(in oklch, var(--background) 86%, transparent); box-shadow: 0 4px 18px rgb(0 0 0 / 6%); font-size: 12px; opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity 180ms ease, transform 180ms ease, color 180ms ease; }
 
-/* Figma homepage — intentionally isolated from the editorial subpage system. */
+/* Figma homepage , intentionally isolated from the editorial subpage system. */
 .figma-home {
   --home-width: 1248px;
   --home-rounded: "Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif;

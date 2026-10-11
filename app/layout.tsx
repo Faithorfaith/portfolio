@@ -45,7 +45,7 @@ export default function RootLayout({
         {/* DNS prefetch for external services */}
         <link rel="dns-prefetch" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" />
 
-        {/* Preconnect to critical domains — reduces TLS handshake time */}
+        {/* Preconnect to critical domains , reduces TLS handshake time */}
         <link rel="preconnect" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" crossOrigin="anonymous" />
       </head>
       <body className={inter.variable}>

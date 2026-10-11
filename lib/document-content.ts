@@ -1,7 +1,7 @@
 // Legacy records stay untouched until the document is edited.
 export const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 type LegacySection = { id: string; label: string; title: string | null; toc: string | null; body: string; image: string | null; video_url?: string | null; embed_url?: string | null; blocks?: { type: string; content?: string; imageUrl?: string; buttons?: { text: string; link: string }[] }[] }
-const cleanLegacyLists = (html: string) => html.replace(/(<li(?:\s[^>]*)?>\s*(?:<p>)?)\s*[-–—•]\s+/gi, '$1')
+const cleanLegacyLists = (html: string) => html.replace(/(<li(?:\s[^>]*)?>\s*(?:<p>)?)\s*[-–,•]\s+/gi, '$1')
 export function sectionsToDocument(sections: LegacySection[]) {
   return sections.map(s => {
     const heading = s.title || s.label || s.toc

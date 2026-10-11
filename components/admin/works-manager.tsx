@@ -257,7 +257,7 @@ export default function WorksManager({ userId }: WorksManagerProps) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {[['Items', works.length], ['Images', works.filter(work => work.media_type !== 'video').length], ['Videos', works.filter(work => work.media_type === 'video').length], ['Latest', works[0] ? new Date(works[0].created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—']].map(([label, value]) => (
+        {[['Items', works.length], ['Images', works.filter(work => work.media_type !== 'video').length], ['Videos', works.filter(work => work.media_type === 'video').length], ['Latest', works[0] ? new Date(works[0].created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ',']].map(([label, value]) => (
           <div key={String(label)} className="rounded-2xl border border-border/70 bg-foreground/[0.025] px-4 py-3">
             <p className="text-[11px] text-foreground/45">{label}</p><p className="mt-1 text-lg font-medium text-foreground">{value}</p>
           </div>
