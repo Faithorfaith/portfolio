@@ -13,9 +13,10 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const file = formData.get('file') as File
     const folder = formData.get('folder') as string
-    const userId = formData.get('userId') as string
+    // Storage ownership comes from the authenticated session, never a form value.
+    const userId = auth.user.id
 
-    if (!file || !folder || !userId || userId !== auth.user.id || !SAFE_FOLDER.test(folder)) {
+    if (!(file instanceof File) || !folder || !SAFE_FOLDER.test(folder)) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
