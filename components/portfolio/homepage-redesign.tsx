@@ -46,6 +46,22 @@ function useScrollTransitions() {
   }, [])
 }
 
+function useHeroVideoAudio() {
+  useEffect(() => {
+    const video = document.querySelector<HTMLVideoElement>('.new-hero-media video')
+    if (!video) return
+    const enableAudio = () => {
+      video.muted = false
+      void video.play()
+      document.removeEventListener('pointerdown', enableAudio)
+      document.removeEventListener('keydown', enableAudio)
+    }
+    document.addEventListener('pointerdown', enableAudio, { once: true })
+    document.addEventListener('keydown', enableAudio, { once: true })
+    return () => { document.removeEventListener('pointerdown', enableAudio); document.removeEventListener('keydown', enableAudio) }
+  }, [])
+}
+
 let activeVideo: HTMLVideoElement | null = null
 function VideoCard({ work, onOpen }: { work: Work; onOpen: (work: Work) => void }) {
   const video = isVideoUrl(work.media_url)
@@ -76,6 +92,7 @@ function VideoCard({ work, onOpen }: { work: Work; onOpen: (work: Work) => void 
 export default function HomepageRedesign({ profile, caseStudies, projects, works }: Props) {
   useReveal()
   useScrollTransitions()
+  useHeroVideoAudio()
   const [viewer, setViewer] = useState<Work | null>(null)
   const dialog = useRef<HTMLDialogElement>(null)
   useEffect(() => { if (viewer) dialog.current?.showModal(); else dialog.current?.close() }, [viewer])
@@ -95,7 +112,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
       <div className="new-hero-grid">
         <h1 id="hero-title" data-home-reveal>hey,<br />I&apos;m Faith</h1>
         <div className="new-hero-media" data-home-reveal>
-          {heroMedia ? isVideoUrl(heroMedia) ? <video src={heroMedia} autoPlay loop muted playsInline aria-label="Hero video, click to enable sound" onClick={event => { const video = event.currentTarget; video.muted = !video.muted; if (video.paused) void video.play() }} /> : <img src={heroMedia} alt="Faith Awokunle" /> : <span aria-hidden="true" />}
+          {heroMedia ? isVideoUrl(heroMedia) ? <video src={heroMedia} autoPlay loop muted playsInline aria-label="Hero video" /> : <img src={heroMedia} alt="Faith Awokunle" /> : <span aria-hidden="true" />}
         </div>
         <p data-home-reveal>{intro.toLowerCase()}</p>
       </div>
