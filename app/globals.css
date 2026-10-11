@@ -1087,7 +1087,6 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .new-hero-media { width: 310px; height: 515px; overflow: hidden; border-radius: 64px; background: rgb(0 0 0 / 10%); }
 .new-hero-media video, .new-hero-media img { width: 100%; height: 100%; object-fit: cover; }
 .new-hero-media span { display: block; width: 100%; height: 100%; background: linear-gradient(145deg, #ededed, #d4d4d4); }
-.new-scroll-cue { position: absolute; top: 805px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border: .5px solid rgb(0 0 0 / 12%); border-radius: 999px; font-family: "Arial Narrow", Arial, sans-serif; font-size: 12px; }
 .new-experience { width: min(824px, calc(100% - 40px)); margin: 260px auto 0; font-family: var(--home-rounded); font-size: 32px; line-height: 1.4; text-align: center; text-transform: lowercase; }
 .new-featured { position: relative; isolation: isolate; overflow: hidden; min-height: 1307px; display: grid; grid-template-columns: 393px minmax(0, 1fr); gap: 43px; padding: 112px max(32px, calc((100vw - var(--home-width)) / 2)); background: #000; color: #fff; }
 .new-featured::before { content: ''; position: absolute; inset: 0; z-index: 3; background: #fff; transform: translateY(0); transition: transform .9s cubic-bezier(.76,0,.24,1); pointer-events: none; }
@@ -1175,7 +1174,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   .new-home-nav { font-size: 16px; }
   .new-hero-grid { grid-template-columns: 1fr; gap: 38px; margin-top: 90px; }
   .new-hero-grid h1 { font-size: 48px; }.new-hero-grid > p { font-size: 24px; }.new-hero-media { width: min(310px, 75vw); height: min(515px, 125vw); justify-self: center; border-radius: 48px; }
-  .new-scroll-cue { position: static; width: max-content; margin: 32px auto 0; transform: none; }.new-experience { margin-top: 100px; font-size: 25px; }
+  .new-experience { margin-top: 100px; font-size: 25px; }
   .new-featured { min-height: auto; grid-template-columns: 1fr; padding: 80px 20px 110px; }.new-featured-copy { position: static; }.new-featured-copy p { font-size: 20px; }
   .new-featured-grid { margin-top: 20px; }.new-featured-card, .new-featured-card:nth-child(3n+1) { min-height: 330px; }.new-featured-card:nth-child(even), .new-featured-card:nth-child(even):hover { transform: none; }
   .new-white-section { padding-block: 84px; }.new-section-intro p { font-size: 20px; }.new-media-card, .new-gallery-more { flex-basis: min(72vw, 294px); height: min(150vw, 560px); }

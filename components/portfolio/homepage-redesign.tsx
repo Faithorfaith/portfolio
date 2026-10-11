@@ -77,7 +77,6 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
         </div>
         <p data-home-reveal>{intro.toLowerCase()}</p>
       </div>
-      <a href="#featured" className="new-scroll-cue" aria-label="Scroll to featured projects"><span aria-hidden="true">↧</span> Scroll</a>
       <p className="new-experience" data-home-reveal>{supporting.toLowerCase()}</p>
     </section>
 
