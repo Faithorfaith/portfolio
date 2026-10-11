@@ -83,7 +83,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
   const visibleProjects = projects.length ? projects : fallbackProjects
   const videos = useMemo(() => visibleWorks.filter(work => isVideoUrl(work.media_url)), [visibleWorks])
   const beyond = videos.length ? videos : visibleWorks.slice(0, 6)
-  const playground = visibleWorks.filter(work => !isVideoUrl(work.media_url)).slice(0, 8)
+  const playground = visibleWorks.slice(0, 8)
   const heroMedia = profile?.train_video_1 || profile?.hero_image_1 || null
   const intro = profile?.bio?.split('\n\n')[0] || 'A multidisciplinary designer focused primarily on Product Design, with experience across visual design, graphics, and video production.'
   const supporting = profile?.supporting_statement || 'Four years designing digital products across AI, fitness, SaaS, and marketplaces , turning complex challenges into intuitive experiences and ambitious ideas into products built for real-world impact.'
