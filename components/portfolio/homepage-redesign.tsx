@@ -71,7 +71,6 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
   const playground = visibleWorks.filter(work => !isVideoUrl(work.media_url)).slice(0, 8)
   const heroMedia = profile?.hero_image_1 || profile?.train_video_1 || null
   const intro = profile?.bio?.split('\n\n')[0] || 'A multidisciplinary designer focused primarily on Product Design, with experience across visual design, graphics, and video production.'
-  const supporting = profile?.supporting_statement || 'Four years designing digital products across AI, fitness, SaaS, and marketplaces — turning complex challenges into intuitive experiences and ambitious ideas into products built for real-world impact.'
 
   return <main id="top" className="figma-home">
     <section className="new-hero" aria-labelledby="hero-title">
@@ -83,7 +82,6 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
         </div>
         <p data-home-reveal>{intro.toLowerCase()}</p>
       </div>
-      <p className="new-experience" data-home-reveal>{supporting.toLowerCase()}</p>
     </section>
 
     <section id="featured" className="new-featured">
