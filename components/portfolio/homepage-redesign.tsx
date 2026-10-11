@@ -46,10 +46,28 @@ function useScrollTransitions() {
   }, [])
 }
 
+let activeVideo: HTMLVideoElement | null = null
 function VideoCard({ work, onOpen }: { work: Work; onOpen: (work: Work) => void }) {
   const video = isVideoUrl(work.media_url)
-  return <button className="new-media-card" onClick={() => onOpen(work)} aria-label={`Open ${work.title}`}>
-    {video ? <video src={work.media_url || undefined} poster={work.thumbnail_url || undefined} muted playsInline preload="metadata" onMouseEnter={event => void event.currentTarget.play()} onMouseLeave={event => { event.currentTarget.pause(); event.currentTarget.currentTime = 0 }} /> : mediaFor(work) ? <img src={mediaFor(work)!} alt={work.title} loading="lazy" /> : <span>{work.title}</span>}
+  const ref = useRef<HTMLVideoElement>(null)
+  const [playing, setPlaying] = useState(false)
+  useEffect(() => {
+    if (!video || !ref.current) return
+    const element = ref.current
+    const observer = new IntersectionObserver(([entry]) => { if (!entry.isIntersecting && !element.paused) { element.pause(); setPlaying(false) } }, { threshold: 0.2 })
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [video])
+  const toggle = () => {
+    if (!ref.current) return
+    if (ref.current.paused) { if (activeVideo && activeVideo !== ref.current) activeVideo.pause(); activeVideo = ref.current; void ref.current.play(); setPlaying(true) }
+    else { ref.current.pause(); setPlaying(false) }
+  }
+  return video ? <button className="new-media-card new-inline-video" onClick={toggle} aria-label={`${playing ? 'Pause' : 'Play'} ${work.title}`}>
+    <video ref={ref} src={work.media_url || undefined} poster={work.thumbnail_url || undefined} muted playsInline preload="metadata" />
+    <span className="inline-video-toggle" aria-hidden="true">{playing ? 'Ⅱ' : '▶'}</span>
+  </button> : <button className="new-media-card" onClick={() => onOpen(work)} aria-label={`Open ${work.title}`}>
+    {mediaFor(work) ? <img src={mediaFor(work)!} alt={work.title} loading="lazy" /> : <span>{work.title}</span>}
   </button>
 }
 
