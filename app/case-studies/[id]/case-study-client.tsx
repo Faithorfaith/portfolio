@@ -1,71 +1,44 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 import ProgressiveImage from '@/components/progressive-image'
-import SafeHtml from '@/components/safe-html'
 import CaseSectionBody from '@/components/case-section-body'
-import CopyLinkButton from '@/components/copy-link-button'
 import SafeEmbed from '@/components/safe-embed'
-import { slugify } from '@/lib/slugify'
 import ViewportVideo from '@/components/viewport-video'
+import { slugify } from '@/lib/slugify'
 
 interface Section {
-  id: string
-  label: string
-  title: string | null
-  body: string
-  toc: string | null
-  image: string | null
-  video_url?: string | null
-  embed_url?: string | null
+  id: string; label: string; title: string | null; body: string; toc: string | null
+  image: string | null; video_url?: string | null; embed_url?: string | null
   media_width?: 'reading' | 'wide' | 'full'
 }
-
 interface CaseStudy {
-  id: string
-  title: string
-  excerpt: string | null
-  thumbnail_url: string | null
-  video_url: string | null
-  media_type: 'image' | 'video' | null
-  sections: Section[] | string | null
-  nav_items: unknown
-  slug: string | null
-  published: boolean
-  created_at: string
-  cta_text: string | null
-  cta_link: string | null
-  related_article_id: string | null
+  id: string; title: string; excerpt: string | null; thumbnail_url: string | null
+  video_url: string | null; media_type: 'image' | 'video' | null; sections: Section[] | string | null
+  slug: string | null; published: boolean; created_at: string; order_index?: number | null
+  cta_text: string | null; cta_link: string | null; related_article_id: string | null
 }
-
-interface RelatedArticle {
-  id: string
-  title: string
-  slug: string
-  excerpt: string | null
-  cover_image: string | null
-  content: Array<{ content?: string }> | string | null
-  created_at: string
-}
+type CaseStudyLink = Pick<CaseStudy, 'id' | 'title' | 'slug' | 'order_index' | 'created_at'>
+interface RelatedArticle { id: string; title: string; slug: string; excerpt: string | null; cover_image: string | null; content: unknown; created_at: string }
 
 export default function CaseStudyClient() {
   const params = useParams()
   const router = useRouter()
   const id = params.id as string
   const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null)
+  const [caseStudyLinks, setCaseStudyLinks] = useState<CaseStudyLink[]>([])
+  const [relatedArticle, setRelatedArticle] = useState<RelatedArticle | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadPercent, setLoadPercent] = useState(8)
   const [readingProgress, setReadingProgress] = useState(0)
-  const [relatedArticle, setRelatedArticle] = useState<RelatedArticle | null>(null)
   const [expandedImage, setExpandedImage] = useState<{ src: string; alt: string } | null>(null)
-  const sections: Section[] = useMemo(() => Array.isArray(caseStudy?.sections)
-    ? caseStudy.sections
-    : typeof caseStudy?.sections === 'string'
-    ? JSON.parse(caseStudy.sections)
-    : [], [caseStudy])
+  const closeButton = useRef<HTMLButtonElement>(null)
+  const sections: Section[] = useMemo(() => {
+    try { return Array.isArray(caseStudy?.sections) ? caseStudy.sections : typeof caseStudy?.sections === 'string' ? JSON.parse(caseStudy.sections) : [] }
+    catch { return [] }
+  }, [caseStudy])
 
   useEffect(() => {
     if (!isLoading) return
@@ -74,55 +47,27 @@ export default function CaseStudyClient() {
   }, [isLoading])
 
   useEffect(() => {
-    const closeExpandedImage = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setExpandedImage(null)
-    }
-    window.addEventListener('keydown', closeExpandedImage)
-    return () => window.removeEventListener('keydown', closeExpandedImage)
-  }, [])
-
-  useEffect(() => {
     const fetchCaseStudy = async () => {
       try {
         const supabase = createClient()
         const bySlug = await supabase.from('case_studies').select('*').eq('slug', id).eq('published', true).maybeSingle()
-        const byTitle = !bySlug.data && !/^[0-9a-f-]{36}$/i.test(id)
-          ? await supabase.from('case_studies').select('*').eq('published', true)
-          : null
-        const titleMatch = byTitle?.data?.find((item) => slugify(item.title) === id) || null
-        const fallback = !bySlug.data && !titleMatch && /^[0-9a-f-]{36}$/i.test(id)
-          ? await supabase.from('case_studies').select('*').eq('id', id).maybeSingle()
-          : null
+        const byTitle = !bySlug.data && !/^[0-9a-f-]{36}$/i.test(id) ? await supabase.from('case_studies').select('*').eq('published', true) : null
+        const titleMatch = byTitle?.data?.find(item => slugify(item.title) === id) || null
+        const fallback = !bySlug.data && !titleMatch && /^[0-9a-f-]{36}$/i.test(id) ? await supabase.from('case_studies').select('*').eq('id', id).maybeSingle() : null
         const data = bySlug.data || titleMatch || fallback?.data
-        const error = bySlug.error || byTitle?.error || fallback?.error
-
-        if (error || !data) {
-          return
-        }
-
-        setCaseStudy(data)
-      } catch (error) {
-        console.error('Error fetching case study:', error)
-      } finally {
-        setLoadPercent(100)
-        setIsLoading(false)
-      }
+        if (!data) return
+        setCaseStudy(data as CaseStudy)
+        const { data: links } = await supabase.from('case_studies').select('id, title, slug, order_index, created_at').eq('published', true).order('order_index', { ascending: true })
+        setCaseStudyLinks((links as CaseStudyLink[] | null) || [])
+      } catch (error) { console.error('Error fetching case study:', error) }
+      finally { setLoadPercent(100); setIsLoading(false) }
     }
-
     fetchCaseStudy()
-  }, [id, router])
+  }, [id])
 
   useEffect(() => {
-    if (!caseStudy?.related_article_id) {
-      setRelatedArticle(null)
-      return
-    }
-    createClient().from('writings')
-      .select('id, title, slug, excerpt, cover_image, content, created_at')
-      .eq('id', caseStudy.related_article_id)
-      .eq('published', true)
-      .maybeSingle()
-      .then(({ data }) => setRelatedArticle((data as RelatedArticle | null) || null))
+    if (!caseStudy?.related_article_id) { setRelatedArticle(null); return }
+    createClient().from('writings').select('id, title, slug, excerpt, cover_image, content, created_at').eq('id', caseStudy.related_article_id).eq('published', true).maybeSingle().then(({ data }) => setRelatedArticle((data as RelatedArticle | null) || null))
   }, [caseStudy?.related_article_id])
 
   useEffect(() => {
@@ -130,155 +75,61 @@ export default function CaseStudyClient() {
       const height = document.documentElement.scrollHeight - window.innerHeight
       setReadingProgress(height > 0 ? Math.min(100, (window.scrollY / height) * 100) : 0)
     }
-    window.addEventListener('scroll', updateProgress, { passive: true })
-    updateProgress()
+    window.addEventListener('scroll', updateProgress, { passive: true }); updateProgress()
     return () => window.removeEventListener('scroll', updateProgress)
   }, [])
 
-  if (isLoading) {
-    return <main className="relative min-h-screen bg-background px-6 pt-28 md:px-10" aria-busy="true"><div className="mx-auto max-w-[600px] animate-pulse"><div className="h-5 w-2/3 rounded bg-foreground/8" /><div className="mt-6 h-3 w-full rounded bg-foreground/6" /><div className="mt-2 h-3 w-4/5 rounded bg-foreground/6" /><div className="mt-14 aspect-[4/3] w-full rounded-lg bg-foreground/6" /><div className="mt-12 space-y-3"><div className="h-3 w-full rounded bg-foreground/5" /><div className="h-3 w-11/12 rounded bg-foreground/5" /><div className="h-3 w-4/5 rounded bg-foreground/5" /></div></div><span className="fixed bottom-6 right-7 text-5xl md:text-7xl font-medium tracking-tight tabular-nums text-foreground/65" role="status">{loadPercent}%</span></main>
-  }
+  useEffect(() => {
+    if (!expandedImage) return
+    closeButton.current?.focus()
+    const close = (event: KeyboardEvent) => event.key === 'Escape' && setExpandedImage(null)
+    window.addEventListener('keydown', close)
+    return () => window.removeEventListener('keydown', close)
+  }, [expandedImage])
 
-  if (!caseStudy) return <main className="max-w-[664px] mx-auto px-8 py-24"><h1 className="text-[18px]">Case study unavailable</h1><p className="text-sm text-foreground/60 my-4">It may have moved, or the connection failed.</p><a href="/" className="underline min-h-11 inline-flex items-center">Back to work</a><button type="button" onClick={() => window.location.reload()} className="ml-6 underline">Retry</button></main>
+  if (isLoading) return <main className="relative min-h-screen bg-background px-6 pt-28" aria-busy="true"><div className="mx-auto max-w-[640px] animate-pulse"><div className="mx-auto h-7 w-2/3 rounded bg-foreground/8" /><div className="mx-auto mt-12 aspect-[3/2] w-full rounded-[28px] bg-foreground/6" /><div className="mx-auto mt-12 h-4 w-4/5 rounded bg-foreground/6" /></div><span className="fixed bottom-6 right-7 text-5xl font-medium tracking-tight tabular-nums text-foreground/65 md:text-7xl" role="status">{loadPercent}%</span></main>
+  if (!caseStudy) return <main className="mx-auto max-w-[664px] px-8 py-24"><h1 className="text-[24px]">Case study unavailable</h1><p className="my-4 text-base text-foreground/60">It may have moved, or the connection failed.</p><a href="/" className="inline-flex min-h-11 items-center underline">Back to work</a><button type="button" onClick={() => window.location.reload()} className="ml-6 underline">Retry</button></main>
 
-  return (
-    <main className="public-page min-h-screen bg-background">
-      <div className="fixed top-0 left-0 z-[60] h-px bg-foreground/70 transition-[width] duration-100" style={{ width: `${readingProgress}%` }} aria-hidden="true" />
-      <header className="fixed top-0 inset-x-0 z-50 h-[52px] border-b border-foreground/8 bg-background/95 backdrop-blur-xl">
-        <div className="h-full max-w-[1080px] mx-auto px-5 md:px-8 flex items-center justify-between">
-          <div className="flex items-center gap-4 md:gap-7 min-w-0">
-            <button
-              onClick={() => router.push('/')}
-              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-foreground/[0.045] text-xs text-foreground/55 hover:text-foreground hover:bg-foreground/[0.075] transition-colors"
-            >
-              <span aria-hidden="true">‹</span>
-              Back
-            </button>
-            <div className="hidden sm:flex items-center gap-3 text-sm min-w-0">
-              {caseStudy.thumbnail_url && (
-                <div className="relative size-7 shrink-0 overflow-hidden rounded-sm bg-foreground/5">
-                  <img src={caseStudy.thumbnail_url} alt="" className="w-full h-full object-cover" />
-                </div>
-              )}
-              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="font-medium truncate hover:text-foreground/60 transition-colors">{caseStudy.title}</button>
-            </div>
-          </div>
-          <CopyLinkButton className="border-0 bg-foreground/[0.045] hover:bg-foreground/[0.075]" />
-        </div>
+  const currentIndex = caseStudyLinks.findIndex(item => item.id === caseStudy.id)
+  const previous = currentIndex > 0 ? caseStudyLinks[currentIndex - 1] : null
+  const next = currentIndex >= 0 && currentIndex < caseStudyLinks.length - 1 ? caseStudyLinks[currentIndex + 1] : null
+  const href = (item: CaseStudyLink) => `/case-studies/${encodeURIComponent(item.slug || item.id)}`
+
+  return <main className="case-story min-h-screen bg-background">
+    <div className="fixed left-0 top-0 z-[60] h-px bg-foreground/70 transition-[width] duration-100" style={{ width: `${readingProgress}%` }} aria-hidden="true" />
+    <button onClick={() => router.push('/')} className="case-story-back" aria-label="Back to homepage">←</button>
+    <article>
+      <header className="case-story-hero" data-motion-section>
+        <h1>{caseStudy.title} <span>({new Date(caseStudy.created_at).getFullYear()})</span></h1>
+        {caseStudy.thumbnail_url && caseStudy.media_type !== 'video' && <button type="button" onClick={() => setExpandedImage({ src: caseStudy.thumbnail_url!, alt: caseStudy.title })} className="case-story-cover cursor-zoom-in" aria-label={`Expand ${caseStudy.title} image`}><ProgressiveImage src={caseStudy.thumbnail_url} alt={caseStudy.title} className="h-full w-full object-cover" /></button>}
+        {caseStudy.excerpt && <p className="case-story-intro">{caseStudy.excerpt}</p>}
       </header>
 
-      <div className="pt-[52px] w-full max-w-[1080px] mx-auto px-6 md:px-10 lg:px-12">
-        <div className="min-w-0 py-8 md:py-8">
-          <div className="w-full max-w-[1080px] mx-auto">
-          <header className="mb-12 w-full max-w-[1080px]" data-motion-section>
-            {caseStudy.thumbnail_url && caseStudy.media_type !== 'video' && (
-              <button type="button" onClick={() => setExpandedImage({ src: caseStudy.thumbnail_url!, alt: caseStudy.title })} className="motion-media group block w-full mb-10 overflow-hidden bg-foreground/4 cursor-zoom-in" aria-label={`Expand ${caseStudy.title} image`} data-motion-section>
-                <ProgressiveImage src={caseStudy.thumbnail_url} alt={caseStudy.title} className="w-full h-auto" />
-              </button>
-            )}
-            <h1 className="editorial-display text-foreground">{caseStudy.title}</h1>
-            {caseStudy.excerpt && <p className="editorial-lede mt-7 text-foreground/65 max-w-2xl">{caseStudy.excerpt}</p>}
-          </header>
+      {caseStudy.media_type === 'video' && caseStudy.video_url && <div className="case-story-media"><div className="case-story-media-inner"><ViewportVideo src={caseStudy.video_url} controls poster={caseStudy.thumbnail_url || undefined} /></div></div>}
+      {caseStudy.cta_text && caseStudy.cta_link && <div className="case-story-cta"><a href={caseStudy.cta_link} target="_blank" rel="noopener noreferrer">{caseStudy.cta_text}</a></div>}
 
-          {/* Thumbnail */}
-          {caseStudy.media_type === 'video' && caseStudy.video_url && (
-            <div className="mb-16 overflow-hidden bg-black">
-              <ViewportVideo
-                src={caseStudy.video_url}
-                controls
-                poster={caseStudy.thumbnail_url || undefined}
-              />
-            </div>
-          )}
-
-          {/* CTA Button - Right after excerpt */}
-          {caseStudy.cta_text && caseStudy.cta_link && (
-            <div className="mb-12">
-              <a
-                href={caseStudy.cta_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-6 py-3 bg-foreground text-background rounded-lg font-medium hover:opacity-90 transition-opacity"
-              >
-                {caseStudy.cta_text}
-              </a>
-            </div>
-          )}
-
-          {/* Sections */}
-          <div className="w-full max-w-[1080px] space-y-20">
-            {sections.map((section) => (
-              <section key={section.id} id={section.id} className="reading-section scroll-mt-24" data-motion-section>
-                {section.label && (
-                  <p className="text-sm text-foreground/45 mb-3">
-                    {section.label}
-                  </p>
-                )}
-
-                {section.title && (
-                  <h2 className="editorial-section-title text-foreground mb-6">
-                    {section.title}
-                  </h2>
-                )}
-
-                {section.image && (
-                  <button type="button" onClick={() => setExpandedImage({ src: section.image!, alt: section.title || section.label || 'Section image' })} className="block w-full max-w-[1080px] mb-10 overflow-hidden bg-foreground/4 cursor-zoom-in" aria-label={`Expand ${section.title || section.label || 'section'} image`}>
-                    <ProgressiveImage
-                      src={section.image}
-                      alt={section.title || section.label || 'Section image'}
-                      className="w-full h-auto"
-                    />
-                  </button>
-                )}
-
-                {section.video_url && (
-                  <div className="w-full max-w-[1080px] mb-10 overflow-hidden bg-black">
-                    <ViewportVideo
-                      src={section.video_url}
-                      decorative
-                    />
-                  </div>
-                )}
-
-                {section.embed_url && (
-                  <div className="w-full max-w-[1080px] mb-10">
-                    <SafeEmbed url={section.embed_url} title={section.title || section.label || 'Embedded content'} />
-                  </div>
-                )}
-
-                <CaseSectionBody html={section.body} />
-              </section>
-            ))}
+      <div className="case-story-sections">
+        {sections.map((section, index) => <section key={section.id} id={section.id} className="case-story-section reading-section" data-motion-section>
+          {(section.image || section.video_url || section.embed_url) && <div className={`case-story-media ${index % 2 ? 'is-soft' : ''}`}><div className="case-story-media-inner">
+            {section.image && <button type="button" onClick={() => setExpandedImage({ src: section.image!, alt: section.title || section.label || 'Section image' })} className="case-story-image cursor-zoom-in" aria-label={`Expand ${section.title || section.label || 'section'} image`}><ProgressiveImage src={section.image} alt={section.title || section.label || 'Section image'} className="h-full w-full object-contain" /></button>}
+            {section.video_url && <div className="case-story-video"><ViewportVideo src={section.video_url} decorative /></div>}
+            {section.embed_url && <div className="case-story-embed"><SafeEmbed url={section.embed_url} title={section.title || section.label || 'Embedded content'} /></div>}
+          </div></div>}
+          <div className="case-story-copy">
+            {section.label && <p className="case-story-label">{section.label}</p>}
+            {section.title && <h2>{section.title}</h2>}
+            <CaseSectionBody html={section.body} />
           </div>
-
-          {relatedArticle && (() => {
-            const content = typeof relatedArticle.content === 'string' ? JSON.parse(relatedArticle.content) : (relatedArticle.content || [])
-            const words = content.reduce((total: number, block: { content?: string }) => total + (block.content?.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length || 0), 0)
-            return (
-              <section className="w-full max-w-[1080px] mt-20 pt-10 border-t border-foreground/8" data-motion-section>
-                <h2 className="text-[11px] text-foreground/45 font-normal mb-8">Related writing</h2>
-                <a href={`/writing/${encodeURIComponent(slugify(relatedArticle.title))}`} className="group grid grid-cols-[112px_1fr_auto] gap-5 items-center">
-                  {relatedArticle.cover_image ? <img src={relatedArticle.cover_image} alt="" className="w-28 aspect-[4/3] object-cover" /> : <div className="w-28 aspect-[4/3] bg-foreground/5" />}
-                  <div className="min-w-0">
-                    <h3 className="text-sm font-normal leading-relaxed text-foreground/70 group-hover:text-foreground transition-colors">{relatedArticle.title}</h3>
-                    {relatedArticle.excerpt && <p className="text-sm text-foreground/50 mt-1.5 line-clamp-1">{relatedArticle.excerpt}</p>}
-                    <p className="text-[11px] text-foreground/60 mt-2">{Math.max(1, Math.ceil(words / 200))} min · {new Date(relatedArticle.created_at).getFullYear()}</p>
-                  </div>
-                  <span className="text-xl text-foreground/35 group-hover:translate-x-1 group-hover:text-foreground transition-all" aria-hidden="true">→</span>
-                </a>
-              </section>
-            )
-          })()}
-
-          </div>
-        </div>
+        </section>)}
       </div>
-      {expandedImage && (
-        <div className="image-lightbox fixed inset-0 z-[90] bg-black/88 p-4 md:p-8 flex items-center justify-center" role="dialog" aria-modal="true" aria-label="Expanded case study image" onClick={() => setExpandedImage(null)}>
-          <button type="button" onClick={() => setExpandedImage(null)} className="absolute top-4 right-4 size-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20" aria-label="Close image">×</button>
-          <img src={expandedImage.src} alt={expandedImage.alt} className="image-lightbox-media max-w-full max-h-full object-contain" onClick={(event) => event.stopPropagation()} />
-        </div>
-      )}
-    </main>
-  )
+
+      {relatedArticle && <section className="case-story-related" data-motion-section><p>Related writing</p><a href={`/writing/${encodeURIComponent(slugify(relatedArticle.title))}`}><span>{relatedArticle.title}</span><span>Read note →</span></a></section>}
+      <nav className="case-story-pagination" aria-label="Case study navigation">
+        {previous ? <a href={href(previous)}>← Prev</a> : <span />}
+        {next ? <a href={href(next)}>Next →</a> : <a href="/">Home →</a>}
+      </nav>
+    </article>
+
+    {expandedImage && <div className="image-lightbox fixed inset-0 z-[90] flex items-center justify-center bg-black/88 p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Expanded case study image" onClick={() => setExpandedImage(null)}><button ref={closeButton} type="button" onClick={() => setExpandedImage(null)} className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Close image">×</button><img src={expandedImage.src} alt={expandedImage.alt} className="image-lightbox-media max-h-full max-w-full object-contain" onClick={event => event.stopPropagation()} /></div>}
+  </main>
 }

@@ -1,7 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
+import AdminOverview from '@/components/admin/admin-overview'
 import ProfileManager from '@/components/admin/profile-manager'
 import ProjectsManager from '@/components/admin/projects-manager'
 import WorksManager from '@/components/admin/works-manager'
@@ -9,262 +10,72 @@ import WritingsManager from '@/components/admin/writings-manager'
 import CaseStudiesManager from '@/components/admin/case-studies-manager'
 import WorkflowFilesManager from '@/components/admin/workflow-files-manager'
 
-type Tab = 'profile' | 'projects' | 'works' | 'writing' | 'case-studies' | 'workflow-files'
+type Tab = 'overview' | 'profile' | 'case-studies' | 'projects' | 'works' | 'writing' | 'workflow-files'
+type NavItem = { id: Tab; label: string; eyebrow: string; icon: ReactNode }
 
-const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  {
-    id: 'workflow-files',
-    label: 'Workflow Files',
-    icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 3h7l5 5v13H7zM14 3v5h5M10 13h6m-6 4h6"/></svg>,
-  },
-  {
-    id: 'profile',
-    label: 'Profile',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
-    ),
-  },
-  {
-    id: 'case-studies',
-    label: 'Case Studies',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    ),
-  },
-  {
-    id: 'projects',
-    label: 'Projects',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-      </svg>
-    ),
-  },
-  {
-    id: 'works',
-    label: 'Playground',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-    ),
-  },
-  {
-    id: 'writing',
-    label: 'Writing',
-    icon: (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      </svg>
-    ),
-  },
+const icon = (path: string) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d={path} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+const NAV_ITEMS: NavItem[] = [
+  { id: 'overview', label: 'Overview', eyebrow: 'Start here', icon: icon('M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z') },
+  { id: 'profile', label: 'Profile', eyebrow: 'Identity', icon: icon('M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0') },
+  { id: 'case-studies', label: 'Case studies', eyebrow: 'Featured work', icon: icon('M6 3h9l4 4v14H6zM15 3v5h4M9 13h7M9 17h7') },
+  { id: 'works', label: 'Playground', eyebrow: 'Visual archive', icon: icon('M4 19V5h16v14H4Zm2-3 4-4 3 3 2-2 3 3M16 9h.01') },
+  { id: 'projects', label: 'Archives', eyebrow: 'Built things', icon: icon('M4 7h16M6 4h12l2 3v13H4V7l2-3Zm2 7h8M8 15h5') },
+  { id: 'writing', label: 'Writing', eyebrow: 'Editorial', icon: icon('M5 19h4L19 9l-4-4L5 15v4Zm8-12 4 4M5 15l4 4') },
+  { id: 'workflow-files', label: 'Workflow files', eyebrow: 'Downloads', icon: icon('M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6') },
 ]
 
 export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<Tab>('profile')
+  const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [userId, setUserId] = useState<string | null>(null)
-  const [isCaseStudyEditorOpen, setIsCaseStudyEditorOpen] = useState(false)
-  const [isSidebarManuallyOpen, setIsSidebarManuallyOpen] = useState(false)
+  const [isEditorOpen, setIsEditorOpen] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const response = await fetch('/api/admin/check-auth')
-        if (!response.ok) {
-          router.push('/admin/login')
-          return
-        }
+        if (!response.ok) { router.push('/admin/login'); return }
         const data = await response.json()
         setUserId(data.userId)
-        try {
-          await fetch('/api/admin/create-bucket', { method: 'POST' })
-        } catch (bucketError) {
-          console.warn('[v0] Bucket initialization warning:', bucketError)
-        }
-      } catch (error) {
-        router.push('/admin/login')
-      } finally {
-        setIsLoading(false)
-      }
+        fetch('/api/admin/create-bucket', { method: 'POST' }).catch(() => undefined)
+      } catch { router.push('/admin/login') }
+      finally { setIsLoading(false) }
     }
     checkAuth()
   }, [router])
 
-  const handleLogout = async () => {
-    await fetch('/api/admin/logout', { method: 'POST' })
-    router.push('/')
-  }
+  const handleLogout = async () => { await fetch('/api/admin/logout', { method: 'POST' }); router.push('/') }
+  const handleEditorOpenChange = useCallback((open: boolean) => setIsEditorOpen(open), [])
+  const activeNav = NAV_ITEMS.find(item => item.id === activeTab) || NAV_ITEMS[0]
 
-  const handleCaseStudyEditorOpenChange = useCallback((open: boolean) => {
-    setIsCaseStudyEditorOpen(open)
-    if (!open) setIsSidebarManuallyOpen(false)
-  }, [])
+  if (isLoading) return <div className="admin-loading"><span /><p>Opening your studio</p></div>
 
-  if (isLoading) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', background: 'oklch(0.985 0 0)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-          <div className="w-5 h-5 border-2 border-foreground/15 border-t-foreground rounded-full animate-spin" />
-          <p style={{ fontSize: '12px', color: 'var(--foreground)', opacity: 0.35, letterSpacing: '-0.01em' }}>Loading workspace</p>
-        </div>
-      </div>
-    )
-  }
+  return <div className={`admin-surface admin-shell-v2 ${isEditorOpen ? 'has-editor' : ''}`}>
+    <aside className="admin-sidebar-v2">
+      <a href="/admin" className="admin-brand" onClick={event => { event.preventDefault(); setActiveTab('overview') }}><span>FA</span><div><strong>Faith’s Studio</strong><small>Portfolio editor</small></div></a>
+      <nav aria-label="Admin navigation">
+        {NAV_ITEMS.map(item => <button type="button" key={item.id} onClick={() => setActiveTab(item.id)} aria-current={activeTab === item.id ? 'page' : undefined}>
+          <span className="admin-nav-icon">{item.icon}</span><span><small>{item.eyebrow}</small><strong>{item.label}</strong></span><i>↗</i>
+        </button>)}
+      </nav>
+      <div className="admin-sidebar-footer"><a href="/" target="_blank" rel="noreferrer">View portfolio <span>↗</span></a><button type="button" onClick={handleLogout}>Sign out</button></div>
+    </aside>
 
-  const activeNav = NAV_ITEMS.find(n => n.id === activeTab)
-  const isSidebarCollapsed = isCaseStudyEditorOpen && !isSidebarManuallyOpen
-
-  return (
-    <div className="admin-surface admin-shell" style={{ display: 'flex', width: '100%', height: '100%', background: 'oklch(0.985 0 0)' }}>
-      {/* Sidebar */}
-      <aside
-        className="admin-sidebar"
-        style={{
-          width: isSidebarCollapsed ? '0px' : '216px',
-          minWidth: isSidebarCollapsed ? '0px' : '216px',
-          opacity: isSidebarCollapsed ? 0 : 1,
-          pointerEvents: isSidebarCollapsed ? 'none' : 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          borderRight: isSidebarCollapsed ? '0' : '1px solid oklch(0.91 0 0)',
-          background: 'oklch(0.985 0 0)',
-          overflow: 'hidden',
-          transition: 'width 180ms ease, min-width 180ms ease, opacity 140ms ease',
-        }}
-      >
-        {/* Brand */}
-        <div style={{ padding: '22px 18px 18px', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--foreground)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <svg width="13" height="13" fill="none" stroke="var(--background)" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <div>
-              <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground)', lineHeight: 1, letterSpacing: '-0.02em' }}>Studio</p>
-              <p style={{ fontSize: '10.5px', color: 'var(--foreground)', opacity: 0.35, marginTop: '3px', letterSpacing: '0' }}>Content Manager</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Nav */}
-        <nav style={{ flex: 1, padding: '4px 10px 8px', overflowY: 'auto' }}>
-          <p style={{ fontSize: '9.5px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--foreground)', opacity: 0.3, fontWeight: 600, padding: '0 8px', marginBottom: '6px' }}>Content</p>
-          {NAV_ITEMS.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '9px',
-                padding: '7px 10px',
-                borderRadius: '7px',
-                fontSize: '13px',
-                fontWeight: activeTab === item.id ? 500 : 400,
-                background: activeTab === item.id ? 'oklch(0.145 0 0)' : 'transparent',
-                color: activeTab === item.id ? 'oklch(1 0 0)' : 'var(--foreground)',
-                opacity: activeTab === item.id ? 1 : 0.5,
-                border: 'none',
-                cursor: 'pointer',
-                textAlign: 'left',
-                marginBottom: '1px',
-                transition: 'all 0.12s ease',
-                whiteSpace: 'nowrap',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              <span style={{ display: 'flex', alignItems: 'center', flexShrink: 0, opacity: activeTab === item.id ? 0.8 : 1 }}>{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-
-        {/* Footer */}
-        <div style={{ padding: '8px 10px 18px', borderTop: '1px solid oklch(0.91 0 0)', flexShrink: 0 }}>
-          <a
-            href="/"
-            target="_blank"
-            style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '9px', padding: '7px 10px', borderRadius: '7px', fontSize: '13px', color: 'var(--foreground)', opacity: 0.4, textDecoration: 'none', marginBottom: '1px', whiteSpace: 'nowrap', letterSpacing: '-0.01em' }}
-          >
-            <svg style={{ flexShrink: 0 }} width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-            <span>View Portfolio</span>
-          </a>
-          <button
-            onClick={handleLogout}
-            style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '9px', padding: '7px 10px', borderRadius: '7px', fontSize: '13px', color: 'var(--foreground)', opacity: 0.4, background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', whiteSpace: 'nowrap', letterSpacing: '-0.01em' }}
-          >
-            <svg style={{ flexShrink: 0 }} width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <span>Sign Out</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Area */}
-      <div className="admin-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflowY: 'auto', background: 'oklch(1 0 0)' }}>
-        <nav className="admin-mobile-nav" aria-label="Admin sections">
-          {NAV_ITEMS.map((item) => <button key={item.id} type="button" onClick={() => setActiveTab(item.id)} className={activeTab === item.id ? 'is-active' : ''}>{item.label}</button>)}
-        </nav>
-        {isCaseStudyEditorOpen && (
-          <button
-            type="button"
-            onClick={() => setIsSidebarManuallyOpen((open) => !open)}
-            aria-label={isSidebarCollapsed ? 'Show admin sidebar' : 'Hide admin sidebar'}
-            title={isSidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
-            className="fixed left-3 bottom-3 z-50 size-9 rounded-full border border-border bg-background/95 shadow-sm backdrop-blur flex items-center justify-center text-foreground/50 hover:text-foreground hover:shadow-md transition-all"
-          >
-            <svg className={`w-4 h-4 transition-transform ${isSidebarCollapsed ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        )}
-        {/* Top Bar */}
-        <header style={{ height: '50px', flexShrink: 0, borderBottom: '1px solid oklch(0.93 0 0)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px', background: 'oklch(1 0 0)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', color: 'var(--foreground)' }}>
-            <span style={{ opacity: 0.35 }}>Workspace</span>
-            <span style={{ opacity: 0.2 }}>/</span>
-            <span style={{ fontWeight: 500, opacity: 0.8, letterSpacing: '-0.01em' }}>{activeNav?.label}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
-            <span style={{ fontSize: '11px', color: 'var(--foreground)', opacity: 0.3, letterSpacing: '0' }}>Live</span>
-          </div>
-        </header>
-
-        {/* Content Area */}
-        <main className="admin-content" style={{ flex: 1, padding: '36px 40px' }}>
-          {userId ? (
-            <>
-              {activeTab === 'profile' && <ProfileManager userId={userId} />}
-              {activeTab === 'projects' && <ProjectsManager />}
-              {activeTab === 'works' && <WorksManager userId={userId} />}
-              {activeTab === 'writing' && <WritingsManager onEditorOpenChange={handleCaseStudyEditorOpenChange} />}
-              {activeTab === 'workflow-files' && <WorkflowFilesManager userId={userId} />}
-              {activeTab === 'case-studies' && (
-                <CaseStudiesManager
-                  userId={userId}
-                  onEditorOpenChange={handleCaseStudyEditorOpenChange}
-                />
-              )}
-            </>
-          ) : (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-foreground/40 text-sm">Initializing...</p>
-            </div>
-          )}
-        </main>
-      </div>
-    </div>
-  )
+    <section className="admin-workspace-v2">
+      {!isEditorOpen && <header className="admin-topbar-v2"><div><span>Content Studio</span><i>/</i><strong>{activeNav.label}</strong></div><div className="admin-live"><i />Synced</div></header>}
+      <nav className="admin-mobile-nav-v2" aria-label="Admin sections">{NAV_ITEMS.map(item => <button type="button" key={item.id} onClick={() => setActiveTab(item.id)} className={activeTab === item.id ? 'is-active' : ''}>{item.label}</button>)}</nav>
+      <main className="admin-content-v2">
+        {userId ? <>
+          {activeTab === 'overview' && <AdminOverview userId={userId} onOpen={setActiveTab} />}
+          {activeTab === 'profile' && <ProfileManager userId={userId} />}
+          {activeTab === 'projects' && <ProjectsManager />}
+          {activeTab === 'works' && <WorksManager userId={userId} />}
+          {activeTab === 'writing' && <WritingsManager onEditorOpenChange={handleEditorOpenChange} />}
+          {activeTab === 'workflow-files' && <WorkflowFilesManager userId={userId} />}
+          {activeTab === 'case-studies' && <CaseStudiesManager userId={userId} onEditorOpenChange={handleEditorOpenChange} />}
+        </> : <p className="admin-empty">Initializing your workspace…</p>}
+      </main>
+    </section>
+  </div>
 }

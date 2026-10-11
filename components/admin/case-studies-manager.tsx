@@ -1,19 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import DocumentWorkspace from './document-workspace'
-import { sectionsToDocument, documentNavigation } from '@/lib/document-content'
+import { documentNavigation } from '@/lib/document-content'
 import { createClient } from '@/lib/supabase/client'
 import dynamic from 'next/dynamic'
-import { compressImage, uploadFileWithProgress, formatFileSize } from '@/lib/upload-utils'
+import { compressImage, uploadFileWithProgress } from '@/lib/upload-utils'
 import ProgressiveImage from '@/components/progressive-image'
-import ButtonBlockBuilder from './button-block-builder'
-import SafeEmbed from '@/components/safe-embed'
-import SafeHtml from '@/components/safe-html'
-import CaseSectionBody from '@/components/case-section-body'
 import { useEditorGuard } from '@/hooks/use-editor-guard'
 import DraftTools from './draft-tools'
-import MediaLibrary from './media-library'
 
 const RTFEditor = dynamic(() => import('./rtf-editor'), { ssr: false })
 
@@ -176,9 +170,6 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
   const updateSection = (sectionId: string, updates: Partial<Section>) => {
     if (!editing) return
     setHasUnsavedChanges(true)
-    if (selectedSectionId === sectionId) {
-      setSelectedSectionId(editing.sections.find((section) => section.id !== sectionId)?.id || null)
-    }
     setEditing({
       ...editing,
       sections: editing.sections.map(s => s.id === sectionId ? { ...s, ...updates } : s),
@@ -464,26 +455,47 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
   ) : null
 
   if (editing) {
-    return <DocumentWorkspace key={editing.id || 'new'} userId={userId} toc
-      title={editing.title} subtitle={editing.excerpt || ''} html={sectionsToDocument(editing.sections)} cover={editing.thumbnail_url}
-      onTitle={title => setEditing({ ...editing, title, slug: title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') })}
-      onSubtitle={excerpt => setEditing({ ...editing, excerpt })}
-      onCover={thumbnail_url => setEditing({ ...editing, thumbnail_url })}
-      onChange={body => setEditing({ ...editing, sections: [{ id: 'document', label: '', title: null, toc: null, body, image: null }] })}
-      onBack={() => { if (draftDirty && !window.confirm('Leave the editor? Unsaved changes are available in recovery.')) return; setEditing(null); setIsCreating(false) }}
-      onSave={handleSave} saving={isSaving} dirty={draftDirty} published={editing.published}
-      onPublished={published => setEditing({ ...editing, published })} error={error}
-      recovery={<DraftTools key={editing.id || 'new'} kind="case-study" draft={editing} onRestore={setEditing} />}
-      settings={<>
-        <label className="block text-xs space-y-2"><span>URL slug</span><input className="w-full border rounded p-2" value={editing.slug} onChange={e => setEditing({ ...editing, slug: e.target.value })} /></label>
-        <label className="block text-xs space-y-2"><span>Related article</span><select className="w-full border rounded p-2" value={editing.related_article_id || ''} onChange={e => setEditing({ ...editing, related_article_id: e.target.value || null })}><option value="">None</option>{articleOptions.map(a => <option key={a.id} value={a.id}>{a.title}</option>)}</select></label>
-        <details><summary>Cover video & project link</summary><div className="space-y-3 pt-3">
-          <label className="block text-xs">Cover video URL<input className="w-full border rounded p-2" value={editing.video_url || ''} onChange={e => setEditing({ ...editing, video_url: e.target.value || null, media_type: e.target.value ? 'video' : 'image' })} /></label>
-          <label className="block text-xs">Link label<input className="w-full border rounded p-2" value={editing.cta_text || ''} onChange={e => setEditing({ ...editing, cta_text: e.target.value })} /></label>
-          <label className="block text-xs">Project URL<input className="w-full border rounded p-2" value={editing.cta_link || ''} onChange={e => setEditing({ ...editing, cta_link: e.target.value })} /></label>
-        </div></details>
-      </>}
-    />
+    const closeEditor = () => { if (draftDirty && !window.confirm('Leave the editor? Unsaved changes are available in recovery.')) return; setEditing(null); setIsCreating(false) }
+    return <div className="case-admin-editor">
+      <header className="case-admin-toolbar"><button type="button" onClick={closeEditor}>← All case studies</button><span>{draftDirty ? 'Unsaved changes' : 'All changes saved'}</span><a href={editing.id ? `/case-studies/${editing.slug || editing.id}` : '#'} target="_blank" aria-disabled={!editing.id}>Preview ↗</a><button type="button" className="case-admin-save" disabled={isSaving || isUploading} onClick={handleSave}>{isSaving ? 'Saving…' : editing.published ? 'Save & publish' : 'Save draft'}</button></header>
+      {error && <p className="case-admin-error" role="alert">{error}</p>}
+      <div className="case-admin-layout">
+        <div className="case-admin-story">
+          <section className="case-admin-hero-card">
+            <p>Opening</p>
+            <input className="case-admin-title" value={editing.title} onChange={e => setEditing({ ...editing, title: e.target.value, slug: e.target.value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') })} placeholder="Case study title" />
+            <div className="case-admin-cover">
+              {editing.thumbnail_url ? <><img src={editing.thumbnail_url} alt="" /><button type="button" onClick={() => setEditing({ ...editing, thumbnail_url: null })}>Remove cover</button></> : <label><span>Add cover image</span><small>Recommended 1600 × 1067 or larger</small><input type="file" accept="image/*" onChange={e => e.target.files?.[0] && handleThumbnailUpload(e.target.files[0])} /></label>}
+            </div>
+            <textarea value={editing.excerpt || ''} onChange={e => setEditing({ ...editing, excerpt: e.target.value })} placeholder="Introduce the problem, the work, and the outcome in one clear paragraph." rows={5} />
+          </section>
+
+          <div className="case-admin-chapters">
+            {editing.sections.map((section, index) => <section className="case-admin-chapter" key={section.id}>
+              <header><div><span>{String(index + 1).padStart(2, '0')}</span><strong>Story chapter</strong></div><div><button type="button" disabled={index === 0} onClick={() => moveSection(section.id, 'up')}>↑</button><button type="button" disabled={index === editing.sections.length - 1} onClick={() => moveSection(section.id, 'down')}>↓</button><button type="button" onClick={() => deleteSection(section.id)}>Remove</button></div></header>
+              <div className="case-admin-chapter-fields">
+                <input value={section.label} onChange={e => updateSection(section.id, { label: e.target.value })} placeholder="Small label (optional)" />
+                <input value={section.title || ''} onChange={e => updateSection(section.id, { title: e.target.value || null })} placeholder="Chapter title" />
+              </div>
+              <div className="case-admin-media-stage">
+                {section.image ? <><img src={section.image} alt="" /><button type="button" onClick={() => updateSection(section.id, { image: null })}>Remove image</button></> : section.video_url ? <><video src={section.video_url} controls /><button type="button" onClick={() => updateSection(section.id, { video_url: null })}>Remove video</button></> : <div><p>Full-width visual stage</p><span>Upload the image or video shown before this chapter’s text.</span><label>Image<input type="file" accept="image/*" onChange={e => e.target.files?.[0] && handleSectionImageUpload(section.id, e.target.files[0])} /></label><label>Video<input type="file" accept="video/*" onChange={e => e.target.files?.[0] && handleSectionVideoUpload(section.id, e.target.files[0])} /></label></div>}
+              </div>
+              <div className="case-admin-richtext"><RTFEditor value={section.body} onChange={body => updateSection(section.id, { body })} userId={userId} /></div>
+            </section>)}
+            <button type="button" className="case-admin-add" onClick={addSection}>＋ Add another visual chapter</button>
+          </div>
+        </div>
+
+        <aside className="case-admin-settings">
+          <div><p>Publishing</p><label className="case-admin-switch"><input type="checkbox" checked={editing.published} onChange={e => setEditing({ ...editing, published: e.target.checked })} /><span>{editing.published ? 'Published' : 'Draft'}</span></label></div>
+          <div><p>Page details</p><label>URL slug<input value={editing.slug} onChange={e => setEditing({ ...editing, slug: e.target.value })} /></label><label>Related article<select value={editing.related_article_id || ''} onChange={e => setEditing({ ...editing, related_article_id: e.target.value || null })}><option value="">None</option>{articleOptions.map(a => <option key={a.id} value={a.id}>{a.title}</option>)}</select></label></div>
+          <div><p>Optional project link</p><label>Button label<input value={editing.cta_text || ''} onChange={e => setEditing({ ...editing, cta_text: e.target.value })} placeholder="View live project" /></label><label>Destination URL<input value={editing.cta_link || ''} onChange={e => setEditing({ ...editing, cta_link: e.target.value })} placeholder="https://" /></label></div>
+          <div><p>Cover video</p>{editing.video_url ? <button type="button" onClick={() => setEditing({ ...editing, video_url: null, media_type: 'image' })}>Remove uploaded video</button> : <label className="case-admin-upload">Upload cover video<input type="file" accept="video/*" onChange={e => e.target.files?.[0] && handleVideoUpload(e.target.files[0])} /></label>}</div>
+          <details><summary>Recovery & versions</summary><DraftTools key={editing.id || 'new'} kind="case-study" draft={editing} onRestore={setEditing} /></details>
+          <UploadProgress />
+        </aside>
+      </div>
+    </div>
   }
 
   return (
