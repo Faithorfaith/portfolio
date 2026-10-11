@@ -43,7 +43,9 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
     type: '',
     order_index: 0,
   })
-  const visibleWorks = works.filter(work => mode === 'beyond' ? isVideoWork(work) : !isVideoWork(work))
+  // Playground remains the complete legacy media library. Beyond is a focused
+  // video view, so existing uploads are available in both places.
+  const visibleWorks = mode === 'beyond' ? works.filter(isVideoWork) : works
 
   // Fetch works
   useEffect(() => {
