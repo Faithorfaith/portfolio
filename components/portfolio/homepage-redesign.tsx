@@ -103,15 +103,8 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
   useScrollTransitions()
   useHeroVideoAudio()
   const [viewer, setViewer] = useState<Work | null>(null)
-  const [opening, setOpening] = useState(false)
   const dialog = useRef<HTMLDialogElement>(null)
   useEffect(() => { if (viewer) dialog.current?.showModal(); else dialog.current?.close() }, [viewer])
-  useEffect(() => {
-    if (!heroIsVideo || sessionStorage.getItem('portfolio-opening-seen')) return
-    setOpening(true)
-    const timeout = window.setTimeout(() => { setOpening(false); sessionStorage.setItem('portfolio-opening-seen', '1') }, 1600)
-    return () => window.clearTimeout(timeout)
-  }, [heroIsVideo])
   const visibleWorks = works.length ? works : fallbackWorks
   const visibleStudies = caseStudies.length ? caseStudies : fallbackStudies
   const visibleProjects = projects.length ? projects : fallbackProjects
@@ -122,14 +115,13 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
   const supporting = profile?.supporting_statement || 'Four years designing digital products across AI, fitness, SaaS, and marketplaces , turning complex challenges into intuitive experiences and ambitious ideas into products built for real-world impact.'
 
   return <main id="top" className="figma-home">
-    {opening && <div className="home-opening" aria-label="Preparing portfolio"><strong>faith awokunle</strong><span><i /></span></div>}
     <section className="new-hero" aria-labelledby="hero-title">
       <SplitTransition />
       <nav className="new-home-nav" aria-label="Homepage"><a className="nav-works" href="#featured">works</a><a className="nav-name" href="#top">{profile?.full_name || 'Faith Awokunle'}</a><div className="home-contact nav-contact"><button type="button" aria-label="Show contact links">contact</button><div className="home-contact-popover" role="menu">{profile?.contact_email && <a role="menuitem" href={`mailto:${profile.contact_email}`}><Mail size={15} />Email</a>}{profile?.whatsapp_url && <a role="menuitem" href={profile.whatsapp_url} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} />WhatsApp</a>}{profile?.x_url && <a role="menuitem" href={profile.x_url} target="_blank" rel="noopener noreferrer"><AtSign size={15} />X</a>}{!profile?.contact_email && !profile?.whatsapp_url && !profile?.x_url && <span className="home-contact-empty">Coming soon</span>}</div></div></nav>
       <div className="new-hero-grid">
         <h1 id="hero-title" data-home-reveal>hey,<br />I&apos;m Faith</h1>
         <div className="new-hero-media" data-home-reveal>
-          {heroMedia ? heroIsVideo ? <video src={heroMedia} autoPlay loop muted playsInline preload="auto" aria-label="Hero video" onCanPlay={() => { setOpening(false); sessionStorage.setItem('portfolio-opening-seen', '1') }} /> : <img src={heroMedia} alt="Faith Awokunle" /> : <span aria-hidden="true" />}
+          {heroMedia ? heroIsVideo ? <video src={heroMedia} autoPlay loop muted playsInline preload="auto" aria-label="Hero video" /> : <img src={heroMedia} alt="Faith Awokunle" /> : <span aria-hidden="true" />}
         </div>
         <p data-home-reveal>{intro.toLowerCase()}</p>
       </div>
