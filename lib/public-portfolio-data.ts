@@ -63,7 +63,7 @@ export const getHomepagePortfolioData = unstable_cache(async (): Promise<Homepag
   const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
   const [profileResult, caseStudiesResult, projectsResult, worksResult, writingsResult, workflowResult] = await Promise.all([
     supabase.from('profiles').select('*').limit(1).maybeSingle(),
-    supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, order_index, created_at').order('order_index', { ascending: true }).order('created_at', { ascending: false }).limit(50),
+    supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, sections, published, order_index, created_at').order('order_index', { ascending: true }).order('created_at', { ascending: false }).limit(50),
     supabase.from('projects').select('id, title, year, type, link, description, cover_image, created_at').order('created_at', { ascending: false }).limit(30),
     supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type', { count: 'exact' }).order('created_at', { ascending: false }).limit(50),
     supabase.from('writings').select('id, title, slug, excerpt, cover_image, created_at, content').order('created_at', { ascending: false }).limit(4),
@@ -72,7 +72,7 @@ export const getHomepagePortfolioData = unstable_cache(async (): Promise<Homepag
   const works = (worksResult.data as Work[] | null) ?? []
   return {
     profile: (profileResult.data as Profile | null) ?? null,
-    caseStudies: (caseStudiesResult.data as CaseStudy[] | null) ?? [],
+    caseStudies: ((caseStudiesResult.data || []) as (CaseStudy & { sections?: Array<{ image?: string | null; gallery_images?: string[] } | null> })[]).map(study => ({ ...study, thumbnail_url: study.thumbnail_url || study.sections?.flatMap(section => section?.gallery_images || []).find(Boolean) || study.sections?.map(section => section?.image).find(Boolean) || null })) as CaseStudy[],
     projects: (projectsResult.data as Project[] | null) ?? [],
     works,
     hiddenWorkCount: Math.max(0, (worksResult.count || works.length) - works.length),

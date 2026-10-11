@@ -383,6 +383,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
     setError(null)
     try {
       const slug = editing.slug || `${editing.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}-${Date.now()}`
+      const firstSectionImage = editing.sections.flatMap(section => section.gallery_images || []).find(Boolean) || editing.sections.map(section => section.image).find(Boolean)
       const res = await fetch('/api/case-studies', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -390,7 +391,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
           id: editing.id,
           title: editing.title,
           slug,
-          thumbnail_url: editing.thumbnail_url,
+          thumbnail_url: firstSectionImage || editing.thumbnail_url,
           video_url: editing.video_url,
           media_type: editing.media_type,
           excerpt: editing.excerpt,
