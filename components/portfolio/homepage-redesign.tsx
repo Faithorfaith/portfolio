@@ -29,13 +29,18 @@ function useScrollTransitions() {
   useEffect(() => {
     const root = document.documentElement
     const hero = document.querySelector<HTMLElement>('.new-hero')
+    let lastY = window.scrollY
     const update = () => {
       const heroEnd = hero ? hero.offsetTop + hero.offsetHeight : window.innerHeight
       const start = Math.max(0, heroEnd - window.innerHeight * 0.82)
       const distance = Math.max(window.innerHeight * 0.95, heroEnd * 0.35)
       const progress = Math.max(0, Math.min(1, (window.scrollY - start) / distance))
       root.style.setProperty('--veil-progress', progress.toFixed(4))
-      document.body.classList.toggle('home-nav-compact', window.scrollY > 32)
+      const movingDown = window.scrollY > lastY + 2
+      const movingUp = window.scrollY < lastY - 2
+      if (movingDown && window.scrollY > 32) document.body.classList.add('home-nav-compact')
+      if (movingUp || window.scrollY <= 32) document.body.classList.remove('home-nav-compact')
+      lastY = window.scrollY
     }
     update()
     window.addEventListener('scroll', update, { passive: true })
