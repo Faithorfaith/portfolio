@@ -24,6 +24,7 @@ interface WorksManagerProps {
 }
 
 const newestFirst = (items: Work[]) => [...items].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+const isVideoWork = (work: Work) => work.media_type === 'video' || Boolean(work.media_url && (/\.(mp4|webm|mov)(\?|#|$)/i.test(work.media_url) || work.media_url.includes('/video/')))
 
 export default function WorksManager({ userId, mode = 'playground' }: WorksManagerProps) {
   const [works, setWorks] = useState<Work[]>([])
@@ -42,7 +43,7 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
     type: '',
     order_index: 0,
   })
-  const visibleWorks = works.filter(work => mode === 'beyond' ? work.media_type === 'video' : work.media_type !== 'video')
+  const visibleWorks = works.filter(work => mode === 'beyond' ? isVideoWork(work) : !isVideoWork(work))
 
   // Fetch works
   useEffect(() => {
@@ -263,7 +264,7 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {[['Items', visibleWorks.length], ['Images', visibleWorks.filter(work => work.media_type !== 'video').length], ['Videos', visibleWorks.filter(work => work.media_type === 'video').length], ['Latest', visibleWorks[0] ? new Date(visibleWorks[0].created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ',']].map(([label, value]) => (
+        {[['Items', visibleWorks.length], ['Images', visibleWorks.filter(work => !isVideoWork(work)).length], ['Videos', visibleWorks.filter(work => isVideoWork(work)).length], ['Latest', visibleWorks[0] ? new Date(visibleWorks[0].created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ',']].map(([label, value]) => (
           <div key={String(label)} className="rounded-2xl border border-border/70 bg-foreground/[0.025] px-4 py-3">
             <p className="text-[11px] text-foreground/45">{label}</p><p className="mt-1 text-lg font-medium text-foreground">{value}</p>
           </div>
@@ -362,7 +363,7 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
               className="group relative aspect-square overflow-hidden rounded-2xl border border-border/70 bg-foreground/[0.04]"
             >
               {/* Media Preview */}
-              {work.media_type === 'image' && work.media_url && (
+              {!isVideoWork(work) && work.media_url && (
                 <ProgressiveImage
                   src={work.media_url}
                   alt="Portfolio work"
@@ -370,7 +371,7 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
                   containerClassName="h-full w-full"
                 />
               )}
-              {work.media_type === 'video' && (
+              {isVideoWork(work) && (
                 <div className="relative h-full w-full bg-foreground/[0.06]">
                   {work.thumbnail_url && <img src={work.thumbnail_url} alt="" className="h-full w-full object-cover" loading="lazy" />}
                   <span className="absolute inset-0 grid place-items-center"><span className="grid size-10 place-items-center rounded-full bg-black/55 text-white"><svg className="size-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg></span></span>
