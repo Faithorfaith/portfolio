@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       media_url: body.media_url,
       media_type: body.media_type,
       thumbnail_url: body.thumbnail_url,
-      type: body.type || null,
+      type: body.type || 'Design',
       order_index: Number.isFinite(body.order_index) ? body.order_index : 0,
     })
     .select()
