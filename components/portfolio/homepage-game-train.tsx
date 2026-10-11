@@ -167,7 +167,6 @@ export default function HomepageGameTrain({ email }: { email?: string | null }) 
     <div className="new-train-stage">
       <div className="new-train-loop">
         <TrainConsist copy={0} onPlay={setActive} />
-        <TrainConsist copy={1} onPlay={setActive} />
       </div>
       <div className="new-train-track" aria-hidden="true" />
     </div>
