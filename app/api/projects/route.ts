@@ -75,3 +75,17 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 })
   }
 }
+
+export async function PUT(request: Request) {
+  try {
+    const auth = await requireUser()
+    if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const { supabase, user } = auth
+    const body = await request.json()
+    if (!body.id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
+    const { data, error } = await supabase.from('projects').update({ title: body.title, year: body.year || null, type: body.type || null, link: body.link || null, description: body.description || null, cover_image: body.cover_image || null }).eq('id', body.id).eq('user_id', user.id).select().single()
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    revalidatePath('/')
+    return NextResponse.json({ data })
+  } catch (error) { return NextResponse.json({ error: 'Failed to update project' }, { status: 500 }) }
+}

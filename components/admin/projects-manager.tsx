@@ -28,6 +28,7 @@ export default function ProjectsManager() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   const supabase = createClient()
 
@@ -64,9 +65,10 @@ export default function ProjectsManager() {
       const slug = `${baseSlug}-${Date.now()}`
 
       const res = await fetch('/api/projects', {
-        method: 'POST',
+        method: editingId ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          id: editingId || undefined,
           title: formData.title,
           slug,
           year: formData.year,
@@ -82,6 +84,7 @@ export default function ProjectsManager() {
 
       setSuccess(true)
       setIsAdding(false)
+      setEditingId(null)
       setFormData({ title: '', year: String(new Date().getFullYear()), type: '', link: '', description: '', cover_image: '' })
       setTimeout(() => setSuccess(false), 3000)
       await fetchProjects()
@@ -145,7 +148,7 @@ export default function ProjectsManager() {
       {/* Add Project Form */}
       {isAdding && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/25 p-4 backdrop-blur-md" onMouseDown={(event) => { if (event.target === event.currentTarget) setIsAdding(false) }}><div className="max-h-[85dvh] w-full max-w-xl overflow-y-auto rounded-[28px] border border-border/70 bg-background shadow-2xl">
         <div className="flex items-start justify-between border-b px-6 py-5" style={{ borderColor: 'oklch(0.93 0 0)', background: 'oklch(0.985 0 0)' }}>
-          <div><p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">New entry</p><p className="mt-1 text-lg font-medium text-foreground">Add project</p>
+          <div><p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">{editingId ? 'Edit entry' : 'New entry'}</p><p className="mt-1 text-lg font-medium text-foreground">{editingId ? 'Edit project' : 'Add project'}</p>
           <p className="text-xs mt-0.5" style={{ color: 'var(--foreground)', opacity: 0.45 }}>Appears in the Projects section of your portfolio</p>
           </div><button type="button" onClick={() => setIsAdding(false)} className="text-2xl text-foreground/40 hover:text-foreground">×</button>
         </div>
@@ -219,7 +222,9 @@ export default function ProjectsManager() {
                     <p className="text-xs mt-0.5 line-clamp-1" style={{ color: 'var(--foreground)', opacity: 0.45 }}>{project.description}</p>
                   )}
                 </div>
-                <button
+                <button onClick={() => { setEditingId(project.id); setFormData({ title: project.title, year: project.year || '', type: project.type || '', link: project.link || '', description: project.description || '', cover_image: project.cover_image || '' }); setIsAdding(true); setError(null) }} className="p-1.5 rounded-lg text-foreground/45 hover:text-foreground" aria-label={`Edit ${project.title}`}>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="m16.862 3.487 3.65 3.65M4 20l4.2-.8L19.9 7.5a2.58 2.58 0 0 0-3.65-3.65L4.55 15.8 4 20Z" /></svg>
+                </button><button
                   onClick={() => handleDelete(project.id)}
                   className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg transition-all"
                   style={{ border: '1px solid oklch(0.88 0.04 27)', background: 'oklch(0.98 0.01 27)', color: 'oklch(0.5 0.18 27)' }}
