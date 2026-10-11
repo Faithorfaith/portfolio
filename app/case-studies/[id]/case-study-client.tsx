@@ -102,7 +102,7 @@ export default function CaseStudyClient() {
     <article>
       <header className="case-story-hero" data-motion-section>
         <h1>{caseStudy.title} <span>({new Date(caseStudy.created_at).getFullYear()})</span></h1>
-        {caseStudy.thumbnail_url && caseStudy.media_type !== 'video' && <button type="button" onClick={() => setExpandedImage({ src: caseStudy.thumbnail_url!, alt: caseStudy.title })} className="case-story-cover cursor-zoom-in" aria-label={`Expand ${caseStudy.title} image`}><ProgressiveImage src={caseStudy.thumbnail_url} alt={caseStudy.title} className="h-full w-full object-cover" /></button>}
+        {caseStudy.thumbnail_url && caseStudy.media_type !== 'video' && <button type="button" onClick={() => setExpandedImage({ src: caseStudy.thumbnail_url!, alt: caseStudy.title })} className="case-story-cover cursor-zoom-in" aria-label={`Expand ${caseStudy.title} image`}><ProgressiveImage priority sizes="(max-width: 690px) 100vw, 650px" containerClassName="h-full w-full" src={caseStudy.thumbnail_url} alt={caseStudy.title} className="h-full w-full object-cover" /></button>}
         {caseStudy.excerpt && <p className="case-story-intro">{caseStudy.excerpt}</p>}
       </header>
 

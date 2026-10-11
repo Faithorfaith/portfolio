@@ -46,9 +46,7 @@ export default function ProgressiveImage({
           alt={alt}
           fill
           sizes={sizes}
-          className={`object-cover transition-opacity duration-500 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          } ${className}`}
+          className={`object-cover ${className}`}
           onLoad={() => setIsLoaded(true)}
           priority={priority}
           quality={75}
@@ -64,9 +62,7 @@ export default function ProgressiveImage({
           width={width || 1200}
           height={height || 900}
           sizes={sizes}
-          className={`transition-opacity duration-500 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          } ${className}`}
+          className={className}
           onLoad={() => setIsLoaded(true)}
           priority={priority}
           quality={75}

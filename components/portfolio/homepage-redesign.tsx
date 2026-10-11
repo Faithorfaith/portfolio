@@ -1,11 +1,13 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Profile, CaseStudy } from './profile-section'
 import type { Project } from './projects-section'
 import type { Work } from './works-gallery'
 import HomepageGameTrain from './homepage-game-train'
+import SplitTransition from './split-transition'
 import { LockKeyhole, Mail, MessageCircle, AtSign, Play, Pause } from 'lucide-react'
 import { normalizeExternalUrl } from '@/lib/content-utils'
 
@@ -86,11 +88,11 @@ function VideoCard({ work, onOpen }: { work: Work; onOpen: (work: Work) => void 
     else { ref.current.pause(); ref.current.muted = true; setPlaying(false) }
   }
   return video ? <button className="new-media-card new-inline-video" onClick={toggle} aria-label={`${playing ? 'Pause' : 'Play'} ${work.title}`}>
-    {work.thumbnail_url && <img className={`inline-video-poster${playing ? ' is-hidden' : ''}`} src={work.thumbnail_url} alt="" loading="eager" fetchPriority="high" />}
+    {work.thumbnail_url && <Image width={390} height={694} sizes="(max-width: 900px) 72vw, 390px" className={`inline-video-poster${playing ? ' is-hidden' : ''}`} src={work.thumbnail_url} alt="" loading="eager" />}
     <video className={`${playing ? 'is-playing' : ''}${work.thumbnail_url ? ' has-poster' : ' no-poster'}`} ref={ref} src={work.media_url ? `${work.media_url}#t=0.1` : undefined} poster={work.thumbnail_url || undefined} muted playsInline preload="auto" />
     <span className="inline-video-toggle" aria-hidden="true">{playing ? <Pause size={28} strokeWidth={2.2} /> : <Play size={28} strokeWidth={2.2} fill="currentColor" />}</span>
   </button> : <button className="new-media-card" onClick={() => onOpen(work)} aria-label={`Open ${work.title}`}>
-    {mediaFor(work) ? <img src={mediaFor(work)!} alt={work.title} loading="lazy" /> : <span>{work.title}</span>}
+    {mediaFor(work) ? <Image width={780} height={1388} sizes="(max-width: 900px) 72vw, 390px" src={mediaFor(work)!} alt={work.title} loading="eager" /> : <span>{work.title}</span>}
   </button>
 }
 
@@ -122,6 +124,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
   return <main id="top" className="figma-home">
     {opening && <div className="home-opening" aria-label="Preparing portfolio"><strong>faith awokunle</strong><span><i /></span></div>}
     <section className="new-hero" aria-labelledby="hero-title">
+      <SplitTransition />
       <nav className="new-home-nav" aria-label="Homepage"><a className="nav-works" href="#featured">works</a><a className="nav-name" href="#top">{profile?.full_name || 'Faith Awokunle'}</a><div className="home-contact nav-contact"><button type="button" aria-label="Show contact links">contact</button><div className="home-contact-popover" role="menu">{profile?.contact_email && <a role="menuitem" href={`mailto:${profile.contact_email}`}><Mail size={15} />Email</a>}{profile?.whatsapp_url && <a role="menuitem" href={profile.whatsapp_url} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} />WhatsApp</a>}{profile?.x_url && <a role="menuitem" href={profile.x_url} target="_blank" rel="noopener noreferrer"><AtSign size={15} />X</a>}{!profile?.contact_email && !profile?.whatsapp_url && !profile?.x_url && <span className="home-contact-empty">Coming soon</span>}</div></div></nav>
       <div className="new-hero-grid">
         <h1 id="hero-title" data-home-reveal>hey,<br />I&apos;m Faith</h1>
@@ -138,7 +141,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
       <div className="new-featured-grid">
         {visibleStudies.slice(0, 6).map((study, index) => {
           const content = <>
-            {study.thumbnail_url ? <img src={study.thumbnail_url} alt={study.title} loading={index < 2 ? 'eager' : 'lazy'} /> : <span />}
+            {study.thumbnail_url ? <Image width={1000} height={1000} sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 40vw" src={study.thumbnail_url} alt={study.title} loading={index < 2 ? 'eager' : 'lazy'} /> : <span />}
             {!study.published && <span className="featured-lock" aria-hidden="true"><LockKeyhole size={14} strokeWidth={2} /></span>}
             <div><small>{String(index + 1).padStart(2, '0')}</small><strong>{study.title}</strong>{study.excerpt && <p>{study.excerpt}</p>}</div>
           </>
@@ -171,7 +174,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
           const href = normalizeExternalUrl(project.link)
           const Card = href ? 'a' : 'article'
           return <Card key={project.id} {...(href ? { href, target: '_blank', rel: 'noopener noreferrer' } : {})} className="new-archive-card" data-home-reveal>
-            <div className={`archive-art art-${index % 4}`}>{project.cover_image ? <img src={project.cover_image} alt="" loading="lazy" /> : <span>{project.title.slice(0, 1)}</span>}</div>
+            <div className={`archive-art art-${index % 4}`}>{project.cover_image ? <Image width={520} height={586} sizes="(max-width: 900px) 294px, 260px" src={project.cover_image} alt="" loading="eager" /> : <span>{project.title.slice(0, 1)}</span>}</div>
             <small>{project.type || 'Independent project'}</small><h3>{project.title}</h3>{project.description && <p>{project.description}</p>}
           </Card>
           })}
