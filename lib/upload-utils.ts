@@ -44,6 +44,13 @@ export async function compressVideo(file: File): Promise<File> {
   return finished
 }
 
+export async function generateVideoThumbnail(file: File): Promise<Blob | null> {
+  const video = document.createElement('video'); video.src = URL.createObjectURL(file); video.muted = true; video.playsInline = true
+  await new Promise<void>((resolve, reject) => { video.onloadeddata = () => { video.currentTime = 0.1 }; video.onseeked = () => resolve(); video.onerror = () => reject(new Error('Could not generate video cover')) })
+  const scale = Math.min(1, 720 / video.videoHeight); const canvas = document.createElement('canvas'); canvas.width = Math.round(video.videoWidth * scale); canvas.height = Math.round(video.videoHeight * scale); canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height); URL.revokeObjectURL(video.src)
+  return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.78))
+}
+
 // Compress image before upload
 export async function compressImage(
   file: File,

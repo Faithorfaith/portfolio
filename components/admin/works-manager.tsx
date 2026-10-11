@@ -72,6 +72,7 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
   const handleMediaUpload = (url: string) => {
     setFormData((prev) => ({ ...prev, media_url: url, title: prev.title || decodeURIComponent(url.split('/').pop()?.split('?')[0] || 'Untitled').replace(/\.[^.]+$/, '') }))
   }
+  const handleThumbnailUpload = (url: string) => setFormData(prev => ({ ...prev, thumbnail_url: url }))
 
   const handleBulkMediaUpload = async (urls: string[]) => {
     if (urls.length < 2) return
@@ -331,6 +332,7 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
                 userId={userId}
                 folder={formData.media_type === 'image' ? 'portfolio-images' : 'portfolio-videos'}
                 onUpload={handleMediaUpload}
+                onUploadThumbnail={handleThumbnailUpload}
                 onUploadMany={handleBulkMediaUpload}
                 multiple
                 accept={formData.media_type === 'image' ? 'image/*' : 'video/*'}
