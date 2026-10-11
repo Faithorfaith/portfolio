@@ -111,7 +111,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
           const href = normalizeExternalUrl(project.link)
           const Card = href ? 'a' : 'article'
           return <Card key={project.id} {...(href ? { href, target: '_blank', rel: 'noopener noreferrer' } : {})} className="new-archive-card" data-home-reveal>
-            <div className={`archive-art art-${index % 4}`}><span>{project.title.slice(0, 1)}</span><div className="archive-art-overlay"><strong>{project.title}</strong><time>{year}</time></div></div>
+            <div className={`archive-art art-${index % 4}`}><span>{project.title.slice(0, 1)}</span></div>
             <small>{project.type || 'Independent project'}</small><h3>{project.title}</h3>{project.description && <p>{project.description}</p>}
           </Card>
           })}
