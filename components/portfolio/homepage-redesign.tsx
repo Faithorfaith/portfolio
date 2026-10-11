@@ -89,10 +89,17 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
     <section id="featured" className="new-featured">
       <div className="new-featured-copy"><h2>featured projects</h2><p>A selection of projects where I&apos;ve tackled complex challenges, shaped ideas, and designed experiences that make a difference.</p></div>
       <div className="new-featured-grid">
-        {visibleStudies.slice(0, 6).map((study, index) => <article key={study.id} className={`new-featured-card card-${index + 1} is-locked`} aria-label={`${study.title}, locked case study`}>
-          {study.thumbnail_url ? <img src={study.thumbnail_url} alt={study.title} loading={index < 2 ? 'eager' : 'lazy'} /> : <span />}
-          <span className="featured-lock" aria-hidden="true"><LockKeyhole size={14} strokeWidth={2} /></span><div><small>{String(index + 1).padStart(2, '0')}</small><strong>{study.title}</strong>{study.excerpt && <p>{study.excerpt}</p>}</div>
-        </article>)}
+        {visibleStudies.slice(0, 6).map((study, index) => {
+          const content = <>
+            {study.thumbnail_url ? <img src={study.thumbnail_url} alt={study.title} loading={index < 2 ? 'eager' : 'lazy'} /> : <span />}
+            {!study.published && <span className="featured-lock" aria-hidden="true"><LockKeyhole size={14} strokeWidth={2} /></span>}
+            <div><small>{String(index + 1).padStart(2, '0')}</small><strong>{study.title}</strong>{study.excerpt && <p>{study.excerpt}</p>}</div>
+          </>
+          const className = `new-featured-card card-${index + 1}${study.published ? '' : ' is-locked'}`
+          return study.published
+            ? <Link key={study.id} href={`/case-studies/${study.slug || study.id}`} className={className} aria-label={study.title}>{content}</Link>
+            : <article key={study.id} className={className} aria-label={`${study.title}, locked case study`}>{content}</article>
+        })}
       </div>
     </section>
 
