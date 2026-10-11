@@ -7,6 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 /** Original SVG geometry, grouped by its two vertical alignments. */
 export default function SplitTransition() {
   const layer = useRef<SVGSVGElement>(null)
+  const completed = useRef(false)
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
@@ -15,6 +16,9 @@ export default function SplitTransition() {
     if (!svg || !section) return
     const media = gsap.matchMedia()
     media.add('(prefers-reduced-motion: no-preference)', () => {
+      if (completed.current) { svg.style.display = 'none'; return }
+      let completionFrame = 0
+      let scrollTween: gsap.core.Tween | undefined
       const top = svg.querySelectorAll('[data-split="top"]')
       const bottom = svg.querySelectorAll('[data-split="bottom"]')
       const timeline = gsap.timeline({
@@ -25,18 +29,31 @@ export default function SplitTransition() {
           pin: true,
           scrub: true,
           invalidateOnRefresh: true,
+          onLeave: trigger => {
+            if (completed.current) return
+            completed.current = true
+            svg.style.display = 'none'
+            scrollTween?.kill()
+            completionFrame = window.requestAnimationFrame(() => {
+              const scrollPosition = window.scrollY
+              const pinDistance = trigger.end - trigger.start
+              trigger.kill(true)
+              // Remove the opening's extra scroll space without jumping past the hero.
+              window.scrollTo({ top: Math.max(0, scrollPosition - pinDistance), behavior: 'instant' })
+              ScrollTrigger.refresh()
+            })
+          },
         },
       })
       timeline.to(top, { y: -1630, ease: 'sine.inOut', duration: 1 }, 0)
         .to(bottom, { y: 1630, ease: 'sine.inOut', duration: 1 }, 0)
       // Drive the same scroll timeline automatically, without overriding manual input.
-      let scrollTween: gsap.core.Tween | undefined
       const timer = window.setTimeout(() => {
         const trigger = timeline.scrollTrigger
-        if (!trigger || window.scrollY > trigger.start + 4 || window.location.hash) return
+        if (completed.current || !trigger || window.scrollY > trigger.start + 4 || window.location.hash) return
         const position = { y: window.scrollY }
         scrollTween = gsap.to(position, {
-          y: trigger.end,
+          y: trigger.end + 1,
           duration: 1.6,
           ease: 'sine.inOut',
           onUpdate: () => window.scrollTo({ top: position.y, behavior: 'instant' }),
@@ -48,6 +65,7 @@ export default function SplitTransition() {
       window.addEventListener('keydown', cancel)
       return () => {
         cancel()
+        window.cancelAnimationFrame(completionFrame)
         window.removeEventListener('wheel', cancel)
         window.removeEventListener('touchstart', cancel)
         window.removeEventListener('keydown', cancel)
