@@ -1122,10 +1122,10 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .new-media-card:hover video, .new-media-card:hover img { transform: scale(1.025); }
 .new-media-card > span { display: grid; height: 100%; place-items: center; padding: 30px; font-family: var(--home-rounded); font-size: 24px; }
 .new-archives { padding-top: 110px; }
-.new-archive-scroll { width: min(var(--home-width), calc(100% - 40px)); margin: 0 auto; display: flex; gap: 56px; overflow-x: auto; padding-bottom: 22px; scrollbar-width: none; scroll-snap-type: x proximity; }
+.new-archive-scroll { width: min(var(--home-width), calc(100% - 40px)); margin: 0 auto; display: flex; gap: 24px; overflow-x: auto; padding-bottom: 22px; scrollbar-width: none; scroll-snap-type: x proximity; }
 .new-archive-scroll::-webkit-scrollbar { display: none; }
 .new-archive-group { flex: 0 0 auto; display: flex; align-items: flex-start; gap: 24px; scroll-snap-align: start; }
-.archive-year { flex: 0 0 56px; padding-top: 10px; font-family: var(--home-rounded), Arial, sans-serif; font-size: 14px; color: #777; }
+.archive-year { display: none; }
 .new-archive-group-cards { display: flex; gap: 24px; }
 .new-archive-card { flex: 0 0 260px; width: 260px; display: block; }
 .archive-art { height: 293px; display: grid; place-items: center; overflow: hidden; border: 2px solid #f4f3f3; border-radius: 48px; background: #ececec; transition: transform .35s cubic-bezier(.22,1,.36,1); }
