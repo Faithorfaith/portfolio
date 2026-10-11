@@ -365,7 +365,7 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
               {/* Media Preview */}
               {!isVideoWork(work) && work.media_url && (
                 <ProgressiveImage
-                  src={work.media_url}
+                  src={work.thumbnail_url || work.media_url}
                   alt="Portfolio work"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   containerClassName="h-full w-full"
