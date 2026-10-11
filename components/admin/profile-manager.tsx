@@ -341,12 +341,13 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
       <SectionCard title="Footer experience" description="Manage the optional audio and train media used in the footer.">
         <div className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5"><label className="block">Footer sound</label><FileUpload userId={userId} folder="train-audio" accept="audio/*" onUpload={url => set('train_music_url', url)} /><input type="url" value={formData.train_music_url} onChange={e => set('train_music_url', e.target.value)} placeholder="Or paste an audio URL" className="w-full px-3 py-2" /><p className="text-[11px] text-foreground/45">Upload MP3, WAV, or OGG. Leave blank to use the built-in Japanese-inspired loop.</p></div>
+            {false && <div className="space-y-1.5"><label className="block">Footer sound</label><FileUpload userId={userId} folder="train-audio" accept="audio/*" onUpload={url => set('train_music_url', url)} /><input type="url" value={formData.train_music_url} onChange={e => set('train_music_url', e.target.value)} placeholder="Or paste an audio URL" className="w-full px-3 py-2" /><p className="text-[11px] text-foreground/45">Upload MP3, WAV, or OGG. Leave blank to use the built-in Japanese-inspired loop.</p></div>}
             <div className="space-y-1.5"><label className="block">Hero media video</label><FileUpload userId={userId} folder="hero-media" accept="video/*" directStorage onUpload={url => set('train_video_1', url)} /><input type="url" value={formData.train_video_1} onChange={e => set('train_video_1', e.target.value)} placeholder="Or paste a video URL" className="w-full px-3 py-2" /><p className="text-[11px] text-foreground/45">This video appears in the centered media tile in the homepage hero.</p></div>
           </div>
         </div>
       </SectionCard>
 
+      {false && <>
       <SectionCard title="Bio references" description="Add companies, roles, tools or tags with a short explanation.">
         <div className="space-y-3">
           {formData.bio_references.map((reference, index) => (
@@ -448,6 +449,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
         )}
         <FileUpload userId={userId} folder="profile-gallery" onUpload={addGalleryImage} accept="image/*" />
       </SectionCard>
+      </>}
     </div>
   )
 }
