@@ -18,6 +18,8 @@ interface Profile {
   supporting_statement: string | null
   availability_status: string | null
   contact_email: string | null
+  whatsapp_url: string | null
+  x_url: string | null
   linkedin_url: string | null
   resume_url: string | null
   primary_cta_label: string | null
@@ -106,6 +108,8 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
     supporting_statement: '',
     availability_status: '',
     contact_email: '',
+    whatsapp_url: '',
+    x_url: '',
     linkedin_url: '',
     resume_url: '',
     primary_cta_label: 'Start a project',
@@ -141,7 +145,9 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
             positioning_headline: data.positioning_headline || '',
             supporting_statement: data.supporting_statement || '',
             availability_status: data.availability_status || '',
-            contact_email: data.contact_email || '',
+              contact_email: data.contact_email || '',
+              whatsapp_url: data.whatsapp_url || '',
+              x_url: data.x_url || '',
             linkedin_url: data.linkedin_url || '',
             resume_url: data.resume_url || '',
             primary_cta_label: data.primary_cta_label || 'Start a project',
@@ -170,6 +176,8 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
               supporting_statement: newProfile.supporting_statement || '',
               availability_status: newProfile.availability_status || '',
               contact_email: newProfile.contact_email || '',
+              whatsapp_url: newProfile.whatsapp_url || '',
+              x_url: newProfile.x_url || '',
               linkedin_url: newProfile.linkedin_url || '',
               resume_url: newProfile.resume_url || '',
               primary_cta_label: newProfile.primary_cta_label || 'Start a project',
@@ -215,6 +223,8 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
           supporting_statement: formData.supporting_statement || null,
           availability_status: formData.availability_status || null,
           contact_email: formData.contact_email || null,
+          whatsapp_url: formData.whatsapp_url || null,
+          x_url: formData.x_url || null,
           linkedin_url: formData.linkedin_url || null,
           resume_url: formData.resume_url || null,
           primary_cta_label: formData.primary_cta_label || 'Start a project',
@@ -317,6 +327,14 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
             <label className="block text-xs font-medium text-foreground/50">On my desk</label>
             <textarea value={formData.supporting_statement} onChange={e => set('supporting_statement', e.target.value)} placeholder="A thought, obsession, or thing you are exploring." rows={3} className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm" />
           </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Contact links" description="Destinations shown when visitors hover or focus Contact in the homepage header.">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <label className="space-y-1.5"><span className="block text-xs font-medium text-foreground/50">Email</span><input type="email" value={formData.contact_email} onChange={e => set('contact_email', e.target.value)} placeholder="you@example.com" className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" /></label>
+          <label className="space-y-1.5"><span className="block text-xs font-medium text-foreground/50">WhatsApp link</span><input type="url" value={formData.whatsapp_url} onChange={e => set('whatsapp_url', e.target.value)} placeholder="https://wa.me/234..." className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" /></label>
+          <label className="space-y-1.5"><span className="block text-xs font-medium text-foreground/50">X profile</span><input type="url" value={formData.x_url} onChange={e => set('x_url', e.target.value)} placeholder="https://x.com/username" className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" /></label>
         </div>
       </SectionCard>
 

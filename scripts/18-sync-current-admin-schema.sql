@@ -23,6 +23,8 @@ alter table public.profiles
   add column if not exists supporting_statement text,
   add column if not exists availability_status text,
   add column if not exists contact_email text,
+  add column if not exists whatsapp_url text,
+  add column if not exists x_url text,
   add column if not exists linkedin_url text,
   add column if not exists resume_url text,
   add column if not exists primary_cta_label text default 'Start a project',

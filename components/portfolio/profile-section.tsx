@@ -25,6 +25,8 @@ export interface Profile {
   supporting_statement?: string | null
   availability_status?: string | null
   contact_email?: string | null
+  whatsapp_url?: string | null
+  x_url?: string | null
   linkedin_url?: string | null
   resume_url?: string | null
   primary_cta_label?: string | null
