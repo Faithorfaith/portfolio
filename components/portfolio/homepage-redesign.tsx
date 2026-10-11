@@ -30,23 +30,18 @@ function useScrollTransitions() {
   useEffect(() => {
     const root = document.documentElement
     const hero = document.querySelector<HTMLElement>('.new-hero')
-    let lastY = window.scrollY
     const update = () => {
       const heroEnd = hero ? hero.offsetTop + hero.offsetHeight : window.innerHeight
       const start = Math.max(0, heroEnd - window.innerHeight * 0.82)
       const distance = Math.max(window.innerHeight * 0.95, heroEnd * 0.35)
       const progress = Math.max(0, Math.min(1, (window.scrollY - start) / distance))
       root.style.setProperty('--veil-progress', progress.toFixed(4))
-      const movingDown = window.scrollY > lastY + 2
-      const movingUp = window.scrollY < lastY - 2
-      if (movingDown && window.scrollY > 32) document.body.classList.add('home-nav-compact')
-      if (movingUp || window.scrollY <= 32) document.body.classList.remove('home-nav-compact')
-      lastY = window.scrollY
+      root.style.setProperty('--nav-progress', progress.toFixed(4))
     }
     update()
     window.addEventListener('scroll', update, { passive: true })
     window.addEventListener('resize', update)
-    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); document.body.classList.remove('home-nav-compact') }
+    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update) }
   }, [])
 }
 
@@ -75,7 +70,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
 
   return <main id="top" className="figma-home">
     <section className="new-hero" aria-labelledby="hero-title">
-      <nav className="new-home-nav" aria-label="Homepage"><a href="#featured">works</a><a href="#top">{profile?.full_name || 'Faith Awokunle'}</a><div className="home-contact"><button type="button" aria-label="Show contact links">contact</button><div className="home-contact-popover" role="menu">{profile?.contact_email && <a role="menuitem" href={`mailto:${profile.contact_email}`}><Mail size={15} />Email</a>}{profile?.whatsapp_url && <a role="menuitem" href={profile.whatsapp_url} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} />WhatsApp</a>}{profile?.x_url && <a role="menuitem" href={profile.x_url} target="_blank" rel="noopener noreferrer"><AtSign size={15} />X</a>}{!profile?.contact_email && !profile?.whatsapp_url && !profile?.x_url && <span className="home-contact-empty">Coming soon</span>}</div></div></nav>
+      <nav className="new-home-nav" aria-label="Homepage"><a className="nav-works" href="#featured">works</a><a className="nav-name" href="#top">{profile?.full_name || 'Faith Awokunle'}</a><div className="home-contact nav-contact"><button type="button" aria-label="Show contact links">contact</button><div className="home-contact-popover" role="menu">{profile?.contact_email && <a role="menuitem" href={`mailto:${profile.contact_email}`}><Mail size={15} />Email</a>}{profile?.whatsapp_url && <a role="menuitem" href={profile.whatsapp_url} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} />WhatsApp</a>}{profile?.x_url && <a role="menuitem" href={profile.x_url} target="_blank" rel="noopener noreferrer"><AtSign size={15} />X</a>}{!profile?.contact_email && !profile?.whatsapp_url && !profile?.x_url && <span className="home-contact-empty">Coming soon</span>}</div></div></nav>
       <div className="new-hero-grid">
         <h1 id="hero-title" data-home-reveal>hey,<br />I&apos;m Faith</h1>
         <div className="new-hero-media" data-home-reveal>
