@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import ProgressiveImage from '@/components/progressive-image'
 import CaseSectionBody from '@/components/case-section-body'
@@ -27,7 +27,6 @@ interface RelatedArticle { id: string; title: string; slug: string; excerpt: str
 
 export default function CaseStudyClient() {
   const params = useParams()
-  const router = useRouter()
   const id = params.id as string
   const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null)
   const [caseStudyLinks, setCaseStudyLinks] = useState<CaseStudyLink[]>([])
@@ -99,7 +98,7 @@ export default function CaseStudyClient() {
 
   return <main className="case-story min-h-screen bg-background">
     <div className="fixed left-0 top-0 z-[60] h-px bg-foreground/70 transition-[width] duration-100" style={{ width: `${readingProgress}%` }} aria-hidden="true" />
-    <button onClick={() => router.push('/')} className="case-story-back" aria-label="Back to homepage">←</button>
+    <a href="/" className="case-story-back" aria-label="Back to homepage">←</a>
     <article>
       <header className="case-story-hero" data-motion-section>
         <h1>{caseStudy.title} <span>({new Date(caseStudy.created_at).getFullYear()})</span></h1>
