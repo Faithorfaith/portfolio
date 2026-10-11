@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import type React from 'react'
 
 type GameId = 'tic' | 'rps' | 'memory' | 'connect'
 type GameDefinition = { id: GameId; title: string; short: string }
@@ -11,6 +12,10 @@ const games: GameDefinition[] = [
   { id: 'memory', title: 'Memory Match', short: 'Find every pair' },
   { id: 'connect', title: 'Connect Four', short: 'Outthink the conductor' },
 ]
+
+function WinCelebration({ children }: { children: React.ReactNode }) {
+  return <div className="game-win-celebration" role="status"><span aria-hidden="true">✦</span>{children}<span aria-hidden="true">✦</span></div>
+}
 
 const winner = (board: string[]) => {
   const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
@@ -44,7 +49,7 @@ function TicTacToe() {
     }
     setBoard(next)
   }
-  return <div className="game-panel"><p>{result === 'X' ? 'You won.' : result === 'O' ? 'I won this round.' : result === 'draw' ? 'A draw.' : 'You are X. Make your move.'}</p><div className="tic-grid">{board.map((cell, i) => <button key={i} onClick={() => play(i)} aria-label={`Square ${i + 1}${cell ? `: ${cell}` : ''}`}>{cell}</button>)}</div><button className="game-action" onClick={() => setBoard(Array(9).fill(''))}>Replay</button></div>
+  return <div className={`game-panel ${result === 'X' ? 'is-win' : ''}`}>{result === 'X' && <WinCelebration>You won!</WinCelebration>}<p>{result === 'X' ? 'You won.' : result === 'O' ? 'I won this round.' : result === 'draw' ? 'A draw.' : 'You are X. Make your move.'}</p><div className="tic-grid">{board.map((cell, i) => <button key={i} onClick={() => play(i)} aria-label={`Square ${i + 1}${cell ? `: ${cell}` : ''}`}>{cell}</button>)}</div><button className="game-action" onClick={() => setBoard(Array(9).fill(''))}>Replay</button></div>
 }
 
 function RockPaperScissors() {
@@ -58,7 +63,8 @@ function RockPaperScissors() {
     setMessage(`You: ${choice}. Me: ${computer}. ${draw ? 'Draw.' : win ? 'You win.' : 'I win.'}`)
     if (!draw) setScore(([you, me]) => win ? [you + 1, me] : [you, me + 1])
   }
-  return <div className="game-panel"><p>{message}</p><strong className="game-score">You {score[0]} · {score[1]} Faith</strong><div className="rps-row">{choices.map(choice => <button key={choice} onClick={() => play(choice)}>{choice}</button>)}</div><button className="game-action" onClick={() => { setScore([0,0]); setMessage('Choose your move.') }}>Reset score</button></div>
+  const won = message.includes('You win.')
+  return <div className={`game-panel ${won ? 'is-win' : ''}`}>{won && <WinCelebration>round won!</WinCelebration>}<p>{message}</p><strong className="game-score">You {score[0]} · {score[1]} Faith</strong><div className="rps-row">{choices.map(choice => <button key={choice} onClick={() => play(choice)}>{choice}</button>)}</div><button className="game-action" onClick={() => { setScore([0,0]); setMessage('Choose your move.') }}>Reset score</button></div>
 }
 
 const memorySymbols = ['●','▲','■','◆','✦','✿']
@@ -77,7 +83,8 @@ function MemoryMatch() {
     }
   }
   const reset = () => { setCards(shuffledCards()); setOpen([]); setMatched([]) }
-  return <div className="game-panel"><p>{matched.length === cards.length ? 'Every pair found. Nicely done.' : `${matched.length / 2} of ${memorySymbols.length} pairs found.`}</p><div className="memory-grid">{cards.map(card => <button key={card.id} onClick={() => choose(card.id)} aria-label={open.includes(card.id) || matched.includes(card.id) ? card.symbol : 'Hidden card'}>{open.includes(card.id) || matched.includes(card.id) ? card.symbol : ''}</button>)}</div><button className="game-action" onClick={reset}>Replay</button></div>
+  const won = matched.length === cards.length
+  return <div className={`game-panel ${won ? 'is-win' : ''}`}>{won && <WinCelebration>all pairs found!</WinCelebration>}<p>{won ? 'Every pair found. Nicely done.' : `${matched.length / 2} of ${memorySymbols.length} pairs found.`}</p><div className="memory-grid">{cards.map(card => <button key={card.id} onClick={() => choose(card.id)} aria-label={open.includes(card.id) || matched.includes(card.id) ? card.symbol : 'Hidden card'}>{open.includes(card.id) || matched.includes(card.id) ? card.symbol : ''}</button>)}</div><button className="game-action" onClick={reset}>Replay</button></div>
 }
 
 type Disc = 0 | 1 | 2
@@ -109,7 +116,8 @@ function ConnectFour() {
     setBoard(computerBoard)
     setStatus(connectWin(computerBoard, 2) ? 'I connected four.' : computerBoard.every(Boolean) ? 'The board is full.' : 'Your turn.')
   }
-  return <div className="game-panel"><p>{status}</p><div className="connect-columns">{[0,1,2,3,4,5,6].map(column => <button key={column} onClick={() => play(column)} aria-label={`Drop in column ${column + 1}`}>↓</button>)}</div><div className="connect-grid">{board.map((cell, i) => <span key={i} className={cell === 1 ? 'is-player' : cell === 2 ? 'is-computer' : ''} />)}</div><button className="game-action" onClick={() => { setBoard(Array(42).fill(0)); setStatus('Choose a column. You play black.') }}>Replay</button></div>
+  const won = status === 'You connected four.'
+  return <div className={`game-panel ${won ? 'is-win' : ''}`}>{won && <WinCelebration>connected four!</WinCelebration>}<p>{status}</p><div className="connect-columns">{[0,1,2,3,4,5,6].map(column => <button key={column} onClick={() => play(column)} aria-label={`Drop in column ${column + 1}`}>↓</button>)}</div><div className="connect-grid">{board.map((cell, i) => <span key={i} className={cell === 1 ? 'is-player' : cell === 2 ? 'is-computer' : ''} />)}</div><button className="game-action" onClick={() => { setBoard(Array(42).fill(0)); setStatus('Choose a column. You play black.') }}>Replay</button></div>
 }
 
 function Game({ id }: { id: GameId }) {
