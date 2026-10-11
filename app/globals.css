@@ -1081,7 +1081,6 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .new-home-nav { position: relative; z-index: 5; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; font-size: 24px; line-height: 1; text-transform: lowercase; transition: transform .45s cubic-bezier(.22,1,.36,1), font-size .45s ease; }
 .home-nav-compact .new-home-nav { transform: scale(.78); transform-origin: top center; }
 .new-home-nav a:last-child { justify-self: end; }
-.scroll-black-veil { position: fixed; inset: 0; z-index: 20; pointer-events: none; background: #000; opacity: calc(var(--veil-progress, 0) * (1 - var(--veil-progress, 0) * .08)); clip-path: polygon(0 0, 100% 0, 100% calc(var(--veil-progress, 0) * 100%), 92% calc(var(--veil-progress, 0) * 97%), 80% calc(var(--veil-progress, 0) * 100%), 68% calc(var(--veil-progress, 0) * 95%), 56% calc(var(--veil-progress, 0) * 99%), 44% calc(var(--veil-progress, 0) * 96%), 31% calc(var(--veil-progress, 0) * 100%), 18% calc(var(--veil-progress, 0) * 96%), 7% calc(var(--veil-progress, 0) * 99%), 0 calc(var(--veil-progress, 0) * 95%)); will-change: clip-path, opacity; }
 .new-hero-grid { display: grid; grid-template-columns: 1fr 310px 1fr; gap: 108px; align-items: center; margin-top: 124px; }
 .new-hero-grid h1 { font-size: 64px; line-height: 1.02; text-align: center; }
 .new-hero-grid > p { max-width: 400px; justify-self: center; font-family: var(--home-rounded), Arial, sans-serif; font-size: 32px; line-height: 1.4; text-align: center; text-transform: lowercase; }

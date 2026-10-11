@@ -68,7 +68,6 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
   const supporting = profile?.supporting_statement || 'Four years designing digital products across AI, fitness, SaaS, and marketplaces — turning complex challenges into intuitive experiences and ambitious ideas into products built for real-world impact.'
 
   return <main id="top" className="figma-home">
-    <div className="scroll-black-veil" aria-hidden="true" />
     <section className="new-hero" aria-labelledby="hero-title">
       <nav className="new-home-nav" aria-label="Homepage"><a href="#featured">works</a><a href="#top">{profile?.full_name || 'Faith Awokunle'}</a><a href={profile?.contact_email ? `mailto:${profile.contact_email}` : '#footer'}>contact</a></nav>
       <div className="new-hero-grid">
