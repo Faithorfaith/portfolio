@@ -151,14 +151,13 @@ function TrainConsist({ copy, onPlay }: { copy: number; onPlay: (game: GameDefin
 
 export default function HomepageGameTrain({ email }: { email?: string | null }) {
   const [active, setActive] = useState<GameDefinition | null>(null)
-  const [paused, setPaused] = useState(false)
   const dialog = useRef<HTMLDialogElement>(null)
   useEffect(() => { if (active) dialog.current?.showModal(); else dialog.current?.close() }, [active])
   const copyright = useMemo(() => new Date().getFullYear(), [])
   return <section id="train" className="new-train-section" aria-labelledby="train-heading">
-    <div className="new-section-intro"><h2 id="train-heading">A moving mind always finds its luck.</h2><p>A little play before the last stop. Four coaches, four games. Think you can beat me?</p><button className="train-pause" onClick={() => setPaused(value => !value)} aria-pressed={paused}>{paused ? 'Play train' : 'Pause train'}</button></div>
+    <div className="new-section-intro"><h2 id="train-heading">A moving mind always finds its luck.</h2><p>A little play before the last stop. Four coaches, four games. Think you can beat me?</p></div>
     <div className="new-train-stage">
-      <div className={`new-train-loop ${paused ? 'is-paused' : ''}`}>
+      <div className="new-train-loop">
         <TrainConsist copy={0} onPlay={setActive} />
         <TrainConsist copy={1} onPlay={setActive} />
       </div>
