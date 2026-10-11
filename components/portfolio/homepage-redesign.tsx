@@ -87,7 +87,7 @@ function VideoCard({ work, onOpen }: { work: Work; onOpen: (work: Work) => void 
   }
   return video ? <button className="new-media-card new-inline-video" onClick={toggle} aria-label={`${playing ? 'Pause' : 'Play'} ${work.title}`}>
     {work.thumbnail_url && <img className={`inline-video-poster${playing ? ' is-hidden' : ''}`} src={work.thumbnail_url} alt="" loading="eager" fetchPriority="high" />}
-    <video className={playing ? 'is-playing' : ''} ref={ref} src={work.media_url || undefined} poster={work.thumbnail_url || undefined} muted playsInline preload="metadata" />
+    <video className={`${playing ? 'is-playing' : ''}${work.thumbnail_url ? ' has-poster' : ' no-poster'}`} ref={ref} src={work.media_url ? `${work.media_url}#t=0.1` : undefined} poster={work.thumbnail_url || undefined} muted playsInline preload="auto" />
     <span className="inline-video-toggle" aria-hidden="true">{playing ? <Pause size={28} strokeWidth={2.2} /> : <Play size={28} strokeWidth={2.2} fill="currentColor" />}</span>
   </button> : <button className="new-media-card" onClick={() => onOpen(work)} aria-label={`Open ${work.title}`}>
     {mediaFor(work) ? <img src={mediaFor(work)!} alt={work.title} loading="lazy" /> : <span>{work.title}</span>}
