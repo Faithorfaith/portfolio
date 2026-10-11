@@ -1090,8 +1090,6 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .new-hero-media span { display: block; width: 100%; height: 100%; background: linear-gradient(145deg, #ededed, #d4d4d4); }
 .new-experience { width: min(824px, calc(100% - 40px)); margin: 260px auto 0; font-family: var(--home-rounded); font-size: 32px; line-height: 1.4; text-align: center; text-transform: lowercase; }
 .new-featured { position: relative; isolation: isolate; overflow: hidden; min-height: 1307px; display: grid; grid-template-columns: 393px minmax(0, 1fr); gap: 43px; padding: 112px max(32px, calc((100vw - var(--home-width)) / 2)); background: #000; color: #fff; }
-.new-featured::before { content: ''; position: absolute; inset: 0; z-index: 3; background: #fff; transform: translateY(0); transition: transform .9s cubic-bezier(.76,0,.24,1); pointer-events: none; }
-.new-featured[data-visible='true']::before { transform: translateY(-100%); }
 .new-featured-copy { align-self: start; position: sticky; top: 112px; }
 .new-featured-copy h2, .new-section-intro h2 { font-size: 32px; line-height: 1.15; text-transform: lowercase; }
 .new-featured-copy p { margin-top: 24px; font-family: var(--home-rounded); font-size: 24px; line-height: 1.4; color: rgb(255 255 255 / 80%); }
@@ -1109,7 +1107,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .new-featured-card.is-locked { cursor: not-allowed; }
 .new-featured-card.is-locked:hover { transform: none; }
 .new-featured-card:nth-child(even).is-locked:hover { transform: translateY(48px); }
-.featured-lock { position: absolute; right: 18px; top: 18px; z-index: 2; display: inline-grid; place-items: center; width: 27px; height: 27px; border: 1px solid rgb(0 0 0 / 15%); border-radius: 50%; background: rgb(255 255 255 / 85%); font-size: 14px; line-height: 1; color: #222; opacity: 0; transform: translateY(6px); transition: opacity .25s ease, transform .25s ease; }
+.featured-lock { position: absolute; right: 18px; top: 18px; z-index: 2; display: inline-grid; place-items: center; width: 27px; height: 27px; border: 1px solid rgb(0 0 0 / 15%); border-radius: 50%; background: rgb(255 255 255 / 85%); color: #222; opacity: 0; transform: translateY(6px); transition: opacity .25s ease, transform .25s ease; }
 .new-featured-card:hover .featured-lock, .new-featured-card:focus-visible .featured-lock { opacity: 1; transform: none; }
 .new-featured-card small { grid-column: 2; grid-row: 1; align-self: center; font-size: 14px; color: rgb(255 255 255 / 70%); }.new-featured-card strong { grid-column: 1; grid-row: 1; font-size: 20px; line-height: 1.1; text-transform: lowercase; }.new-featured-card p { grid-column: 1 / -1; font-size: 14px; line-height: 1.45; color: rgb(255 255 255 / 68%); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 .new-white-section { padding: 120px 0; background: #fff; }

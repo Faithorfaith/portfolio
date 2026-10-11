@@ -6,6 +6,7 @@ import type { Profile, CaseStudy } from './profile-section'
 import type { Project } from './projects-section'
 import type { Work } from './works-gallery'
 import HomepageGameTrain from './homepage-game-train'
+import { LockKeyhole } from 'lucide-react'
 import { normalizeExternalUrl } from '@/lib/content-utils'
 
 type Props = { profile: Profile | null; caseStudies: CaseStudy[]; projects: Project[]; works: Work[] }
@@ -85,12 +86,12 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
       <p className="new-experience" data-home-reveal>{supporting.toLowerCase()}</p>
     </section>
 
-    <section id="featured" className="new-featured" data-featured-reveal>
-      <div className="new-featured-copy" data-home-reveal><h2>featured projects</h2><p>A selection of projects where I&apos;ve tackled complex challenges, shaped ideas, and designed experiences that make a difference.</p></div>
+    <section id="featured" className="new-featured">
+      <div className="new-featured-copy"><h2>featured projects</h2><p>A selection of projects where I&apos;ve tackled complex challenges, shaped ideas, and designed experiences that make a difference.</p></div>
       <div className="new-featured-grid">
-        {visibleStudies.slice(0, 6).map((study, index) => <article key={study.id} className={`new-featured-card card-${index + 1} is-locked`} data-home-reveal aria-label={`${study.title}, locked case study`}>
+        {visibleStudies.slice(0, 6).map((study, index) => <article key={study.id} className={`new-featured-card card-${index + 1} is-locked`} aria-label={`${study.title}, locked case study`}>
           {study.thumbnail_url ? <img src={study.thumbnail_url} alt={study.title} loading={index < 2 ? 'eager' : 'lazy'} /> : <span />}
-          <span className="featured-lock" aria-hidden="true">🔒</span><div><small>{String(index + 1).padStart(2, '0')}</small><strong>{study.title}</strong>{study.excerpt && <p>{study.excerpt}</p>}</div>
+          <span className="featured-lock" aria-hidden="true"><LockKeyhole size={14} strokeWidth={2} /></span><div><small>{String(index + 1).padStart(2, '0')}</small><strong>{study.title}</strong>{study.excerpt && <p>{study.excerpt}</p>}</div>
         </article>)}
       </div>
     </section>
