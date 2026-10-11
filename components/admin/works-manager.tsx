@@ -371,14 +371,9 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
                 />
               )}
               {work.media_type === 'video' && (
-                <div className="flex h-full w-full items-center justify-center bg-foreground/[0.06]">
-                  <svg
-                    className="w-6 h-6 text-foreground/50"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
+                <div className="relative h-full w-full bg-foreground/[0.06]">
+                  {work.thumbnail_url && <img src={work.thumbnail_url} alt="" className="h-full w-full object-cover" loading="lazy" />}
+                  <span className="absolute inset-0 grid place-items-center"><span className="grid size-10 place-items-center rounded-full bg-black/55 text-white"><svg className="size-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg></span></span>
                 </div>
               )}
 
