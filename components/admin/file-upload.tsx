@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { uploadFileWithProgress } from '@/lib/upload-utils'
+import { formatFileSize, uploadFileWithProgress } from '@/lib/upload-utils'
 
 interface FileUploadProps {
   userId: string
@@ -28,6 +28,7 @@ export default function FileUpload({
   const [progress, setProgress] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedName, setUploadedName] = useState('')
+  const [uploadSize, setUploadSize] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const uploadFile = async (file?: File): Promise<string | null> => {
@@ -42,6 +43,7 @@ export default function FileUpload({
     setProgress(0)
     setError(null)
     setUploadedName('')
+    setUploadSize(file.size)
 
     try {
       // Direct Storage uploads avoid the server bucket-probing path.
@@ -148,9 +150,9 @@ export default function FileUpload({
         }}
         className={`relative w-full min-h-24 overflow-hidden rounded-lg border border-dashed px-4 py-5 text-center transition-colors ${isDragging ? 'border-foreground/55 bg-foreground/[0.045]' : 'border-foreground/15 bg-foreground/[0.018] hover:border-foreground/35 hover:bg-foreground/[0.03]'}`}
       >
-        <span className="block text-xs font-medium text-foreground/70">{isLoading ? (progress ? `Uploading ${Math.round(progress)}%` : 'Uploading…') : 'Drop a file or click to browse'}</span>
-        <span className="mt-1 block text-[11px] text-foreground/35">{accept === '*' ? 'Images and videos supported' : accept}</span>
-        {isLoading && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-foreground/8"><span className="block h-full bg-foreground transition-[width]" style={{ width: `${progress}%` }} /></span>}
+        <span className="block text-xs font-medium text-foreground/70">{isLoading ? (progress ? `Uploading ${Math.round(progress)}%` : 'Preparing upload…') : uploadedName ? 'Upload complete' : 'Drop a file or click to browse'}</span>
+        <span className="mt-1 block text-[11px] text-foreground/35">{isLoading && uploadSize ? `${formatFileSize(uploadSize)} · keep this window open` : accept === '*' ? 'Images and videos supported' : accept}</span>
+        {isLoading && <><span className="absolute inset-x-0 bottom-0 h-1 bg-foreground/8"><span className="block h-full bg-foreground transition-[width] duration-150" style={{ width: `${progress}%` }} /></span><span className="absolute inset-x-0 bottom-2 text-[10px] text-foreground/45">{progress > 0 ? `${Math.round(progress)}% uploaded` : 'Connecting…'}</span></>}
       </button>
 
       {error && <p role="alert" className="text-xs text-red-600">{error}</p>}

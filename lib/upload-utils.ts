@@ -95,18 +95,27 @@ export async function uploadFileWithProgress(
       }
     }
     
-    // Upload the complete object. The previous "chunked" path uploaded separate
-    // .part files but returned a URL for an object that never existed.
-    onProgress?.(8)
-    const { error } = await supabase.storage.from(bucket).upload(filePath, file, {
-      contentType: file.type || undefined,
-      upsert: true,
-      cacheControl: '3600',
+    const { data: { session } } = await supabase.auth.getSession()
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    if (!session?.access_token || !supabaseUrl) return { success: false, error: 'Your session expired. Please sign in again.' }
+
+    // Supabase's fetch upload has no progress events. Use the storage REST
+    // endpoint so the browser can report real bytes uploaded.
+    await new Promise<void>((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+      xhr.open('POST', `${supabaseUrl}/storage/v1/object/${bucket}/${filePath}`)
+      xhr.setRequestHeader('Authorization', `Bearer ${session.access_token}`)
+      xhr.setRequestHeader('apikey', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '')
+      xhr.setRequestHeader('x-upsert', 'true')
+      xhr.setRequestHeader('cache-control', '3600')
+      xhr.setRequestHeader('content-type', file.type || 'application/octet-stream')
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) onProgress?.(Math.max(1, Math.round((event.loaded / event.total) * 100)))
+      }
+      xhr.onerror = () => reject(new Error('Network error while uploading'))
+      xhr.onload = () => xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(xhr.responseText || `Upload failed (${xhr.status})`))
+      xhr.send(file)
     })
-    
-    if (error) {
-      return { success: false, error: error.message }
-    }
     
     const { data } = supabase.storage.from(bucket).getPublicUrl(filePath)
     onProgress?.(100)
