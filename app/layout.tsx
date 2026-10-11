@@ -6,6 +6,7 @@ import SoundControl from '@/components/portfolio/sound-control'
 import { ArticleAudioProvider } from '@/components/article-audio-provider'
 import MotionOrchestrator from '@/components/portfolio/motion-orchestrator'
 import { Inter } from 'next/font/google'
+import PostHogProvider from '@/components/posthog-provider'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
 
@@ -53,6 +54,7 @@ export default function RootLayout({
           <MotionOrchestrator />
           {children}
           <SoundControl />
+          <PostHogProvider />
         </ArticleAudioProvider>
         <Analytics />
         <SpeedInsights />
