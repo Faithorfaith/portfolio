@@ -1085,6 +1085,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .new-hero-grid { display: grid; grid-template-columns: 1fr 310px 1fr; gap: 108px; align-items: center; margin-top: 124px; }
 .new-hero-grid h1 { align-self: center; font-size: 64px; line-height: 1.02; text-align: left; }
 .new-hero-grid > p { max-width: 430px; justify-self: center; align-self: center; font-family: var(--home-rounded), Arial, sans-serif; font-size: 32px; line-height: 1.4; text-align: left; text-transform: lowercase; }
+.new-experience { width: min(824px, calc(100% - 40px)); margin: 180px auto 0; font-family: var(--home-rounded); font-size: 32px; line-height: 1.4; text-align: center; text-transform: lowercase; }
 .new-hero-media { width: 310px; height: 515px; overflow: hidden; border-radius: 64px; background: rgb(0 0 0 / 10%); }
 .new-hero-media video, .new-hero-media img { width: 100%; height: 100%; object-fit: cover; }
 .new-hero-media span { display: block; width: 100%; height: 100%; background: #e9e9e9; }
