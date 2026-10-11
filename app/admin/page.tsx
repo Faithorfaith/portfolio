@@ -55,6 +55,7 @@ export default function AdminPage() {
   return <div className={`admin-surface admin-shell-v2 ${isEditorOpen ? 'has-editor' : ''}`}>
     <aside className="admin-sidebar-v2">
       <a href="/admin" className="admin-brand" onClick={event => { event.preventDefault(); setActiveTab('overview') }}><span>FA</span><div><strong>Faith’s Studio</strong><small>Portfolio editor</small></div></a>
+      <label className="admin-sidebar-search"><span>⌕</span><input aria-label="Search admin" placeholder="Search" /></label>
       <nav aria-label="Admin navigation">
         {NAV_ITEMS.map(item => <button type="button" key={item.id} onClick={() => setActiveTab(item.id)} aria-current={activeTab === item.id ? 'page' : undefined}>
           <span className="admin-nav-icon">{item.icon}</span><span><small>{item.eyebrow}</small><strong>{item.label}</strong></span><i>↗</i>
