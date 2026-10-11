@@ -1116,7 +1116,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .new-section-intro p { width: min(776px, 100%); font-family: var(--home-rounded); font-size: 24px; line-height: 1.5; color: #2b2b2bcc; }
 .new-horizontal-gallery { width: min(var(--home-width), calc(100% - 32px)); margin-inline: auto; display: flex; gap: 24px; overflow-x: auto; padding: 2px 0 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .new-horizontal-gallery::-webkit-scrollbar { display: none; }
-.new-media-card { flex: 0 0 294px; height: 636px; overflow: hidden; border: 2px solid #f4f3f3; border-radius: 32px; background: #f0f0f0; scroll-snap-align: start; transition: transform .35s cubic-bezier(.22,1,.36,1); }
+.new-media-card { flex: 0 0 294px; aspect-ratio: 9 / 16; height: auto; overflow: hidden; border: 2px solid #f4f3f3; border-radius: 32px; background: #f0f0f0; scroll-snap-align: start; transition: transform .35s cubic-bezier(.22,1,.36,1); }
 .new-media-card:hover { transform: translateY(-7px); }
 .new-media-card video, .new-media-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.22,1,.36,1); }
 .new-media-card:hover video, .new-media-card:hover img { transform: scale(1.025); }
@@ -1182,7 +1182,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   .new-experience { margin-top: 100px; font-size: 25px; }
   .new-featured { min-height: auto; grid-template-columns: 1fr; padding: 80px 20px 110px; }.new-featured-copy { position: static; }.new-featured-copy p { font-size: 20px; }
   .new-featured-grid { margin-top: 20px; }.new-featured-card, .new-featured-card:nth-child(3n+1) { min-height: 0; }.new-featured-card:nth-child(even), .new-featured-card:nth-child(even):hover { transform: none; }
-  .new-white-section { padding-block: 84px; }.new-section-intro p { font-size: 20px; }.new-media-card, .new-gallery-more { flex-basis: min(72vw, 294px); height: min(150vw, 560px); }
+  .new-white-section { padding-block: 84px; }.new-section-intro p { font-size: 20px; }.new-media-card, .new-gallery-more { flex-basis: min(72vw, 294px); height: auto; aspect-ratio: 9 / 16; }
   .new-archive-scroll { width: calc(100% - 40px); gap: 32px; }.new-archive-group { gap: 16px; }.new-archive-group-cards { gap: 16px; }.new-archive-card { flex-basis: min(78vw, 294px); width: min(78vw, 294px); }.archive-art { height: 280px; }
 }
 @media (max-width: 560px) {
