@@ -45,6 +45,11 @@ export default function AdminOverview({ userId, onOpen }: { userId: string; onOp
       <h1>Everything that makes<br />your corner of the internet.</h1>
       <span>{total} saved pieces across the portfolio.</span>
     </header>
+    <section className="admin-kpi-grid" aria-label="Studio summary">
+      <div className="admin-kpi admin-kpi-accent"><span>Published case studies</span><strong>{recent.filter(item => item.published).length}</strong><small>Recent visible stories</small></div>
+      <div className="admin-kpi"><span>Portfolio pieces</span><strong>{total}</strong><small>Across every section</small></div>
+      <div className="admin-kpi"><span>Visitor analytics</span><strong className="admin-kpi-live">Live</strong><small>Tracked by Vercel Analytics</small><a href="https://vercel.com/analytics" target="_blank" rel="noreferrer">Open analytics ↗</a></div>
+    </section>
     <div className="admin-overview-grid">
       {cards.map(card => <button type="button" key={card.id} onClick={() => onOpen(card.id)} className="admin-overview-card">
         <span>{card.eyebrow}</span><strong>{card.label}</strong><p>{card.description}</p><small>{counts[card.id]} item{counts[card.id] === 1 ? '' : 's'} <i>→</i></small>
