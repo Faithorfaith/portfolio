@@ -66,7 +66,7 @@ function VideoCard({ work, onOpen }: { work: Work; onOpen: (work: Work) => void 
     else { ref.current.pause(); ref.current.muted = true; setPlaying(false) }
   }
   return video ? <button className="new-media-card new-inline-video" onClick={toggle} aria-label={`${playing ? 'Pause' : 'Play'} ${work.title}`}>
-    <video ref={ref} src={work.media_url || undefined} poster={work.thumbnail_url || undefined} muted playsInline preload="metadata" onPointerEnter={event => { event.currentTarget.preload = 'auto'; event.currentTarget.load() }} />
+    <video ref={ref} src={work.media_url || undefined} poster={work.thumbnail_url || undefined} muted playsInline preload="auto" />
     <span className="inline-video-toggle" aria-hidden="true">{playing ? 'Ⅱ' : '▶'}</span>
   </button> : <button className="new-media-card" onClick={() => onOpen(work)} aria-label={`Open ${work.title}`}>
     {mediaFor(work) ? <img src={mediaFor(work)!} alt={work.title} loading="lazy" /> : <span>{work.title}</span>}
