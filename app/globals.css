@@ -1096,7 +1096,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .new-hero-media span { display: block; width: 100%; height: 100%; background: #e9e9e9; }
 .new-featured { position: relative; isolation: isolate; overflow: hidden; min-height: 1307px; display: grid; grid-template-columns: 393px minmax(0, 1fr); gap: 43px; padding: 112px max(32px, calc((100vw - var(--home-width)) / 2)); background: #000; color: #fff; }
 .new-featured-copy { align-self: start; position: sticky; top: 112px; }
-.featured-split-layer { position: absolute; inset: 0 0 auto; width: 100%; height: 100svh; z-index: 5; pointer-events: none; overflow: hidden; }
+.featured-split-layer { position: absolute; inset: 0 0 auto; width: 100%; height: 100svh; z-index: 60; pointer-events: none; overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .featured-split-layer { display: none; } }
 .new-featured-copy h2, .new-section-intro h2 { font-size: 32px; line-height: 1.15; text-transform: lowercase; }
 .new-featured-copy p { margin-top: 24px; font-family: var(--home-rounded); font-size: 24px; line-height: 1.4; color: rgb(255 255 255 / 80%); }
