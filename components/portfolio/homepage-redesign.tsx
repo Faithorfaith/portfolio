@@ -94,7 +94,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
       <div className="new-hero-grid">
         <h1 id="hero-title" data-home-reveal>hey,<br />I&apos;m Faith</h1>
         <div className="new-hero-media" data-home-reveal>
-          {heroMedia ? isVideoUrl(heroMedia) ? <video src={heroMedia} autoPlay loop muted playsInline /> : <img src={heroMedia} alt="Faith Awokunle" /> : <span aria-hidden="true" />}
+          {heroMedia ? isVideoUrl(heroMedia) ? <video src={heroMedia} autoPlay loop muted playsInline aria-label="Hero video, click to enable sound" onClick={event => { const video = event.currentTarget; video.muted = !video.muted; if (video.paused) void video.play() }} /> : <img src={heroMedia} alt="Faith Awokunle" /> : <span aria-hidden="true" />}
         </div>
         <p data-home-reveal>{intro.toLowerCase()}</p>
       </div>
