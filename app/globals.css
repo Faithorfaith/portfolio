@@ -1228,13 +1228,13 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .case-story-copy .article-prose p { margin: 0 0 1.6em; }.case-story-copy .article-prose p:last-child { margin-bottom: 0; }
 .case-story-copy .article-prose h2, .case-story-copy .article-prose h3 { margin: 2em 0 .7em; font-size: 1.25em; line-height: 1.25; }
 .case-story-related { width: min(100% - 40px, var(--case-copy)); margin: 40px auto 110px; padding-top: 28px; border-top: 1px solid rgb(17 17 17 / 10%); }.case-story-related > p { margin-bottom: 18px; font-size: 13px; color: rgb(17 17 17 / 48%); }.case-story-related a { display: flex; justify-content: space-between; gap: 30px; font-size: 17px; }
-.case-story-pagination { display: flex; justify-content: center; gap: 8px; padding: 100px 20px 120px; }.case-story-pagination a { min-width: 64px; padding: 8px 12px; border: 1px solid rgb(17 17 17 / 12%); border-radius: 999px; font-size: 12px; text-align: center; transition: background 180ms ease; }.case-story-pagination a:hover { background: #f2f2f2; }
+.case-story-pagination { position: fixed; z-index: 55; left: 50%; bottom: 20px; display: flex; justify-content: center; gap: 8px; padding: 6px; border: 1px solid rgb(17 17 17 / 10%); border-radius: 999px; background: rgb(255 255 255 / 90%); box-shadow: 0 8px 28px rgb(0 0 0 / 12%); backdrop-filter: blur(14px); transform: translateX(-50%); }.case-story-pagination a { min-width: 64px; padding: 8px 12px; border: 1px solid rgb(17 17 17 / 12%); border-radius: 999px; font-size: 12px; text-align: center; transition: background 180ms ease; }.case-story-pagination a:hover { background: #f2f2f2; }
 @media (max-width: 640px) {
   .case-story-back { position: absolute; top: 16px; left: 16px; }
   .case-story-hero { padding: 74px 0 72px; }.case-story-cover { margin-top: 34px; border-radius: 20px; }.case-story-intro { margin-top: 38px; }
   .case-story-media { min-height: 66vw; padding: 24px 16px; }.case-story-media-inner, .case-story-image, .case-story-video, .case-story-embed { min-height: 58vw; }
   .case-story-gallery { grid-template-columns: 1fr; gap: 10px; }.case-story-gallery .case-story-image, .case-story-gallery-feature-split .is-feature { aspect-ratio: 4 / 3; }.case-story-gallery .case-story-image { min-height: 0; border-radius: 18px; }
-  .case-story-copy { padding-block: 68px; }.case-story-pagination { padding-block: 70px 90px; }
+  .case-story-copy { padding-block: 68px; }.case-story-pagination { bottom: 14px; width: max-content; max-width: calc(100vw - 28px); }
 }
 
 /* Portfolio Content Studio */
