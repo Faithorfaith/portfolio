@@ -1205,17 +1205,17 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .case-story-hero { display: flex; flex-direction: column; align-items: center; width: min(100% - 40px, 840px); margin: 0 auto; padding: 72px 0 94px; text-align: center; }
 .case-story-hero h1 { font-family: var(--home-rounded), Arial, sans-serif; font-size: clamp(28px, 2.7vw, 42px); font-weight: 700; line-height: 1.08; letter-spacing: .02em; }
 .case-story-hero h1 span { white-space: nowrap; }
-.case-story-cover { width: min(100%, 650px); aspect-ratio: 3 / 2; margin-top: 50px; overflow: hidden; border-radius: 28px; background: #f6f6f6; }
+.case-story-cover { width: min(100%, 650px); aspect-ratio: 3 / 2; margin-top: 50px; overflow: hidden; border-radius: 28px; background: #fff; }
 .case-story-cover img { transition: transform 500ms cubic-bezier(.2,.8,.2,1); }.case-story-cover:hover img { transform: scale(1.015); }
 .case-story-intro { max-width: var(--case-copy); margin-top: 56px; font-family: var(--home-rounded), Arial, sans-serif; font-size: clamp(18px, 1.55vw, 23px); font-weight: 700; line-height: 1.45; letter-spacing: .01em; }
 .case-story-cta { display: flex; justify-content: center; margin: -52px auto 92px; }.case-story-cta a { padding: 11px 18px; border-radius: 999px; background: #111; color: #fff; font-size: 14px; }
 .case-story-section { margin: 0; }
-.case-story-media { width: 100%; min-height: min(74vw, 780px); display: grid; place-items: center; padding: clamp(48px, 7vw, 112px) 24px; background: #fafafa; }
-.case-story-media.is-soft { background: #f7f7f7; }
+.case-story-media { width: 100%; min-height: min(74vw, 780px); display: grid; place-items: center; padding: clamp(48px, 7vw, 112px) 24px; background: #fff; }
+.case-story-media.is-soft { background: #fff; }
 .case-story-media-inner { width: min(100%, 1248px); height: 100%; min-height: min(58vw, 610px); display: grid; place-items: center; }
 .case-story-image, .case-story-video, .case-story-embed { display: block; width: 100%; height: 100%; min-height: min(58vw, 610px); overflow: hidden; }
 .case-story-gallery { width: 100%; display: grid; gap: 16px; }
-.case-story-gallery .case-story-image { min-height: 0; aspect-ratio: 1 / 1; border-radius: 24px; background: #f3f3f3; }
+.case-story-gallery .case-story-image { min-height: 0; aspect-ratio: 1 / 1; border-radius: 24px; background: #fff; }
 .case-story-gallery-feature-split { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .case-story-gallery-feature-split .is-feature { grid-column: 1 / -1; aspect-ratio: 16 / 8; }
 .case-story-gallery-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
