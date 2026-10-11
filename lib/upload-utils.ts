@@ -135,7 +135,7 @@ export async function uploadFileWithProgress(
       xhr.setRequestHeader('Authorization', `Bearer ${session.access_token}`)
       xhr.setRequestHeader('apikey', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '')
       xhr.setRequestHeader('x-upsert', 'true')
-      xhr.setRequestHeader('cache-control', '3600')
+      xhr.setRequestHeader('cache-control', '31536000, immutable')
       xhr.setRequestHeader('content-type', file.type || 'application/octet-stream')
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) onProgress?.(Math.max(1, Math.round((event.loaded / event.total) * 100)))

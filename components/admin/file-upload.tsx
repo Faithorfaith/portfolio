@@ -61,7 +61,7 @@ export default function FileUpload({
         )
         if (!result.success || !result.publicUrl) throw new Error(result.error || 'Video upload failed')
         onUpload(result.publicUrl)
-        if (file.type.startsWith('video/') && onUploadThumbnail) { const poster = await generateVideoThumbnail(file); if (poster) { const posterPath = `${folder}/${userId}/${Date.now()}-poster.jpg`; const posterClient = createClient(); const { error: posterError } = await posterClient.storage.from('portfolio-uploads').upload(posterPath, poster, { contentType: 'image/jpeg', upsert: true }); if (!posterError) onUploadThumbnail(posterClient.storage.from('portfolio-uploads').getPublicUrl(posterPath).data.publicUrl) } }
+        if (file.type.startsWith('video/') && onUploadThumbnail) { const poster = await generateVideoThumbnail(file); if (poster) { const posterPath = `${folder}/${userId}/${Date.now()}-poster.jpg`; const posterClient = createClient(); const { error: posterError } = await posterClient.storage.from('portfolio-uploads').upload(posterPath, poster, { contentType: 'image/jpeg', cacheControl: '31536000', upsert: true }); if (!posterError) onUploadThumbnail(posterClient.storage.from('portfolio-uploads').getPublicUrl(posterPath).data.publicUrl) } }
         setUploadedName(file.name)
       if (fileInputRef.current) fileInputRef.current.value = ''
         return result.publicUrl

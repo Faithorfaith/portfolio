@@ -6,7 +6,7 @@ import type { Profile, CaseStudy } from './profile-section'
 import type { Project } from './projects-section'
 import type { Work } from './works-gallery'
 import HomepageGameTrain from './homepage-game-train'
-import { LockKeyhole, Mail, MessageCircle, AtSign } from 'lucide-react'
+import { LockKeyhole, Mail, MessageCircle, AtSign, Play, Pause } from 'lucide-react'
 import { normalizeExternalUrl } from '@/lib/content-utils'
 
 type Props = { profile: Profile | null; caseStudies: CaseStudy[]; projects: Project[]; works: Work[] }
@@ -50,6 +50,11 @@ function useHeroVideoAudio() {
   useEffect(() => {
     const video = document.querySelector<HTMLVideoElement>('.new-hero-media video')
     if (!video) return
+    const visibility = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { void video.play() }
+      else video.pause()
+    }, { threshold: 0.15 })
+    visibility.observe(video)
     const enableAudio = () => {
       video.muted = false
       void video.play()
@@ -58,7 +63,7 @@ function useHeroVideoAudio() {
     }
     document.addEventListener('pointerdown', enableAudio, { once: true })
     document.addEventListener('keydown', enableAudio, { once: true })
-    return () => { document.removeEventListener('pointerdown', enableAudio); document.removeEventListener('keydown', enableAudio) }
+    return () => { visibility.disconnect(); document.removeEventListener('pointerdown', enableAudio); document.removeEventListener('keydown', enableAudio) }
   }, [])
 }
 
@@ -83,7 +88,7 @@ function VideoCard({ work, onOpen }: { work: Work; onOpen: (work: Work) => void 
   return video ? <button className="new-media-card new-inline-video" onClick={toggle} aria-label={`${playing ? 'Pause' : 'Play'} ${work.title}`}>
     {work.thumbnail_url && <img className={`inline-video-poster${playing ? ' is-hidden' : ''}`} src={work.thumbnail_url} alt="" loading="eager" fetchPriority="high" />}
     <video className={playing ? 'is-playing' : ''} ref={ref} src={work.media_url || undefined} poster={work.thumbnail_url || undefined} muted playsInline preload="metadata" />
-    <span className="inline-video-toggle" aria-hidden="true">{playing ? 'Ⅱ' : '▶'}</span>
+    <span className="inline-video-toggle" aria-hidden="true">{playing ? <Pause size={28} strokeWidth={2.2} /> : <Play size={28} strokeWidth={2.2} fill="currentColor" />}</span>
   </button> : <button className="new-media-card" onClick={() => onOpen(work)} aria-label={`Open ${work.title}`}>
     {mediaFor(work) ? <img src={mediaFor(work)!} alt={work.title} loading="lazy" /> : <span>{work.title}</span>}
   </button>
