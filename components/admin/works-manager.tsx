@@ -104,24 +104,25 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
     setSuccess(false)
 
     try {
-      const supabase = createClient()
-      const { error: insertError } = await supabase
-        .from('portfolio_works')
-        .insert([{
-          user_id: userId,
+      const response = await fetch('/api/works', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           title: formData.title || 'Untitled playground study',
           description: formData.description || null,
           media_url: formData.media_url,
-          media_type: formData.media_type,
+          media_type: formData.media_type || 'image',
           thumbnail_url: formData.thumbnail_url || null,
-          type: formData.type || null,
           order_index: formData.order_index,
-        }])
-        .select('id')
+          type: formData.type || null,
+        }),
+      })
 
-      if (insertError) throw insertError
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(result.error || 'Failed to save work')
 
       // Refresh works list
+      const supabase = createClient()
       const { data: works, error: fetchError } = await supabase
         .from('portfolio_works')
         .select('*')
