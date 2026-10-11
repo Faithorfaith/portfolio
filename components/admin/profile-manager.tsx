@@ -338,7 +338,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
         </div>
       </SectionCard>
 
-      <SectionCard title="Footer experience" description="Manage the optional audio and train media used in the footer.">
+      <SectionCard title="Homepage media" description="Manage the video shown in the centered hero media tile.">
         <div className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
             {false && <div className="space-y-1.5"><label className="block">Footer sound</label><FileUpload userId={userId} folder="train-audio" accept="audio/*" onUpload={url => set('train_music_url', url)} /><input type="url" value={formData.train_music_url} onChange={e => set('train_music_url', e.target.value)} placeholder="Or paste an audio URL" className="w-full px-3 py-2" /><p className="text-[11px] text-foreground/45">Upload MP3, WAV, or OGG. Leave blank to use the built-in Japanese-inspired loop.</p></div>}
