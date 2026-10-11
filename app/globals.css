@@ -1100,7 +1100,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 @media (prefers-reduced-motion: reduce) { .featured-split-layer { display: none; } }
 .new-featured-copy h2, .new-section-intro h2 { font-size: 32px; line-height: 1.15; text-transform: lowercase; }
 .new-featured-copy p { margin-top: 24px; font-family: var(--home-rounded); font-size: 24px; line-height: 1.4; color: rgb(255 255 255 / 80%); }
-.new-featured-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.new-featured-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; align-content: start; align-self: start; }
 .new-featured-card { position: relative; min-height: 0; overflow: visible; border-radius: 0; background: transparent; color: #fff; transform: translateZ(0); transition: transform .45s cubic-bezier(.22,1,.36,1); }
 .new-featured-card:nth-child(3n+1) { min-height: 0; }
 .new-featured-card:nth-child(even) { transform: none; }
