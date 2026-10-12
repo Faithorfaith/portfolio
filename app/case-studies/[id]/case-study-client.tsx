@@ -54,7 +54,7 @@ export default function CaseStudyClient() {
         const bySlug = await supabase.from('case_studies').select('*').eq('slug', id).eq('published', true).maybeSingle()
         const byTitle = !bySlug.data && !/^[0-9a-f-]{36}$/i.test(id) ? await supabase.from('case_studies').select('*').eq('published', true) : null
         const titleMatch = byTitle?.data?.find(item => slugify(item.title) === id) || null
-        const fallback = !bySlug.data && !titleMatch && /^[0-9a-f-]{36}$/i.test(id) ? await supabase.from('case_studies').select('*').eq('id', id).maybeSingle() : null
+        const fallback = !bySlug.data && !titleMatch && /^[0-9a-f-]{36}$/i.test(id) ? await supabase.from('case_studies').select('*').eq('id', id).eq('published', true).maybeSingle() : null
         const data = bySlug.data || titleMatch || fallback?.data
         if (!data) return
         setCaseStudy(data as CaseStudy)
