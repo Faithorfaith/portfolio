@@ -514,8 +514,13 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
                 <label>Add media<input type="file" multiple onChange={e => e.target.files && handleSectionGalleryUpload(section.id, e.target.files)} /></label>
                 {(section.image_layout || 'single') === 'single' && !!section.gallery_images?.length && <div className="case-admin-gallery-preview">{section.gallery_images.map((src, i) => <div key={src}><CaseMedia src={src} /><button type="button" onClick={() => updateSection(section.id, { gallery_images: section.gallery_images?.filter((_, n) => n !== i) })}>Remove</button></div>)}</div>}
                 {(section.image_layout && section.image_layout !== 'single') ? <>
-                  <div className={`case-admin-gallery-preview case-layout-preview-${section.image_layout}`}>{(section.gallery_images || []).map((src, imageIndex) => <div key={src}><CaseMedia src={src} /><button type="button" onClick={() => updateSection(section.id, { gallery_images: (section.gallery_images || []).filter((_, i) => i !== imageIndex) })}>Remove</button></div>)}</div>
-                  <small>Use 3 images for the feature + two-column layout.</small>
+                  <div className={`case-admin-gallery-preview case-layout-preview-${section.image_layout}`}>
+                    {Array.from({ length: Math.max(section.gallery_images?.length || 0, section.image_layout === 'grid-2' ? 2 : 3) }, (_, imageIndex) => {
+                      const src = section.gallery_images?.[imageIndex]
+                      return <div key={`${imageIndex}-${src || 'empty'}`} className="case-canvas-slot">{src ? <><CaseMedia src={src} /><button type="button" onClick={() => updateSection(section.id, { gallery_images: (section.gallery_images || []).filter((_, i) => i !== imageIndex) })}>Remove</button></> : <div className="case-canvas-placeholder"><strong>{section.image_layout === 'feature-split' && imageIndex === 0 ? 'Full-width media' : `Media ${imageIndex + 1}`}</strong><span>Upload media to fill this space</span></div>}</div>
+                    })}
+                  </div>
+                  <small>Media fills these spaces in upload order.</small>
                 </> : section.image ? <><img src={section.image} alt="" /><button type="button" onClick={() => updateSection(section.id, { image: null })}>Remove image</button></> : section.video_url ? <><video src={section.video_url} controls /><button type="button" onClick={() => updateSection(section.id, { video_url: null })}>Remove video</button></> : <div><p>Full-width visual stage</p><span>Upload the image or video shown before this chapter’s text.</span><label>Image<input type="file" accept="image/*" onChange={e => e.target.files?.[0] && handleSectionImageUpload(section.id, e.target.files[0])} /></label><label>Video<input type="file" accept="video/*" onChange={e => e.target.files?.[0] && handleSectionVideoUpload(section.id, e.target.files[0])} /></label></div>}
               </div>
               <div className="case-admin-richtext"><RTFEditor value={section.body} onChange={body => updateSection(section.id, { body })} userId={userId} /></div>
