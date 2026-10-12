@@ -8,6 +8,7 @@ import CaseSectionBody from '@/components/case-section-body'
 import SafeEmbed from '@/components/safe-embed'
 import ViewportVideo from '@/components/viewport-video'
 import { slugify } from '@/lib/slugify'
+import CaseMedia from '@/components/case-media'
 
 interface Section {
   id: string; label: string; title: string | null; body: string; toc: string | null
@@ -112,7 +113,7 @@ export default function CaseStudyClient() {
       <div className="case-story-sections">
         {sections.map((section, index) => <section key={section.id} id={section.id} className="case-story-section reading-section" data-motion-section>
           {(section.image || section.gallery_images?.length || section.video_url || section.embed_url) && <div className={`case-story-media ${index % 2 ? 'is-soft' : ''}`}><div className="case-story-media-inner">
-            {(section.gallery_images?.length || section.image) && <div className={`case-story-gallery case-story-gallery-${section.image_layout || 'single'}`}>{(section.gallery_images?.length ? section.gallery_images : [section.image!]).map((src, imageIndex) => <button key={src} type="button" onClick={() => setExpandedImage({ src, alt: section.title || section.label || 'Section image' })} className={`case-story-image cursor-zoom-in ${imageIndex === 0 ? 'is-feature' : ''}`} aria-label={`Expand ${section.title || section.label || 'section'} image ${imageIndex + 1}`}><ProgressiveImage src={src} alt={section.title || section.label || 'Section image'} className="h-full w-full object-cover" /></button>)}</div>}
+            {(section.gallery_images?.length || section.image) && <div className={`case-story-gallery case-story-gallery-${section.image_layout || 'single'}`}>{(section.gallery_images?.length ? section.gallery_images : [section.image!]).map((src, imageIndex) => /\.(mp4|webm|mov|m4v|mp3|wav|ogg|m4a|aac|flac|pdf|zip)([?#]|$)/i.test(src) ? <div key={src} className={`case-story-image ${imageIndex === 0 ? 'is-feature' : ''}`}><CaseMedia src={src} /></div> : <button key={src} type="button" onClick={() => setExpandedImage({ src, alt: section.title || section.label || 'Section image' })} className={`case-story-image cursor-zoom-in ${imageIndex === 0 ? 'is-feature' : ''}`} aria-label={`Expand ${section.title || section.label || 'section'} image ${imageIndex + 1}`}><ProgressiveImage src={src} alt={section.title || section.label || 'Section image'} className="h-full w-full object-cover" /></button>)}</div>}
             {section.video_url && <div className="case-story-video"><ViewportVideo src={section.video_url} decorative /></div>}
             {section.embed_url && <div className="case-story-embed"><SafeEmbed url={section.embed_url} title={section.title || section.label || 'Embedded content'} /></div>}
           </div></div>}

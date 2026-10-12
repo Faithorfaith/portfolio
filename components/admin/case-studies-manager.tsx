@@ -8,6 +8,7 @@ import { compressImage, uploadFileWithProgress } from '@/lib/upload-utils'
 import ProgressiveImage from '@/components/progressive-image'
 import { useEditorGuard } from '@/hooks/use-editor-guard'
 import DraftTools from './draft-tools'
+import CaseMedia from '@/components/case-media'
 
 const RTFEditor = dynamic(() => import('./rtf-editor'), { ssr: false })
 
@@ -363,7 +364,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
       const urls: string[] = []
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
-        const compressed = await compressImage(file, 2400, 1800, 0.86)
+        const compressed = /^image\/(jpeg|png|webp)$/.test(file.type) ? await compressImage(file, 2400, 1800, 0.86) : file
         const result = await uploadFileWithProgress(supabase, 'portfolio-uploads', `case-studies/sections/gallery/${Date.now()}-${i}-${file.name}`, compressed, progress => setUploadProgress(Math.round(((i + progress / 100) / files.length) * 100)))
         if (!result.success || !result.publicUrl) throw new Error(result.error || 'Upload failed')
         urls.push(result.publicUrl)
@@ -509,10 +510,11 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
                 <input value={section.title || ''} onChange={e => updateSection(section.id, { title: e.target.value || null })} placeholder="Chapter title" />
               </div>
               <div className="case-admin-media-stage">
-                <label>Image layout<select value={section.image_layout || 'single'} onChange={e => updateSection(section.id, { image_layout: e.target.value as Section['image_layout'] })}><option value="single">Single image</option><option value="feature-split">Feature + two columns</option><option value="grid-2">Two-column grid</option><option value="grid-3">Three-column grid</option></select></label>
+                <div className="case-layout-options" role="group" aria-label="Media layout">{(['single', 'feature-split', 'grid-2', 'grid-3'] as const).map(layout => <button type="button" key={layout} aria-pressed={(section.image_layout || 'single') === layout} onClick={() => updateSection(section.id, { image_layout: layout })}><span className={`case-layout-diagram layout-${layout}`}>{Array.from({ length: layout === 'single' ? 1 : layout === 'grid-2' ? 2 : 3 }, (_, i) => <i key={i} />)}</span>{({ single: 'Single', 'feature-split': 'Feature + two', 'grid-2': 'Two columns', 'grid-3': 'Three columns' })[layout]}</button>)}</div>
+                <label>Add media<input type="file" multiple onChange={e => e.target.files && handleSectionGalleryUpload(section.id, e.target.files)} /></label>
+                {(section.image_layout || 'single') === 'single' && !!section.gallery_images?.length && <div className="case-admin-gallery-preview">{section.gallery_images.map((src, i) => <div key={src}><CaseMedia src={src} /><button type="button" onClick={() => updateSection(section.id, { gallery_images: section.gallery_images?.filter((_, n) => n !== i) })}>Remove</button></div>)}</div>}
                 {(section.image_layout && section.image_layout !== 'single') ? <>
-                  <div className="case-admin-gallery-preview">{(section.gallery_images || []).map((src, imageIndex) => <div key={src}><img src={src} alt="" /><button type="button" onClick={() => updateSection(section.id, { gallery_images: (section.gallery_images || []).filter((_, i) => i !== imageIndex) })}>Remove</button></div>)}</div>
-                  <label>Add gallery images<input type="file" accept="image/*" multiple onChange={e => e.target.files && handleSectionGalleryUpload(section.id, e.target.files)} /></label>
+                  <div className={`case-admin-gallery-preview case-layout-preview-${section.image_layout}`}>{(section.gallery_images || []).map((src, imageIndex) => <div key={src}><CaseMedia src={src} /><button type="button" onClick={() => updateSection(section.id, { gallery_images: (section.gallery_images || []).filter((_, i) => i !== imageIndex) })}>Remove</button></div>)}</div>
                   <small>Use 3 images for the feature + two-column layout.</small>
                 </> : section.image ? <><img src={section.image} alt="" /><button type="button" onClick={() => updateSection(section.id, { image: null })}>Remove image</button></> : section.video_url ? <><video src={section.video_url} controls /><button type="button" onClick={() => updateSection(section.id, { video_url: null })}>Remove video</button></> : <div><p>Full-width visual stage</p><span>Upload the image or video shown before this chapter’s text.</span><label>Image<input type="file" accept="image/*" onChange={e => e.target.files?.[0] && handleSectionImageUpload(section.id, e.target.files[0])} /></label><label>Video<input type="file" accept="video/*" onChange={e => e.target.files?.[0] && handleSectionVideoUpload(section.id, e.target.files[0])} /></label></div>}
               </div>
