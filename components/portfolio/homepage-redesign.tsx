@@ -9,6 +9,7 @@ import type { Work } from './works-gallery'
 import HomepageGameTrain from './homepage-game-train'
 import { LockKeyhole, Mail, MessageCircle, AtSign, Play, Pause } from 'lucide-react'
 import { normalizeExternalUrl, normalizeWhatsAppUrl } from '@/lib/content-utils'
+import { isSoundEnabled, SOUND_PREFERENCE_EVENT } from '@/lib/interaction-feedback'
 
 type Props = { profile: Profile | null; caseStudies: CaseStudy[]; projects: Project[]; works: Work[] }
 const isVideoUrl = (url?: string | null) => Boolean(url && (/\.(mp4|webm|mov)(\?|#|$)/i.test(url) || url.includes('/video/')))
@@ -50,23 +51,24 @@ function useHeroVideoAudio() {
     const video = document.querySelector<HTMLVideoElement>('.new-hero-media video')
     if (!video) return
     let heroVisible = false
+    const applySoundPreference = (enabled: boolean) => {
+      video.muted = !enabled
+      video.defaultMuted = !enabled
+      if (enabled && heroVisible) void video.play().catch(() => {})
+    }
+    applySoundPreference(isSoundEnabled())
     const visibility = new IntersectionObserver(([entry]) => {
       heroVisible = entry.isIntersecting
       if (heroVisible) { void video.play() }
       else video.pause()
     }, { threshold: 0.15 })
     visibility.observe(video)
-    const enableAudio = (event: Event) => {
-      const target = event.target instanceof Element ? event.target : null
-      if (!heroVisible || target?.closest('.new-inline-video, .new-media-dialog')) return
-      video.muted = false
-      void video.play()
-      document.removeEventListener('pointerdown', enableAudio)
-      document.removeEventListener('keydown', enableAudio)
+    const handleSoundPreference = (event: Event) => {
+      const enabled = (event as CustomEvent<{ enabled?: boolean }>).detail?.enabled
+      applySoundPreference(Boolean(enabled))
     }
-    document.addEventListener('pointerdown', enableAudio)
-    document.addEventListener('keydown', enableAudio)
-    return () => { visibility.disconnect(); document.removeEventListener('pointerdown', enableAudio); document.removeEventListener('keydown', enableAudio) }
+    window.addEventListener(SOUND_PREFERENCE_EVENT, handleSoundPreference)
+    return () => { visibility.disconnect(); window.removeEventListener(SOUND_PREFERENCE_EVENT, handleSoundPreference) }
   }, [])
 }
 

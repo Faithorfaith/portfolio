@@ -1,4 +1,5 @@
 export const SOUND_PREFERENCE_KEY = 'portfolio-sound-enabled'
+export const SOUND_PREFERENCE_EVENT = 'portfolio-sound-change'
 
 type FeedbackTone = 'tap' | 'success'
 let sharedContext: AudioContext | null = null
