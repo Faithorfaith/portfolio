@@ -7,7 +7,7 @@ import type { Profile, CaseStudy } from './profile-section'
 import type { Project } from './projects-section'
 import type { Work } from './works-gallery'
 import HomepageGameTrain from './homepage-game-train'
-import { LockKeyhole, Mail, MessageCircle, AtSign, Play, Pause, Share2, Check } from 'lucide-react'
+import { LockKeyhole, Mail, MessageCircle, AtSign, Play, Pause } from 'lucide-react'
 import { normalizeExternalUrl } from '@/lib/content-utils'
 
 type Props = { profile: Profile | null; caseStudies: CaseStudy[]; projects: Project[]; works: Work[] }
@@ -73,38 +73,6 @@ function useHeroVideoAudio() {
 }
 
 let activeVideo: HTMLVideoElement | null = null
-
-function ShareSectionLink({ sectionId, label }: { sectionId: string; label: string }) {
-  const [copied, setCopied] = useState(false)
-  const share = async () => {
-    const url = new URL('/', window.location.origin)
-    url.hash = sectionId
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: label, text: `View ${label} by Faith Awokunle`, url: url.toString() })
-        return
-      }
-      await navigator.clipboard.writeText(url.toString())
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') return
-      const input = document.createElement('textarea')
-      input.value = url.toString()
-      input.style.position = 'fixed'
-      input.style.opacity = '0'
-      document.body.appendChild(input)
-      input.select()
-      document.execCommand('copy')
-      input.remove()
-    }
-    setCopied(true)
-    window.setTimeout(() => setCopied(false), 1800)
-  }
-  return <button type="button" className="section-share" onClick={share} aria-label={`Share ${label}`}>
-    {copied ? <Check size={15} strokeWidth={2} /> : <Share2 size={15} strokeWidth={1.8} />}
-    <span>{copied ? 'link copied' : 'share section'}</span>
-  </button>
-}
-
 function VideoCard({ work, onOpen, priority = false }: { work: Work; onOpen: (work: Work) => void; priority?: boolean }) {
   const video = isVideoUrl(work.media_url)
   const ref = useRef<HTMLVideoElement>(null)
@@ -208,7 +176,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
     </section>
 
     <section id="frames" className="new-white-section">
-      <div className="new-section-intro" data-home-reveal><h2>beyond the frames</h2><p>i don&apos;t just design experiences, i bring ideas to life through video editing, storytelling, and visual direction , creating compelling visuals that capture attention and communicate ideas.</p><ShareSectionLink sectionId="frames" label="Beyond the Frames" /></div>
+      <div className="new-section-intro" data-home-reveal><h2>beyond the frames</h2><p>i don&apos;t just design experiences, i bring ideas to life through video editing, storytelling, and visual direction , creating compelling visuals that capture attention and communicate ideas.</p></div>
       <div className="new-horizontal-gallery" aria-label="Video and visual work">
         {beyond.map((work, index) => <VideoCard key={work.id} work={work} onOpen={setViewer} priority={index < 4} />)}
       </div>
