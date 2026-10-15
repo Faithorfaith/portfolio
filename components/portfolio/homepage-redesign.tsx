@@ -81,13 +81,19 @@ function VideoCard({ work, onOpen, priority = false }: { work: Work; onOpen: (wo
   useEffect(() => {
     if (!video || !ref.current) return
     const element = ref.current
-    element.muted = true
-    element.defaultMuted = true
-    const handlePlay = () => setPlaying(true)
+    element.muted = false
+    element.defaultMuted = false
+    element.volume = 1
+    const handlePlay = () => {
+      element.muted = false
+      element.defaultMuted = false
+      element.volume = 1
+      setPlaying(true)
+    }
     const handlePause = () => setPlaying(false)
     element.addEventListener('play', handlePlay)
     element.addEventListener('pause', handlePause)
-    const observer = new IntersectionObserver(([entry]) => { if (!entry.isIntersecting && !element.paused) { element.pause(); element.muted = true } }, { threshold: 0.2 })
+    const observer = new IntersectionObserver(([entry]) => { if (!entry.isIntersecting && !element.paused) element.pause() }, { threshold: 0.2 })
     observer.observe(element)
     return () => {
       observer.disconnect()
@@ -100,7 +106,7 @@ function VideoCard({ work, onOpen, priority = false }: { work: Work; onOpen: (wo
     if (!ref.current) return
     ref.current.preload = 'auto'
     if (ref.current.paused) {
-      if (activeVideo && activeVideo !== ref.current) { activeVideo.pause(); activeVideo.muted = true }
+      if (activeVideo && activeVideo !== ref.current) activeVideo.pause()
       activeVideo = ref.current
       ref.current.defaultMuted = false
       ref.current.muted = false
@@ -108,7 +114,6 @@ function VideoCard({ work, onOpen, priority = false }: { work: Work; onOpen: (wo
       void ref.current.play().catch(() => setPlaying(false))
     } else {
       ref.current.pause()
-      ref.current.muted = true
     }
   }
   const prepareFirstFrame = () => {
