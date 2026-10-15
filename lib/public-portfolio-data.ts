@@ -61,25 +61,23 @@ export const getHomepagePortfolioData = unstable_cache(async (): Promise<Homepag
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   if (!url || !key) return { profile: null, caseStudies: [], projects: [], works: [], hiddenWorkCount: 0, writings: [], workflowFiles: [] }
   const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
-  const [profileResult, caseStudiesResult, projectsResult, worksResult, writingsResult, workflowResult] = await Promise.all([
+  const [profileResult, caseStudiesResult, projectsResult, worksResult] = await Promise.all([
     supabase.from('profiles').select('*').limit(1).maybeSingle(),
-    supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, sections, published, order_index, created_at').order('order_index', { ascending: true }).order('created_at', { ascending: false }).limit(50),
+    supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, order_index, created_at').order('order_index', { ascending: true }).order('created_at', { ascending: false }).limit(50),
     supabase.from('projects').select('id, title, year, type, link, description, cover_image, created_at').order('created_at', { ascending: false }).limit(30),
     supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type', { count: 'exact' }).order('created_at', { ascending: false }).limit(50),
-    supabase.from('writings').select('id, title, slug, excerpt, cover_image, created_at, content').order('created_at', { ascending: false }).limit(4),
-    supabase.from('workflow_files').select('*, workflow_file_versions(*)').eq('published', true).order('updated_at', { ascending: false }).limit(4),
   ])
   const works = (worksResult.data as Work[] | null) ?? []
   return {
     profile: (profileResult.data as Profile | null) ?? null,
-    caseStudies: ((caseStudiesResult.data || []) as (CaseStudy & { sections?: Array<{ image?: string | null; gallery_images?: string[] } | null> })[]).map(study => ({ ...study, thumbnail_url: study.thumbnail_url || study.sections?.flatMap(section => section?.gallery_images || []).find(Boolean) || study.sections?.map(section => section?.image).find(Boolean) || null })) as CaseStudy[],
+    caseStudies: (caseStudiesResult.data as CaseStudy[] | null) ?? [],
     projects: (projectsResult.data as Project[] | null) ?? [],
     works,
     hiddenWorkCount: Math.max(0, (worksResult.count || works.length) - works.length),
-    writings: (writingsResult.data || []).map(({ content, ...writing }) => ({ ...writing, readingMinutes: Math.max(1, Math.ceil(wordCount(content) / 200)) })) as HomeWriting[],
-    workflowFiles: ((workflowResult.data || []).map(file => ({ ...file, workflow_file_versions: [...(file.workflow_file_versions || [])].sort((a, b) => b.version_number - a.version_number) })) as WorkflowFile[]),
+    writings: [],
+    workflowFiles: [],
   }
-}, ['homepage-portfolio-data-v5'], { revalidate: 60 })
+}, ['homepage-portfolio-data-v6'], { revalidate: 60 })
 
 export const getPublicPortfolioData = unstable_cache(async (): Promise<PortfolioData> => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL

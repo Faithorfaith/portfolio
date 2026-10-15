@@ -17,22 +17,22 @@ interface Section {
   image_layout?: 'single' | 'feature-split' | 'grid-2' | 'grid-3'
   gallery_images?: string[]
 }
-interface CaseStudy {
+export interface CaseStudy {
   id: string; title: string; excerpt: string | null; thumbnail_url: string | null
   video_url: string | null; media_type: 'image' | 'video' | null; sections: Section[] | string | null
   slug: string | null; published: boolean; created_at: string; order_index?: number | null
   cta_text: string | null; cta_link: string | null; related_article_id: string | null
 }
-type CaseStudyLink = Pick<CaseStudy, 'id' | 'title' | 'slug' | 'order_index' | 'created_at'>
+export type CaseStudyLink = Pick<CaseStudy, 'id' | 'title' | 'slug' | 'order_index' | 'created_at'>
 interface RelatedArticle { id: string; title: string; slug: string; excerpt: string | null; cover_image: string | null; content: unknown; created_at: string }
 
-export default function CaseStudyClient() {
+export default function CaseStudyClient({ initialCaseStudy, initialLinks = [] }: { initialCaseStudy?: CaseStudy | null; initialLinks?: CaseStudyLink[] }) {
   const params = useParams()
   const id = params.id as string
-  const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null)
-  const [caseStudyLinks, setCaseStudyLinks] = useState<CaseStudyLink[]>([])
+  const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(initialCaseStudy || null)
+  const [caseStudyLinks, setCaseStudyLinks] = useState<CaseStudyLink[]>(initialLinks)
   const [relatedArticle, setRelatedArticle] = useState<RelatedArticle | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(!initialCaseStudy)
   const [loadPercent, setLoadPercent] = useState(8)
   const [readingProgress, setReadingProgress] = useState(0)
   const [expandedImage, setExpandedImage] = useState<{ src: string; alt: string } | null>(null)
@@ -49,6 +49,7 @@ export default function CaseStudyClient() {
   }, [isLoading])
 
   useEffect(() => {
+    if (initialCaseStudy) return
     const fetchCaseStudy = async () => {
       try {
         const supabase = createClient()
@@ -65,7 +66,7 @@ export default function CaseStudyClient() {
       finally { setLoadPercent(100); setIsLoading(false) }
     }
     fetchCaseStudy()
-  }, [id])
+  }, [id, initialCaseStudy])
 
   useEffect(() => {
     if (!caseStudy?.related_article_id) { setRelatedArticle(null); return }

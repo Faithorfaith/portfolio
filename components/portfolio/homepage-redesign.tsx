@@ -163,7 +163,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
       <div className="new-featured-grid">
         {visibleStudies.slice(0, 6).map((study, index) => {
           const content = <>
-            {study.thumbnail_url ? <Image width={1000} height={1000} sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 40vw" src={study.thumbnail_url} alt={study.title} loading={index < 2 ? 'eager' : 'lazy'} /> : <span />}
+            {study.thumbnail_url ? <Image width={1000} height={1000} sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 40vw" src={study.thumbnail_url} alt={study.title} loading="lazy" /> : <span />}
             {!study.published && <span className="featured-lock" aria-hidden="true"><LockKeyhole size={14} strokeWidth={2} /></span>}
             <div><small>{String(index + 1).padStart(2, '0')}</small><strong>{study.title}</strong>{study.excerpt && <p>{study.excerpt}</p>}</div>
           </>
@@ -178,7 +178,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
     <section id="frames" className="new-white-section">
       <div className="new-section-intro" data-home-reveal><h2>beyond the frames</h2><p>i don&apos;t just design experiences, i bring ideas to life through video editing, storytelling, and visual direction , creating compelling visuals that capture attention and communicate ideas.</p></div>
       <div className="new-horizontal-gallery" aria-label="Video and visual work">
-        {beyond.map((work, index) => <VideoCard key={work.id} work={work} onOpen={setViewer} priority={index < 4} />)}
+        {beyond.map(work => <VideoCard key={work.id} work={work} onOpen={setViewer} />)}
       </div>
     </section>
 
@@ -196,7 +196,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
           const href = normalizeExternalUrl(project.link)
           const Card = href ? 'a' : 'article'
           return <Card key={project.id} {...(href ? { href, target: '_blank', rel: 'noopener noreferrer' } : {})} className="new-archive-card" data-home-reveal>
-            <div className={`archive-art art-${index % 4}`}>{project.cover_image ? <Image width={520} height={586} sizes="(max-width: 900px) 294px, 260px" src={project.cover_image} alt="" loading="eager" /> : <span>{project.title.slice(0, 1)}</span>}</div>
+            <div className={`archive-art art-${index % 4}`}>{project.cover_image ? <Image width={520} height={586} sizes="(max-width: 900px) 294px, 260px" src={project.cover_image} alt="" loading="lazy" /> : <span>{project.title.slice(0, 1)}</span>}</div>
             <small>{project.type || 'Independent project'}</small><h3>{project.title}</h3>{project.description && <p>{project.description}</p>}
           </Card>
           })}
