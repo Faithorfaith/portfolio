@@ -127,8 +127,14 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
   }, [variant, onSubPageChange])
 
   useEffect(() => {
-    if (variant === 'full' && window.location.search) window.history.replaceState(null, '', '/playground')
-  }, [variant])
+    if (variant !== 'full' || works.length === 0 || selectedWork) return
+    const requestedId = new URLSearchParams(window.location.search).get('work')
+    const requestedWork = requestedId ? works.find((work) => work.id === requestedId) : null
+    if (!requestedWork) return
+    setSelectedWork(requestedWork)
+    onSubPageChange?.(true)
+    requestAnimationFrame(() => requestAnimationFrame(() => setModalVisible(true)))
+  }, [variant, works, selectedWork, onSubPageChange])
 
   useEffect(() => {
     if (initialWorks) return
@@ -322,7 +328,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                 
                 return (
                   <div key={work.id} data-playground-card={work.id} data-motion-section>
-                    <div aria-label={work.title} className="group block w-full text-left">
+                    <button type="button" onClick={() => openWork(work)} aria-label={`Preview ${work.title}`} className="group block w-full text-left">
                       <div className="relative w-full aspect-[3/4] rounded-md overflow-hidden bg-foreground/5 ring-1 ring-transparent group-hover:ring-foreground/25 transition-[box-shadow,filter] duration-200 group-hover:brightness-[0.98]">
                         {coverImage ? (
                           <ProgressiveImage
@@ -347,7 +353,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                           </div>
                         )}
                       </div>
-                    </div>
+                    </button>
                   </div>
                 )
               })}
