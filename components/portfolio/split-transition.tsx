@@ -17,58 +17,46 @@ export default function SplitTransition() {
     const media = gsap.matchMedia()
     media.add('(prefers-reduced-motion: no-preference)', () => {
       if (completed.current) { svg.style.display = 'none'; return }
-      let completionFrame = 0
-      let scrollTween: gsap.core.Tween | undefined
+      let openingTween: gsap.core.Timeline | undefined
       const top = svg.querySelectorAll('[data-split="top"]')
       const bottom = svg.querySelectorAll('[data-split="bottom"]')
+      const completeOpening = (trigger?: ScrollTrigger) => {
+        if (completed.current) return
+        completed.current = true
+        trigger?.kill()
+        svg.style.display = 'none'
+      }
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: 'top top',
           end: () => `+=${window.innerHeight * 0.85}`,
-          pin: true,
           scrub: true,
           invalidateOnRefresh: true,
-          onLeave: trigger => {
-            if (completed.current) return
-            completed.current = true
-            svg.style.display = 'none'
-            scrollTween?.kill()
-            completionFrame = window.requestAnimationFrame(() => {
-              const scrollPosition = window.scrollY
-              const pinDistance = trigger.end - trigger.start
-              trigger.kill(true)
-              // Remove the opening's extra scroll space without jumping past the hero.
-              window.scrollTo({ top: Math.max(0, scrollPosition - pinDistance), behavior: 'instant' })
-              ScrollTrigger.refresh()
-            })
-          },
+          onLeave: completeOpening,
         },
       })
       timeline.to(top, { y: -1630, ease: 'sine.inOut', duration: 1 }, 0)
         .to(bottom, { y: 1630, ease: 'sine.inOut', duration: 1 }, 0)
-      // Drive the same scroll timeline automatically, without overriding manual input.
+      // Open the layer in place after a short pause. The document itself never moves.
       const timer = window.setTimeout(() => {
         const trigger = timeline.scrollTrigger
         if (completed.current || !trigger || window.scrollY > trigger.start + 4 || window.location.hash) return
-        const position = { y: window.scrollY }
-        scrollTween = gsap.to(position, {
-          y: trigger.end + 1,
-          duration: 1.6,
-          ease: 'sine.inOut',
-          onUpdate: () => window.scrollTo({ top: position.y, behavior: 'instant' }),
-        })
+        trigger.kill()
+        openingTween = gsap.timeline({ onComplete: () => completeOpening() })
+          .to(top, { y: -1630, duration: 1.6, ease: 'sine.inOut' }, 0)
+          .to(bottom, { y: 1630, duration: 1.6, ease: 'sine.inOut' }, 0)
       }, 3000)
-      const cancel = () => { window.clearTimeout(timer); scrollTween?.kill() }
-      window.addEventListener('wheel', cancel, { passive: true })
-      window.addEventListener('touchstart', cancel, { passive: true })
-      window.addEventListener('keydown', cancel)
+      const cancelScheduledOpening = () => window.clearTimeout(timer)
+      window.addEventListener('wheel', cancelScheduledOpening, { passive: true })
+      window.addEventListener('touchstart', cancelScheduledOpening, { passive: true })
+      window.addEventListener('keydown', cancelScheduledOpening)
       return () => {
-        cancel()
-        window.cancelAnimationFrame(completionFrame)
-        window.removeEventListener('wheel', cancel)
-        window.removeEventListener('touchstart', cancel)
-        window.removeEventListener('keydown', cancel)
+        cancelScheduledOpening()
+        openingTween?.kill()
+        window.removeEventListener('wheel', cancelScheduledOpening)
+        window.removeEventListener('touchstart', cancelScheduledOpening)
+        window.removeEventListener('keydown', cancelScheduledOpening)
       }
     })
     return () => media.revert()
