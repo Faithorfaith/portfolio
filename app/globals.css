@@ -1115,8 +1115,12 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .new-featured-card:hover .featured-lock, .new-featured-card:focus-visible .featured-lock { opacity: 1; transform: none; }
 .new-featured-card small { grid-column: 2; grid-row: 1; align-self: center; font-size: 14px; color: rgb(255 255 255 / 70%); }.new-featured-card strong { grid-column: 1; grid-row: 1; font-size: 20px; line-height: 1.1; text-transform: lowercase; }.new-featured-card p { grid-column: 1 / -1; font-size: 14px; line-height: 1.45; color: rgb(255 255 255 / 68%); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 .new-white-section { padding: 120px 0; background: #fff; }
+.new-white-section[id] { scroll-margin-top: 24px; }
 .new-section-intro { width: min(var(--home-width), calc(100% - 40px)); margin: 0 auto 48px; display: grid; justify-items: center; gap: 24px; text-align: center; }
 .new-section-intro p { width: min(776px, 100%); font-family: var(--home-rounded); font-size: 24px; line-height: 1.5; color: #2b2b2bcc; }
+.section-share { display:inline-flex; align-items:center; gap:7px; min-height:34px; padding:7px 12px; border:1px solid #dededb; border-radius:999px; background:#fff; color:#292929; font-family:var(--home-rounded); font-size:12px; line-height:1; transition:border-color .2s ease, background-color .2s ease, transform .2s ease; }
+.section-share:hover { border-color:#b8b8b4; background:#f7f7f5; transform:translateY(-1px); }
+.section-share:focus-visible { outline:2px solid #111; outline-offset:3px; }
 .new-horizontal-gallery { width: min(var(--home-width), calc(100% - 32px)); margin-inline: auto; display: flex; gap: 24px; overflow-x: auto; padding: 2px 0 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .new-horizontal-gallery::-webkit-scrollbar { display: none; }
 .new-media-card { flex: 0 0 294px; aspect-ratio: 9 / 16; height: auto; overflow: hidden; border: 1.5px solid #f5f5f5; border-radius: 32px; background: #f0f0f0; scroll-snap-align: start; transition: transform .35s cubic-bezier(.22,1,.36,1); }
