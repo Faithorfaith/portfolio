@@ -8,7 +8,7 @@ import type { Project } from './projects-section'
 import type { Work } from './works-gallery'
 import HomepageGameTrain from './homepage-game-train'
 import { LockKeyhole, Mail, MessageCircle, AtSign, Play, Pause } from 'lucide-react'
-import { normalizeExternalUrl } from '@/lib/content-utils'
+import { normalizeExternalUrl, normalizeWhatsAppUrl } from '@/lib/content-utils'
 
 type Props = { profile: Profile | null; caseStudies: CaseStudy[]; projects: Project[]; works: Work[] }
 const isVideoUrl = (url?: string | null) => Boolean(url && (/\.(mp4|webm|mov)(\?|#|$)/i.test(url) || url.includes('/video/')))
@@ -147,7 +147,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
 
   return <main id="top" className="figma-home">
     <section className="new-hero" aria-labelledby="hero-title">
-      <nav className="new-home-nav" aria-label="Homepage"><a className="nav-works" href="#featured">works</a><a className="nav-name" href="#top">{profile?.full_name || 'Faith Awokunle'}</a><div className="home-contact nav-contact"><button type="button" aria-label="Show contact links">contact</button><div className="home-contact-popover" role="menu">{profile?.contact_email && <a role="menuitem" href={`mailto:${profile.contact_email}`}><Mail size={15} />Email</a>}{profile?.whatsapp_url && <a role="menuitem" href={profile.whatsapp_url} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} />WhatsApp</a>}{profile?.x_url && <a role="menuitem" href={profile.x_url} target="_blank" rel="noopener noreferrer"><AtSign size={15} />X</a>}{!profile?.contact_email && !profile?.whatsapp_url && !profile?.x_url && <span className="home-contact-empty">Coming soon</span>}</div></div></nav>
+      <nav className="new-home-nav" aria-label="Homepage"><a className="nav-works" href="#featured">works</a><a className="nav-name" href="#top">{profile?.full_name || 'Faith Awokunle'}</a><div className="home-contact nav-contact"><button type="button" aria-label="Show contact links">contact</button><div className="home-contact-popover" role="menu">{profile?.contact_email && <a role="menuitem" href={`mailto:${profile.contact_email}`}><Mail size={15} />Email</a>}{profile?.whatsapp_url && <a role="menuitem" href={normalizeWhatsAppUrl(profile.whatsapp_url)} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} />WhatsApp</a>}{profile?.x_url && <a role="menuitem" href={normalizeExternalUrl(profile.x_url)} target="_blank" rel="noopener noreferrer"><AtSign size={15} />X</a>}{!profile?.contact_email && !profile?.whatsapp_url && !profile?.x_url && <span className="home-contact-empty">Coming soon</span>}</div></div></nav>
       <div className="new-hero-grid">
         <h1 id="hero-title" data-home-reveal>hey,<br />I&apos;m Faith</h1>
         <div className="new-hero-media" data-home-reveal>

@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
-import { cleanInlineText, normalizeExternalUrl } from '@/lib/content-utils'
+import { cleanInlineText, normalizeExternalUrl, normalizeWhatsAppUrl } from '@/lib/content-utils'
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,6 +46,8 @@ export async function POST(request: NextRequest) {
         supporting_statement: body.supporting_statement || null,
         availability_status: body.availability_status || null,
         contact_email: body.contact_email || null,
+        whatsapp_url: normalizeWhatsAppUrl(body.whatsapp_url) || null,
+        x_url: normalizeExternalUrl(body.x_url) || null,
         linkedin_url: body.linkedin_url || null,
         resume_url: body.resume_url || null,
         primary_cta_label: body.primary_cta_label || 'Start a project',

@@ -12,3 +12,11 @@ export function normalizeExternalUrl(value: string | null | undefined) {
   if (url.startsWith('//')) return `https:${url}`
   return `https://${url.replace(/^\/+/, '')}`
 }
+
+export function normalizeWhatsAppUrl(value: string | null | undefined) {
+  const input = cleanInlineText(value)
+  if (!input) return ''
+  if (/^(https?:\/\/)?(www\.)?(wa\.me|api\.whatsapp\.com)\//i.test(input)) return normalizeExternalUrl(input)
+  const phone = input.replace(/\D/g, '')
+  return phone.length >= 7 ? `https://wa.me/${phone}` : normalizeExternalUrl(input)
+}

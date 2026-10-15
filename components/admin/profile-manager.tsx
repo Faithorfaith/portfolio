@@ -333,7 +333,7 @@ export default function ProfileManager({ userId }: ProfileManagerProps) {
       <SectionCard title="Contact links" description="Destinations shown when visitors hover or focus Contact in the homepage header.">
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="space-y-1.5"><span className="block text-xs font-medium text-foreground/50">Email</span><input type="email" value={formData.contact_email} onChange={e => set('contact_email', e.target.value)} placeholder="you@example.com" className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" /></label>
-          <label className="space-y-1.5"><span className="block text-xs font-medium text-foreground/50">WhatsApp link</span><input type="url" value={formData.whatsapp_url} onChange={e => set('whatsapp_url', e.target.value)} placeholder="https://wa.me/234..." className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" /></label>
+          <label className="space-y-1.5"><span className="block text-xs font-medium text-foreground/50">WhatsApp link or number</span><input type="text" inputMode="tel" value={formData.whatsapp_url} onChange={e => set('whatsapp_url', e.target.value)} placeholder="https://wa.me/234... or +234..." className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" /></label>
           <label className="space-y-1.5"><span className="block text-xs font-medium text-foreground/50">X profile</span><input type="url" value={formData.x_url} onChange={e => set('x_url', e.target.value)} placeholder="https://x.com/username" className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" /></label>
         </div>
       </SectionCard>
