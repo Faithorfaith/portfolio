@@ -70,10 +70,11 @@ function useHeroVideoAudio() {
 }
 
 let activeVideo: HTMLVideoElement | null = null
-function VideoCard({ work, onOpen }: { work: Work; onOpen: (work: Work) => void }) {
+function VideoCard({ work, onOpen, priority = false }: { work: Work; onOpen: (work: Work) => void; priority?: boolean }) {
   const video = isVideoUrl(work.media_url)
   const ref = useRef<HTMLVideoElement>(null)
   const [playing, setPlaying] = useState(false)
+  const [previewReady, setPreviewReady] = useState(false)
   useEffect(() => {
     if (!video || !ref.current) return
     const element = ref.current
@@ -87,9 +88,16 @@ function VideoCard({ work, onOpen }: { work: Work; onOpen: (work: Work) => void 
     if (ref.current.paused) { if (activeVideo && activeVideo !== ref.current) { activeVideo.pause(); activeVideo.muted = true }; activeVideo = ref.current; ref.current.muted = false; void ref.current.play(); setPlaying(true) }
     else { ref.current.pause(); ref.current.muted = true; setPlaying(false) }
   }
-  return video ? <button className="new-media-card new-inline-video" onClick={toggle} aria-label={`${playing ? 'Pause' : 'Play'} ${work.title}`}>
-    {work.thumbnail_url && <Image width={390} height={694} sizes="(max-width: 900px) 72vw, 390px" className={`inline-video-poster${playing ? ' is-hidden' : ''}`} src={work.thumbnail_url} alt="" loading="eager" />}
-    <video className={`${playing ? 'is-playing' : ''}${work.thumbnail_url ? ' has-poster' : ' no-poster'}`} ref={ref} src={work.media_url ? `${work.media_url}#t=0.1` : undefined} poster={work.thumbnail_url || undefined} muted playsInline preload="auto" />
+  const prepareFirstFrame = () => {
+    const element = ref.current
+    if (!element || work.thumbnail_url) return
+    const previewTime = Number.isFinite(element.duration) ? Math.min(0.08, element.duration / 2) : 0.08
+    if (element.currentTime < previewTime) element.currentTime = previewTime
+  }
+  return video ? <button className={`new-media-card new-inline-video${previewReady ? ' preview-ready' : ' preview-loading'}`} onClick={toggle} aria-label={`${playing ? 'Pause' : 'Play'} ${work.title}`}>
+    <span className="inline-video-loading" aria-hidden="true" />
+    {work.thumbnail_url && <Image width={390} height={694} sizes="(max-width: 900px) 72vw, 390px" className={`inline-video-poster${playing ? ' is-hidden' : ''}`} src={work.thumbnail_url} alt="" loading="eager" fetchPriority={priority ? 'high' : 'auto'} onLoad={() => setPreviewReady(true)} />}
+    <video className={`${playing ? 'is-playing' : ''}${work.thumbnail_url ? ' has-poster' : ' no-poster'}`} ref={ref} src={work.media_url ? `${work.media_url}#t=0.08` : undefined} poster={work.thumbnail_url || undefined} muted playsInline preload="metadata" onLoadedMetadata={prepareFirstFrame} onLoadedData={() => setPreviewReady(true)} />
     <span className="inline-video-toggle" aria-hidden="true">{playing ? <Pause size={28} strokeWidth={2.2} /> : <Play size={28} strokeWidth={2.2} fill="currentColor" />}</span>
   </button> : <button className="new-media-card" onClick={() => onOpen(work)} aria-label={`Open ${work.title}`}>
     {mediaFor(work) ? <Image width={780} height={1388} sizes="(max-width: 900px) 72vw, 390px" src={mediaFor(work)!} alt={work.title} loading="eager" /> : <span>{work.title}</span>}
@@ -148,7 +156,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
     <section id="frames" className="new-white-section">
       <div className="new-section-intro" data-home-reveal><h2>beyond the frames</h2><p>i don&apos;t just design experiences, i bring ideas to life through video editing, storytelling, and visual direction , creating compelling visuals that capture attention and communicate ideas.</p></div>
       <div className="new-horizontal-gallery" aria-label="Video and visual work">
-        {beyond.map(work => <VideoCard key={work.id} work={work} onOpen={setViewer} />)}
+        {beyond.map((work, index) => <VideoCard key={work.id} work={work} onOpen={setViewer} priority={index < 4} />)}
       </div>
     </section>
 
