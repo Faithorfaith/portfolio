@@ -7,7 +7,6 @@ import type { Profile, CaseStudy } from './profile-section'
 import type { Project } from './projects-section'
 import type { Work } from './works-gallery'
 import HomepageGameTrain from './homepage-game-train'
-import SplitTransition from './split-transition'
 import { LockKeyhole, Mail, MessageCircle, AtSign, Play, Pause } from 'lucide-react'
 import { normalizeExternalUrl } from '@/lib/content-utils'
 
@@ -52,19 +51,23 @@ function useHeroVideoAudio() {
   useEffect(() => {
     const video = document.querySelector<HTMLVideoElement>('.new-hero-media video')
     if (!video) return
+    let heroVisible = false
     const visibility = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { void video.play() }
+      heroVisible = entry.isIntersecting
+      if (heroVisible) { void video.play() }
       else video.pause()
     }, { threshold: 0.15 })
     visibility.observe(video)
-    const enableAudio = () => {
+    const enableAudio = (event: Event) => {
+      const target = event.target instanceof Element ? event.target : null
+      if (!heroVisible || target?.closest('.new-inline-video, .new-media-dialog')) return
       video.muted = false
       void video.play()
       document.removeEventListener('pointerdown', enableAudio)
       document.removeEventListener('keydown', enableAudio)
     }
-    document.addEventListener('pointerdown', enableAudio, { once: true })
-    document.addEventListener('keydown', enableAudio, { once: true })
+    document.addEventListener('pointerdown', enableAudio)
+    document.addEventListener('keydown', enableAudio)
     return () => { visibility.disconnect(); document.removeEventListener('pointerdown', enableAudio); document.removeEventListener('keydown', enableAudio) }
   }, [])
 }
@@ -124,7 +127,6 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
 
   return <main id="top" className="figma-home">
     <section className="new-hero" aria-labelledby="hero-title">
-      <SplitTransition />
       <nav className="new-home-nav" aria-label="Homepage"><a className="nav-works" href="#featured">works</a><a className="nav-name" href="#top">{profile?.full_name || 'Faith Awokunle'}</a><div className="home-contact nav-contact"><button type="button" aria-label="Show contact links">contact</button><div className="home-contact-popover" role="menu">{profile?.contact_email && <a role="menuitem" href={`mailto:${profile.contact_email}`}><Mail size={15} />Email</a>}{profile?.whatsapp_url && <a role="menuitem" href={profile.whatsapp_url} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} />WhatsApp</a>}{profile?.x_url && <a role="menuitem" href={profile.x_url} target="_blank" rel="noopener noreferrer"><AtSign size={15} />X</a>}{!profile?.contact_email && !profile?.whatsapp_url && !profile?.x_url && <span className="home-contact-empty">Coming soon</span>}</div></div></nav>
       <div className="new-hero-grid">
         <h1 id="hero-title" data-home-reveal>hey,<br />I&apos;m Faith</h1>
