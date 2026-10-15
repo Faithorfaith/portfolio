@@ -1,6 +1,6 @@
 'use client'
 
-import DOMPurify from 'dompurify'
+import DOMPurify from 'isomorphic-dompurify'
 import { createElement } from 'react'
 import SafeEmbed from './safe-embed'
 
