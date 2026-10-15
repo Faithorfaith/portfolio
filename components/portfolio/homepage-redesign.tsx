@@ -81,15 +81,35 @@ function VideoCard({ work, onOpen, priority = false }: { work: Work; onOpen: (wo
   useEffect(() => {
     if (!video || !ref.current) return
     const element = ref.current
-    const observer = new IntersectionObserver(([entry]) => { if (!entry.isIntersecting && !element.paused) { element.pause(); setPlaying(false) } }, { threshold: 0.2 })
+    element.muted = true
+    element.defaultMuted = true
+    const handlePlay = () => setPlaying(true)
+    const handlePause = () => setPlaying(false)
+    element.addEventListener('play', handlePlay)
+    element.addEventListener('pause', handlePause)
+    const observer = new IntersectionObserver(([entry]) => { if (!entry.isIntersecting && !element.paused) { element.pause(); element.muted = true } }, { threshold: 0.2 })
     observer.observe(element)
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      element.removeEventListener('play', handlePlay)
+      element.removeEventListener('pause', handlePause)
+      if (activeVideo === element) activeVideo = null
+    }
   }, [video])
   const toggle = () => {
     if (!ref.current) return
     ref.current.preload = 'auto'
-    if (ref.current.paused) { if (activeVideo && activeVideo !== ref.current) { activeVideo.pause(); activeVideo.muted = true }; activeVideo = ref.current; ref.current.muted = false; void ref.current.play(); setPlaying(true) }
-    else { ref.current.pause(); ref.current.muted = true; setPlaying(false) }
+    if (ref.current.paused) {
+      if (activeVideo && activeVideo !== ref.current) { activeVideo.pause(); activeVideo.muted = true }
+      activeVideo = ref.current
+      ref.current.defaultMuted = false
+      ref.current.muted = false
+      ref.current.volume = 1
+      void ref.current.play().catch(() => setPlaying(false))
+    } else {
+      ref.current.pause()
+      ref.current.muted = true
+    }
   }
   const prepareFirstFrame = () => {
     const element = ref.current
@@ -100,7 +120,7 @@ function VideoCard({ work, onOpen, priority = false }: { work: Work; onOpen: (wo
   return video ? <button className={`new-media-card new-inline-video${previewReady ? ' preview-ready' : ' preview-loading'}`} onClick={toggle} aria-label={`${playing ? 'Pause' : 'Play'} ${work.title}`}>
     <span className="inline-video-loading" aria-hidden="true" />
     {work.thumbnail_url && <Image width={390} height={694} sizes="(max-width: 900px) 72vw, 390px" className={`inline-video-poster${playing ? ' is-hidden' : ''}`} src={work.thumbnail_url} alt="" loading="eager" fetchPriority={priority ? 'high' : 'auto'} onLoad={() => setPreviewReady(true)} />}
-    <video className={`${playing ? 'is-playing' : ''}${work.thumbnail_url ? ' has-poster' : ' no-poster'}`} ref={ref} src={work.media_url ? `${work.media_url}#t=0.08` : undefined} poster={work.thumbnail_url || undefined} muted playsInline preload="metadata" onLoadedMetadata={prepareFirstFrame} onLoadedData={() => setPreviewReady(true)} />
+    <video className={`${playing ? 'is-playing' : ''}${work.thumbnail_url ? ' has-poster' : ' no-poster'}`} ref={ref} src={work.media_url ? `${work.media_url}#t=0.08` : undefined} poster={work.thumbnail_url || undefined} playsInline preload="metadata" onLoadedMetadata={prepareFirstFrame} onLoadedData={() => setPreviewReady(true)} />
     <span className="inline-video-toggle" aria-hidden="true">{playing ? <Pause size={28} strokeWidth={2.2} /> : <Play size={28} strokeWidth={2.2} fill="currentColor" />}</span>
   </button> : <button className="new-media-card" onClick={() => onOpen(work)} aria-label={`Open ${work.title}`}>
     {mediaFor(work) ? <Image width={780} height={1388} sizes="(max-width: 900px) 72vw, 390px" src={mediaFor(work)!} alt={work.title} loading="eager" /> : <span>{work.title}</span>}
