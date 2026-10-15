@@ -81,7 +81,7 @@ function useHeroVideoAudio() {
 }
 
 let activeVideo: HTMLVideoElement | null = null
-function VideoCard({ work, onOpen, priority = false }: { work: Work; onOpen: (work: Work) => void; priority?: boolean }) {
+function VideoCard({ work, onOpen, priority = false }: { work: Work; onOpen?: (work: Work) => void; priority?: boolean }) {
   const video = isVideoUrl(work.media_url)
   const ref = useRef<HTMLVideoElement>(null)
   const [playing, setPlaying] = useState(false)
@@ -135,9 +135,11 @@ function VideoCard({ work, onOpen, priority = false }: { work: Work; onOpen: (wo
     {work.thumbnail_url && <Image width={390} height={694} sizes="(max-width: 900px) 72vw, 390px" className={`inline-video-poster${playing ? ' is-hidden' : ''}`} src={work.thumbnail_url} alt="" loading="eager" fetchPriority={priority ? 'high' : 'auto'} onLoad={() => setPreviewReady(true)} />}
     <video className={`${playing ? 'is-playing' : ''}${work.thumbnail_url ? ' has-poster' : ' no-poster'}`} ref={ref} src={work.media_url ? `${work.media_url}#t=0.08` : undefined} poster={work.thumbnail_url || undefined} playsInline preload="metadata" onLoadedMetadata={prepareFirstFrame} onLoadedData={() => setPreviewReady(true)} />
     <span className="inline-video-toggle" aria-hidden="true">{playing ? <Pause size={28} strokeWidth={2.2} /> : <Play size={28} strokeWidth={2.2} fill="currentColor" />}</span>
-  </button> : <button className="new-media-card" onClick={() => onOpen(work)} aria-label={`Open ${work.title}`}>
+  </button> : onOpen ? <button className="new-media-card" onClick={() => onOpen(work)} aria-label={`Open ${work.title}`}>
     {mediaFor(work) ? <Image width={780} height={1388} sizes="(max-width: 900px) 72vw, 390px" src={mediaFor(work)!} alt={work.title} loading="eager" /> : <span>{work.title}</span>}
-  </button>
+  </button> : <div className="new-media-card" aria-label={work.title}>
+    {mediaFor(work) ? <Image width={780} height={1388} sizes="(max-width: 900px) 72vw, 390px" src={mediaFor(work)!} alt={work.title} loading="eager" /> : <span>{work.title}</span>}
+  </div>
 }
 
 export default function HomepageRedesign({ profile, caseStudies, projects, works }: Props) {
@@ -221,7 +223,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
     <section id="playground" className="new-white-section new-playground">
       <div className="new-section-intro" data-home-reveal><h2>playground</h2><p>Random ideas, creative experiments, and explorations that don&apos;t always need a reason to exist.</p></div>
       <div className="new-horizontal-gallery" aria-label="Playground gallery">
-        {playground.map(work => <VideoCard key={work.id} work={work} onOpen={setViewer} />)}
+        {playground.map(work => <VideoCard key={work.id} work={work} />)}
       </div>
     </section>
 
