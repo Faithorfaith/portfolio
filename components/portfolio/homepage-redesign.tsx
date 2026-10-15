@@ -36,9 +36,7 @@ function useScrollTransitions() {
       const start = Math.max(0, heroEnd - window.innerHeight * 0.82)
       const distance = Math.max(window.innerHeight * 0.95, heroEnd * 0.35)
       const progress = Math.max(0, Math.min(1, (window.scrollY - start) / distance))
-      const navProgress = Math.max(0, Math.min(1, window.scrollY / 560))
       root.style.setProperty('--veil-progress', progress.toFixed(4))
-      root.style.setProperty('--nav-progress', navProgress.toFixed(4))
     }
     update()
     window.addEventListener('scroll', update, { passive: true })
