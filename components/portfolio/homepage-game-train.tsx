@@ -1,5 +1,6 @@
 'use client'
 
+import AppIcon from '@/components/icons/app-icon'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'
 
@@ -14,7 +15,7 @@ const games: GameDefinition[] = [
 ]
 
 function WinCelebration({ children }: { children: React.ReactNode }) {
-  return <div className="game-win-celebration" role="status"><span aria-hidden="true">✦</span>{children}<span aria-hidden="true">✦</span></div>
+  return <div className="game-win-celebration" role="status">{children}</div>
 }
 
 const winner = (board: string[]) => {
@@ -117,7 +118,7 @@ function ConnectFour() {
     setStatus(connectWin(computerBoard, 2) ? 'I connected four.' : computerBoard.every(Boolean) ? 'The board is full.' : 'Your turn.')
   }
   const won = status === 'You connected four.'
-  return <div className={`game-panel ${won ? 'is-win' : ''}`}>{won && <WinCelebration>connected four!</WinCelebration>}<p>{status}</p><div className="connect-columns">{[0,1,2,3,4,5,6].map(column => <button key={column} onClick={() => play(column)} aria-label={`Drop in column ${column + 1}`}>↓</button>)}</div><div className="connect-grid">{board.map((cell, i) => <span key={i} className={cell === 1 ? 'is-player' : cell === 2 ? 'is-computer' : ''} />)}</div><button className="game-action" onClick={() => { setBoard(Array(42).fill(0)); setStatus('Choose a column. You play black.') }}>Replay</button></div>
+  return <div className={`game-panel ${won ? 'is-win' : ''}`}>{won && <WinCelebration>connected four!</WinCelebration>}<p>{status}</p><div className="connect-columns">{[0,1,2,3,4,5,6].map(column => <button key={column} onClick={() => play(column)} aria-label={`Drop in column ${column + 1}`}><AppIcon name="ArrowDown" /></button>)}</div><div className="connect-grid">{board.map((cell, i) => <span key={i} className={cell === 1 ? 'is-player' : cell === 2 ? 'is-computer' : ''} />)}</div><button className="game-action" onClick={() => { setBoard(Array(42).fill(0)); setStatus('Choose a column. You play black.') }}>Replay</button></div>
 }
 
 function Game({ id }: { id: GameId }) {
@@ -172,7 +173,7 @@ export default function HomepageGameTrain({ email }: { email?: string | null }) 
     </div>
     <footer id="footer" className="new-home-footer"><span>Faith Awokunle · {copyright}</span><div><a href="#top">Back to top</a>{email && <a href={`mailto:${email}`}>Contact</a>}</div></footer>
     {active && <dialog ref={dialog} className="game-dialog" onCancel={() => setActive(null)} onClick={event => event.target === event.currentTarget && setActive(null)}>
-      <div><header><span>Coach {String(games.findIndex(game => game.id === active.id) + 1).padStart(2, '0')}</span><button onClick={() => setActive(null)} aria-label="Close game">×</button></header><h2>{active.title}</h2><Game id={active.id} /></div>
+      <div><header><span>Coach {String(games.findIndex(game => game.id === active.id) + 1).padStart(2, '0')}</span><button onClick={() => setActive(null)} aria-label="Close game"><AppIcon name="X" /></button></header><h2>{active.title}</h2><Game id={active.id} /></div>
     </dialog>}
   </section>
 }

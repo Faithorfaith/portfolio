@@ -1,5 +1,6 @@
 'use client'
 
+import AppIcon from '@/components/icons/app-icon'
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import dynamic from 'next/dynamic'
@@ -286,35 +287,27 @@ export default function WritingsManager({ onEditorOpenChange }: { onEditorOpenCh
           className="flex items-center gap-2 text-background rounded-lg font-medium hover:opacity-90 transition-opacity"
           style={{ padding: '7px 14px', background: 'var(--foreground)', fontSize: '12.5px', letterSpacing: '-0.01em' }}
         >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+          <AppIcon name="Plus" className="w-3.5 h-3.5" />
           New Article
         </button>
       </div>
 
       {error && (
         <div className="flex items-center gap-2 p-3 rounded-lg text-sm" style={{ background: 'oklch(0.97 0.01 27)', border: '1px solid oklch(0.92 0.03 27)', color: 'oklch(0.5 0.18 27)' }}>
-          <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <AppIcon name="CircleAlert" className="w-3.5 h-3.5 shrink-0" />
           {error}
         </div>
       )}
       {success && (
         <div className="flex items-center gap-2 p-3 rounded-lg text-sm" style={{ background: 'oklch(0.97 0.03 142)', border: '1px solid oklch(0.91 0.06 142)', color: 'oklch(0.45 0.15 142)' }}>
-          <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
+          <AppIcon name="Check" className="w-3.5 h-3.5 shrink-0" />
           Saved
         </div>
       )}
 
       {writings.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 rounded-xl text-center" style={{ border: '2px dashed oklch(0.91 0 0)' }}>
-          <svg className="w-8 h-8 mb-3" style={{ color: 'var(--foreground)', opacity: 0.18 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
+          <AppIcon name="SquarePen" className="w-8 h-8 mb-3" />
           <p className="text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 0.35 }}>No articles yet</p>
           <p className="text-xs mt-1" style={{ color: 'var(--foreground)', opacity: 0.25 }}>Write your first article to get started</p>
         </div>
@@ -344,14 +337,12 @@ export default function WritingsManager({ onEditorOpenChange }: { onEditorOpenCh
                 >
                   Edit
                 </button>
-                <button
+                <button aria-label="Delete"
                   onClick={() => handleDelete(w.id)}
                   className="p-1.5 rounded-lg transition-colors"
                   style={{ border: '1px solid oklch(0.88 0.04 27)', background: 'oklch(0.98 0.01 27)', color: 'oklch(0.5 0.18 27)' }}
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  <AppIcon name="Trash2" className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>

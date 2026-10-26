@@ -1,4 +1,5 @@
 'use client'
+import AppIcon from '@/components/icons/app-icon'
 
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -137,7 +138,7 @@ export default function DraftTools<T extends Draft>({ kind, draft, onRestore }: 
     <div className="grid grid-cols-3 gap-1 rounded-lg border border-border p-1">
       <button type="button" onClick={checkpoint} disabled={!key} className="draft-action"><span aria-hidden="true">＋</span><span>Snapshot</span></button>
       <button type="button" onClick={() => setHistoryOpen(!historyOpen)} aria-expanded={historyOpen} className="draft-action"><span aria-hidden="true">↺</span><span>History</span><span className="text-foreground/35">{history.length + cloudHistory.length}</span></button>
-      <button type="button" onClick={check} disabled={checking} className="draft-action"><span aria-hidden="true">{checking ? '…' : '✓'}</span><span>{checking ? 'Checking' : 'Preflight'}</span></button>
+      <button type="button" onClick={check} disabled={checking} className="draft-action"><span aria-hidden="true"><AppIcon name={checking ? 'Loader2' : 'Check'} /></span><span>{checking ? 'Checking' : 'Preflight'}</span></button>
     </div>
 
     {historyOpen && <div className="rounded-lg border border-border p-3">
@@ -152,6 +153,6 @@ export default function DraftTools<T extends Draft>({ kind, draft, onRestore }: 
 
     {compare && <div className="rounded-lg border border-border p-3 space-y-2"><div className="flex items-center justify-between"><p className="font-medium">Version comparison</p><button type="button" onClick={() => setCompare(null)}>Close</button></div>{Object.keys(draft).filter((field) => !['id', 'user_id', 'created_at', 'updated_at'].includes(field) && JSON.stringify((draft as Record<string, unknown>)[field]) !== JSON.stringify((compare as Record<string, unknown>)[field])).map((field) => <details key={field}><summary className="cursor-pointer py-1">{field.replaceAll('_', ' ')} changed</summary><div className="grid gap-3 sm:grid-cols-2"><pre className="max-h-48 overflow-auto whitespace-pre-wrap break-all rounded bg-muted p-2">Before: {JSON.stringify((compare as Record<string, unknown>)[field], null, 2)}</pre><pre className="max-h-48 overflow-auto whitespace-pre-wrap break-all rounded bg-muted p-2">Current: {JSON.stringify((draft as Record<string, unknown>)[field], null, 2)}</pre></div></details>)}</div>}
     {issues.length > 0 && <div className="rounded-lg border border-amber-500/20 bg-amber-500/[0.05] p-3"><p className="mb-2 font-medium text-amber-800">Review before publishing</p><ul className="list-disc space-y-1 pl-4 break-words text-[11px] leading-relaxed text-amber-800/80">{issues.map((issue) => <li key={issue}>{issue}</li>)}</ul></div>}
-    {!checking && issues.length === 0 && message.startsWith('Checks passed') && <div className="rounded-lg bg-emerald-500/[0.06] px-3 py-2.5 text-[11px] text-emerald-700">✓ Publishing checks passed</div>}
+    {!checking && issues.length === 0 && message.startsWith('Checks passed') && <div className="rounded-lg bg-emerald-500/[0.06] px-3 py-2.5 text-[11px] text-emerald-700"><AppIcon name="Check" /> Publishing checks passed</div>}
   </section>
 }

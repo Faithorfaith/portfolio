@@ -1,5 +1,6 @@
 'use client'
 
+import AppIcon from '@/components/icons/app-icon'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { fetchWithCache } from '@/lib/cache-utils'
@@ -110,7 +111,7 @@ export default function CaseStudiesSection() {
                       rel="noopener noreferrer"
                       className="inline-block text-sm text-foreground hover:text-foreground/70 transition-colors underline"
                     >
-                      Read Full Case Study →
+                      Read Full Case Study <AppIcon name="ArrowRight" />
                     </a>
                   )}
                 </div>

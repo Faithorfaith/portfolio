@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  devIndicators: false,
+  // Preserve jsdom's package-relative stylesheet lookup during server rendering.
+  serverExternalPackages: ['isomorphic-dompurify', 'jsdom'],
   images: {
     unoptimized: false,
     formats: ['image/webp', 'image/avif'],

@@ -1,5 +1,6 @@
 'use client'
 
+import AppIcon from '@/components/icons/app-icon'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { imageFocus } from '@/lib/image-focus'
@@ -23,8 +24,8 @@ export default function MediaLibrary({ value, onSelect }: { value: string | null
   return <div className="space-y-3 text-xs">
     <button type="button" className="min-h-9 underline underline-offset-4" onClick={() => open ? setOpen(false) : browse('')}> {open ? 'Close media library' : 'Choose an existing image'}</button>
     {open && <div className="rounded-lg border border-border p-3 space-y-2">
-      <div className="flex justify-between items-center"><span>{path || 'Uploads'}</span>{path && <button type="button" onClick={() => browse(path.split('/').slice(0, -1).join('/'))}>↑ Parent folder</button>}</div>
-      {loading ? <p role="status">Loading…</p> : <div className="max-h-56 overflow-auto space-y-1">{files.filter((file) => !file.id || /\.(png|jpe?g|webp|gif|avif)$/i.test(file.name)).map((file) => <button type="button" key={file.name} className="block w-full text-left break-all min-h-9 px-2 rounded hover:bg-muted" onClick={() => file.id ? choose(file.name) : browse([path, file.name].filter(Boolean).join('/'))}>{file.id ? '▧' : '▸'} {file.name}</button>)}{!files.length && <p>No files in this folder.</p>}</div>}
+      <div className="flex justify-between items-center"><span>{path || 'Uploads'}</span>{path && <button type="button" onClick={() => browse(path.split('/').slice(0, -1).join('/'))}><AppIcon name="ArrowUp" /> Parent folder</button>}</div>
+      {loading ? <p role="status">Loading…</p> : <div className="max-h-56 overflow-auto space-y-1">{files.filter((file) => !file.id || /\.(png|jpe?g|webp|gif|avif)$/i.test(file.name)).map((file) => <button type="button" key={file.name} className="block w-full text-left break-all min-h-9 px-2 rounded hover:bg-muted" onClick={() => file.id ? choose(file.name) : browse([path, file.name].filter(Boolean).join('/'))}><AppIcon name={file.id ? 'Image' : 'Folder'} /> {file.name}</button>)}{!files.length && <p>No files in this folder.</p>}</div>}
       <p className="text-foreground/60">Showing up to 100 entries per folder.</p>
       {error && <p role="alert" className="text-red-600">{error}</p>}
     </div>}

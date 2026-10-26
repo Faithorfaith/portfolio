@@ -1,5 +1,6 @@
 'use client'
 
+import AppIcon from '@/components/icons/app-icon'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -42,9 +43,7 @@ export default function AdminLogin() {
       <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 bg-foreground text-background">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-background/10 flex items-center justify-center">
-            <svg className="w-4 h-4 text-background" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+            <AppIcon name="Zap" className="w-4 h-4 text-background" />
           </div>
           <span className="text-sm font-semibold text-background">Studio</span>
         </div>
@@ -70,9 +69,7 @@ export default function AdminLogin() {
           {/* Mobile brand */}
           <div className="lg:hidden flex items-center gap-2">
             <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center">
-              <svg className="w-3.5 h-3.5 text-background" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+              <AppIcon name="Zap" className="w-3.5 h-3.5 text-background" />
             </div>
             <span className="text-sm font-semibold text-foreground">Studio</span>
           </div>
@@ -115,9 +112,7 @@ export default function AdminLogin() {
 
             {error && (
               <div className="flex items-center gap-2 p-3 bg-destructive/8 border border-destructive/20 rounded-lg text-sm text-destructive">
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <AppIcon name="CircleAlert" className="w-4 h-4 shrink-0" />
                 {error}
               </div>
             )}

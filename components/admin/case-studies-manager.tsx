@@ -1,5 +1,6 @@
 'use client'
 
+import AppIcon from '@/components/icons/app-icon'
 import { useState, useEffect } from 'react'
 import { documentNavigation } from '@/lib/document-content'
 import { createClient } from '@/lib/supabase/client'
@@ -489,7 +490,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
   if (editing) {
     const closeEditor = () => { if (draftDirty && !window.confirm('Leave the editor? Unsaved changes are available in recovery.')) return; setEditing(null); setIsCreating(false) }
     return <div className="case-admin-editor">
-      <header className="case-admin-toolbar"><button type="button" onClick={closeEditor}>← All case studies</button><span>{draftDirty ? 'Unsaved changes' : 'All changes saved'}</span><a href={editing.id ? `/case-studies/${editing.slug || editing.id}` : '#'} target="_blank" aria-disabled={!editing.id}>Preview ↗</a><button type="button" className="case-admin-save" disabled={isSaving || isUploading} onClick={handleSave}>{isSaving ? 'Saving…' : editing.published ? 'Save & publish' : 'Save draft'}</button></header>
+      <header className="case-admin-toolbar"><button type="button" onClick={closeEditor}><AppIcon name="ArrowLeft" /> All case studies</button><span>{draftDirty ? 'Unsaved changes' : 'All changes saved'}</span><a href={editing.id ? `/case-studies/${editing.slug || editing.id}` : '#'} target="_blank" aria-disabled={!editing.id}>Preview <AppIcon name="ArrowUpRight" /></a><button type="button" className="case-admin-save" disabled={isSaving || isUploading} onClick={handleSave}>{isSaving ? 'Saving…' : editing.published ? 'Save & publish' : 'Save draft'}</button></header>
       {error && <p className="case-admin-error" role="alert">{error}</p>}
       <div className="case-admin-layout">
         <div className="case-admin-story">
@@ -504,7 +505,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
 
           <div className="case-admin-chapters">
             {editing.sections.map((section, index) => <section className="case-admin-chapter" key={section.id}>
-              <header><div><span>{String(index + 1).padStart(2, '0')}</span><strong>Story chapter</strong></div><div><button type="button" disabled={index === 0} onClick={() => moveSection(section.id, 'up')}>↑</button><button type="button" disabled={index === editing.sections.length - 1} onClick={() => moveSection(section.id, 'down')}>↓</button><button type="button" onClick={() => deleteSection(section.id)}>Remove</button></div></header>
+              <header><div><span>{String(index + 1).padStart(2, '0')}</span><strong>Story chapter</strong></div><div><button aria-label="Move up" type="button" disabled={index === 0} onClick={() => moveSection(section.id, 'up')}><AppIcon name="ArrowUp" /></button><button aria-label="Move down" type="button" disabled={index === editing.sections.length - 1} onClick={() => moveSection(section.id, 'down')}><AppIcon name="ArrowDown" /></button><button type="button" onClick={() => deleteSection(section.id)}>Remove</button></div></header>
               <div className="case-admin-chapter-fields">
                 <input value={section.label} onChange={e => updateSection(section.id, { label: e.target.value })} placeholder="Small label (optional)" />
                 <input value={section.title || ''} onChange={e => updateSection(section.id, { title: e.target.value || null })} placeholder="Chapter title" />
@@ -554,27 +555,27 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
           onClick={createNewCaseStudy}
           className="flex items-center gap-2 px-4 py-2 bg-foreground text-background rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+          <AppIcon name="Plus" className="w-4 h-4" />
           New Case Study
         </button>
       </div>
 
       {error && (
         <div className="flex items-center gap-2 p-3 bg-destructive/8 border border-destructive/20 rounded-lg text-sm text-destructive">
-          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <AppIcon name="CircleAlert" className="w-4 h-4 shrink-0" />
           {error}
         </div>
       )}
       {success && (
         <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
-          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+          <AppIcon name="Check" className="w-4 h-4 shrink-0" />
           Saved successfully
         </div>
       )}
 
       {caseStudies.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-border rounded-xl text-center">
-          <svg className="w-10 h-10 text-foreground/20 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+          <AppIcon name="FileText" className="w-10 h-10 text-foreground/20 mb-3" />
           <p className="text-sm font-medium text-foreground/40">No case studies yet</p>
           <p className="text-xs text-foreground/30 mt-1">Create your first one to get started</p>
         </div>
@@ -609,7 +610,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-foreground/15">
-                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    <AppIcon name="Image" className="w-10 h-10" />
                   </div>
                 )}
                 <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
@@ -619,7 +620,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
                 </div>
                 <div className="absolute top-2.5 left-2.5">
                   <span className="hidden md:inline-flex cursor-grab active:cursor-grabbing items-center gap-1.5 text-xs bg-black/55 text-white px-2 py-1 rounded-full tabular-nums" title="Drag to reorder">
-                    <svg className="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><circle cx="3" cy="3" r="1"/><circle cx="9" cy="3" r="1"/><circle cx="3" cy="9" r="1"/><circle cx="9" cy="9" r="1"/></svg>
+                    <AppIcon name="GripVertical" className="h-3 w-3" />
                     {index + 1}
                   </span>
                 </div>
@@ -648,7 +649,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
                     target="_blank"
                     className="p-1.5 border border-border rounded-lg hover:bg-foreground/5 transition-colors text-foreground/50 hover:text-foreground"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    <AppIcon name="ArrowUpRight" className="w-3.5 h-3.5" />
                   </a>
                   <button
                     type="button"
@@ -657,13 +658,13 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
                     aria-label={cs.published ? 'Lock project' : 'Unlock project'}
                     title={cs.published ? 'Lock project' : 'Unlock project'}
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={cs.published ? 'M7 11V8a5 5 0 0110 0v3M5 11h14v10H5z' : 'M7 11V8a5 5 0 019.5-3.5M5 11h14v10H5z'} /></svg>
+                    <AppIcon name="LockKeyhole" className="w-3.5 h-3.5" />
                   </button>
-                  <button
+                  <button aria-label="Delete"
                     onClick={() => handleDelete(cs.id)}
                     className="p-1.5 border border-red-200 bg-red-50 rounded-lg hover:bg-red-100 transition-colors text-red-500"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    <AppIcon name="Trash2" className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>

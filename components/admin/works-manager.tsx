@@ -1,5 +1,6 @@
 'use client'
 
+import AppIcon from '@/components/icons/app-icon'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -290,7 +291,7 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
         <div className="w-full max-w-xl">
           <div className="mb-5 flex items-start justify-between gap-4">
             <div><p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">{editingId ? 'Update item' : 'New upload'}</p><h3 className="mt-1 text-xl font-medium tracking-tight text-foreground">{editingId ? 'Edit Playground media' : 'Add Playground media'}</h3></div>
-            <button type="button" onClick={resetForm} aria-label="Close upload dialog" className="grid size-8 place-items-center rounded-full text-lg text-foreground/45 transition-colors hover:bg-foreground/[0.06] hover:text-foreground">×</button>
+            <button type="button" onClick={resetForm} aria-label="Close upload dialog" className="grid size-8 place-items-center rounded-full text-lg text-foreground/45 transition-colors hover:bg-foreground/[0.06] hover:text-foreground"><AppIcon name="X" /></button>
           </div>
 
           <div className="space-y-4">
@@ -376,11 +377,11 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
               {isVideoWork(work) && (
                 <div className="relative h-full w-full bg-foreground/[0.06]">
                   {work.thumbnail_url && <img src={work.thumbnail_url} alt="" className="h-full w-full object-cover" loading="lazy" />}
-                  <span className="absolute inset-0 grid place-items-center"><span className="grid size-10 place-items-center rounded-full bg-black/55 text-white"><svg className="size-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg></span></span>
+                  <span className="absolute inset-0 grid place-items-center"><span className="grid size-10 place-items-center rounded-full bg-black/55 text-white"><AppIcon name="Play" className="size-5" /></span></span>
                 </div>
               )}
 
-              <button type="button" aria-label={`Select ${work.title}`} onClick={() => setSelectedIds(prev => prev.includes(work.id) ? prev.filter(id => id !== work.id) : [...prev, work.id])} className={`absolute left-3 top-3 z-10 grid size-6 place-items-center rounded-full border text-xs transition-colors ${selectedIds.includes(work.id) ? 'border-foreground bg-foreground text-background' : 'border-white/70 bg-black/20 text-transparent hover:text-white'}`}>✓</button>
+              <button type="button" aria-label={`Select ${work.title}`} onClick={() => setSelectedIds(prev => prev.includes(work.id) ? prev.filter(id => id !== work.id) : [...prev, work.id])} className={`absolute left-3 top-3 z-10 grid size-6 place-items-center rounded-full border text-xs transition-colors ${selectedIds.includes(work.id) ? 'border-foreground bg-foreground text-background' : 'border-white/70 bg-black/20 text-transparent hover:text-white'}`}><AppIcon name="Check" /></button>
               <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/65 to-transparent p-3 pt-10 opacity-0 transition-opacity group-hover:opacity-100">
                 <span className="text-[10px] text-white/75">{new Date(work.created_at).toLocaleDateString()}</span>
                 <div className="flex gap-1.5">

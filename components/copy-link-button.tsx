@@ -1,5 +1,6 @@
 'use client'
 
+import AppIcon from '@/components/icons/app-icon'
 import { useEffect, useRef, useState } from 'react'
 import { playFeedback } from '@/lib/interaction-feedback'
 
@@ -41,13 +42,9 @@ export default function CopyLinkButton({ className = '' }: { className?: string 
       aria-label="Copy page link"
     >
       {copied ? (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="m5 12 4 4L19 6" />
-        </svg>
+        <AppIcon name="Check" className="w-4 h-4" />
       ) : (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M10 13a5 5 0 007.07.07l2-2a5 5 0 00-7.07-7.07l-1.15 1.15M14 11a5 5 0 00-7.07-.07l-2 2A5 5 0 0012 20l1.15-1.15" />
-        </svg>
+        <AppIcon name="Link" className="w-4 h-4" />
       )}
       <span aria-live="polite">{failed ? 'Try again' : copied ? 'Copied' : 'Copy link'}</span>
     </button>

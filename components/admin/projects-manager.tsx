@@ -1,5 +1,6 @@
 'use client'
 
+import AppIcon from '@/components/icons/app-icon'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import FileUpload from './file-upload'
@@ -130,17 +131,13 @@ export default function ProjectsManager() {
 
       {error && (
         <div className="flex items-center gap-2 p-3 rounded-lg text-sm" style={{ background: 'oklch(0.97 0.01 27)', border: '1px solid oklch(0.92 0.03 27)', color: 'oklch(0.5 0.18 27)' }}>
-          <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <AppIcon name="CircleAlert" className="w-3.5 h-3.5 shrink-0" />
           {error}
         </div>
       )}
       {success && (
         <div className="flex items-center gap-2 p-3 rounded-lg text-sm" style={{ background: 'oklch(0.97 0.03 142)', border: '1px solid oklch(0.91 0.06 142)', color: 'oklch(0.45 0.15 142)' }}>
-          <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
+          <AppIcon name="Check" className="w-3.5 h-3.5 shrink-0" />
           Saved
         </div>
       )}
@@ -150,7 +147,7 @@ export default function ProjectsManager() {
         <div className="flex items-start justify-between border-b px-6 py-5" style={{ borderColor: 'oklch(0.93 0 0)', background: 'oklch(0.985 0 0)' }}>
           <div><p className="text-[10px] uppercase tracking-[0.18em] text-foreground/40">{editingId ? 'Edit entry' : 'New entry'}</p><p className="mt-1 text-lg font-medium text-foreground">{editingId ? 'Edit project' : 'Add project'}</p>
           <p className="text-xs mt-0.5" style={{ color: 'var(--foreground)', opacity: 0.45 }}>Appears in the Projects section of your portfolio</p>
-          </div><button type="button" onClick={() => setIsAdding(false)} className="text-2xl text-foreground/40 hover:text-foreground">×</button>
+          </div><button aria-label="Close" type="button" onClick={() => setIsAdding(false)} className="text-2xl text-foreground/40 hover:text-foreground"><AppIcon name="X" /></button>
         </div>
         <div className="px-6 py-5 space-y-4" style={{ background: 'oklch(1 0 0)' }}>
           <div className="space-y-1.5">
@@ -195,9 +192,7 @@ export default function ProjectsManager() {
         <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--foreground)', opacity: 0.3, letterSpacing: '0.07em' }}>All Projects</p>
         {projects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 rounded-xl text-center" style={{ border: '2px dashed oklch(0.91 0 0)' }}>
-            <svg className="w-7 h-7 mb-2" style={{ color: 'var(--foreground)', opacity: 0.2 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-            </svg>
+            <AppIcon name="List" className="w-7 h-7 mb-2" />
             <p className="text-sm" style={{ color: 'var(--foreground)', opacity: 0.35 }}>No projects yet</p>
           </div>
         ) : (
@@ -209,9 +204,7 @@ export default function ProjectsManager() {
                     <p className="text-sm font-medium text-foreground truncate" style={{ letterSpacing: '-0.01em' }}>{project.title}</p>
                     {project.link && (
                       <a href={project.link} target="_blank" rel="noopener noreferrer" className="shrink-0 transition-opacity" style={{ color: 'var(--foreground)', opacity: 0.25 }}>
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
+                        <AppIcon name="ArrowUpRight" className="w-3 h-3" />
                       </a>
                     )}
                   </div>
@@ -223,15 +216,13 @@ export default function ProjectsManager() {
                   )}
                 </div>
                 <button onClick={() => { setEditingId(project.id); setFormData({ title: project.title, year: project.year || '', type: project.type || '', link: project.link || '', description: project.description || '', cover_image: project.cover_image || '' }); setIsAdding(true); setError(null) }} className="p-1.5 rounded-lg text-foreground/45 hover:text-foreground" aria-label={`Edit ${project.title}`}>
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="m16.862 3.487 3.65 3.65M4 20l4.2-.8L19.9 7.5a2.58 2.58 0 0 0-3.65-3.65L4.55 15.8 4 20Z" /></svg>
-                </button><button
+                  <AppIcon name="Pencil" className="w-3.5 h-3.5" />
+                </button><button aria-label="Delete"
                   onClick={() => handleDelete(project.id)}
                   className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg transition-all"
                   style={{ border: '1px solid oklch(0.88 0.04 27)', background: 'oklch(0.98 0.01 27)', color: 'oklch(0.5 0.18 27)' }}
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  <AppIcon name="Trash2" className="w-3.5 h-3.5" />
                 </button>
               </div>
             ))}

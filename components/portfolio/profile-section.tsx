@@ -1,5 +1,6 @@
 'use client'
 
+import AppIcon from '@/components/icons/app-icon'
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import EmptyState from './empty-state'
@@ -277,8 +278,8 @@ export default function ProfileSection({
             <h2 className="editorial-section-title text-foreground">Selected case studies</h2>
             {caseStudies.length > 1 && (
               <div className="flex items-center gap-1" aria-label="Browse work">
-                <button type="button" aria-label="Previous work" aria-controls="work-rail" disabled={railEdges.start} onClick={() => browseWork(-1)} className="rail-control">←</button>
-                <button type="button" aria-label="Next work" aria-controls="work-rail" disabled={railEdges.end} onClick={() => browseWork(1)} className="rail-control">→</button>
+                <button type="button" aria-label="Previous work" aria-controls="work-rail" disabled={railEdges.start} onClick={() => browseWork(-1)} className="rail-control"><AppIcon name="ArrowLeft" /></button>
+                <button type="button" aria-label="Next work" aria-controls="work-rail" disabled={railEdges.end} onClick={() => browseWork(1)} className="rail-control"><AppIcon name="ArrowRight" /></button>
               </div>
             )}
           </div>
@@ -357,7 +358,7 @@ export default function ProfileSection({
                       quality={72}
                       className="object-cover"
                     />
-                    <span className="work-action-label absolute bottom-2 right-2 rounded-full bg-background/95 px-2.5 py-1.5 text-[11px]">View case study ↗</span>
+                    <span className="work-action-label absolute bottom-2 right-2 rounded-full bg-background/95 px-2.5 py-1.5 text-[11px]">View case study <AppIcon name="ArrowUpRight" /></span>
                   </div>
                 )}
 

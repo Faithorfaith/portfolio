@@ -1,5 +1,6 @@
 'use client'
 
+import AppIcon from '@/components/icons/app-icon'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { isSoundEnabled, playFeedback, SOUND_PREFERENCE_EVENT, SOUND_PREFERENCE_KEY } from '@/lib/interaction-feedback'
@@ -9,7 +10,7 @@ export default function SoundControl() {
   const [enabled, setEnabled] = useState(false)
 
   useEffect(() => setEnabled(isSoundEnabled()), [])
-  if (pathname.startsWith('/admin') || pathname.startsWith('/auth')) return null
+  if (pathname === '/' || pathname.startsWith('/admin') || pathname.startsWith('/auth')) return null
 
   const toggle = () => {
     const next = !enabled
@@ -28,9 +29,9 @@ export default function SoundControl() {
       title={enabled ? 'Sound on' : 'Sound off'}
     >
       {enabled ? (
-        <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+        <AppIcon name="Volume2" className="size-4" />
       ) : (
-        <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m16 9 5 5m0-5-5 5"/></svg>
+        <AppIcon name="VolumeX" className="size-4" />
       )}
     </button>
   )

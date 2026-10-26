@@ -1,5 +1,6 @@
 'use client'
 
+import AppIcon from '@/components/icons/app-icon'
 import { useRef } from 'react'
 import { playFeedback } from '@/lib/interaction-feedback'
 import { normalizeExternalUrl } from '@/lib/content-utils'
@@ -76,7 +77,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                         {project.type}
                       </span>
                       )}
-                      {project.link && <span aria-hidden="true" className="text-foreground/50 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5">↗</span>}
+                      {project.link && <span aria-hidden="true" className="text-foreground/50 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"><AppIcon name="ArrowUpRight" /></span>}
                     </div>
                   </div>
                 </a>
@@ -86,7 +87,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
         ))}
       </div>
       <div ref={cursorLabelRef} hidden className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm" style={{ willChange: 'transform, opacity' }} aria-hidden="true">
-        <span className="mr-1" aria-hidden="true">↗</span> View project
+        <span className="mr-1" aria-hidden="true"><AppIcon name="ArrowUpRight" /></span> View project
       </div>
     </section>
   )
