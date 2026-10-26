@@ -71,5 +71,15 @@ test('scene startup preserves case-study rooms and mounts a walkable motion room
  document.querySelector('[data-destination=projects]').click();for(let frame=0;frame<35;frame++)runtime.renderer.loop();const facingBefore=runtime.targetPos.x;document.querySelector('#scene canvas').dispatchEvent(new dom.window.WheelEvent('wheel',{deltaY:120,bubbles:true,cancelable:true}));assert.ok(runtime.targetPos.x<facingBefore,'corridor scrolling follows a left-facing view, rather than the fixed corridor axis')
  assert.equal(document.querySelector('.intro h1').textContent,"Hi, I'm Faith Awokunle.")
  runtime.enterProject(3);await runtime.motionExhibition.open(0);for(let tick=0;tick<35;tick++)runtime.renderer.loop();assert.equal(runtime.motionExhibition.activeIndex(),0);const lights=runtime.scene.children.filter(object=>object.userData.motionFilmIndex!==undefined);assert.ok(lights.find(object=>object.userData.motionFilmIndex===0).intensity>30);assert.ok(lights.filter(object=>object.userData.motionFilmIndex!==0).every(object=>object.intensity<.1),'only the selected wall display keeps its attached monitor light on')
+ // A held mobile control follows the view, then releases without residual movement.
+ runtime.go(0);for(let tick=0;tick<60;tick++)runtime.renderer.loop();
+ const pointer=(type,id,x=100,y=100)=>{const event=new dom.window.Event(type,{bubbles:true,cancelable:true});Object.assign(event,{pointerId:id,pointerType:'touch',clientX:x,clientY:y});return event};
+ const ahead=document.getElementById('mobileAhead');const startZ=runtime.targetPos.z;
+ ahead.dispatchEvent(pointer('pointerdown',10));for(let tick=0;tick<10;tick++)runtime.renderer.loop();
+ assert.ok(runtime.targetPos.z<startZ,'holding forward walks smoothly into the house');
+ const canvas=document.querySelector('#scene canvas');canvas.dispatchEvent(pointer('pointerdown',11));window.dispatchEvent(pointer('pointermove',11,200,100));window.dispatchEvent(pointer('pointerup',11));
+ const beforeTurn=runtime.targetPos.x;for(let tick=0;tick<30;tick++)runtime.renderer.loop();assert.notEqual(runtime.targetPos.x,beforeTurn,'a second finger can turn while movement stays held');
+ ahead.dispatchEvent(pointer('pointercancel',10));const stopped=runtime.targetPos.clone();for(let tick=0;tick<10;tick++)runtime.renderer.loop();assert.ok(runtime.targetPos.equals(stopped),'touch cancellation stops movement');
+ assert.equal(ahead.classList.contains('held'),false);
  dom.window.close()
 })

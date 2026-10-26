@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Faith Awokunle — Design & Motion</title><link rel="stylesheet" href="/gallery/gallery.css"></head><body>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Faith Awokunle — Design & Motion</title><link rel="stylesheet" href="/gallery/gallery.css"></head><body>
 <div id="scene"></div><div id="shade"></div>
 <header><div class="logo">FAITH AWOKUNLE<small>DESIGNER & VIDEO EDITOR</small></div><div class="topright"><span class="availability"><i class="dot"></i>OPEN TO COLLABORATE</span><button id="enterVR" class="ghost">Enter VR</button><button id="aboutButton" class="ghost">The creator</button></div></header>
 <section class="intro" id="intro"><h1>Hi, I'm Faith Awokunle.</h1><p>I obsess over the little details, question the obvious, and enjoy turning ambitious, sometimes ridiculous ideas into products people can actually use.</p><button class="action" id="start">Explore my work</button></section>
 <div class="bottom"><div class="guide">SCROLL TO WALK · DRAG TO LOOK · CLICK DOORS TO ENTER</div><nav class="roomnav" aria-label="Gallery areas"></nav></div>
-<div id="motionHint">MOTION EXHIBITION · WASD / SCROLL TO WALK · DRAG TO LOOK · SELECT A FILM</div>
+<div id="motionHint">DRAG TO LOOK · SELECT A FILM</div>
 <div id="motionRoomControls" hidden><button id="motionLeave">Leave room</button></div>
 <video id="exhibitVideo" class="world-video-source" playsinline preload="none" aria-label="Selected wall display"></video>
 <div id="filmPlaybackControls" hidden aria-label="Wall video controls"><button id="filmPlay" aria-label="Pause video" data-icon="Pause"></button><input id="filmSeek" type="range" min="0" max="100" step="0.1" value="0" aria-label="Seek video"><output id="filmTime">0:00 / 0:00</output><label class="film-volume"><span data-icon="Volume2"></span><input id="filmVolume" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volume"></label><button id="filmFullscreen" aria-label="Fullscreen video" data-icon="Maximize2"></button><button id="filmClose" aria-label="Stop video" data-icon="X"></button></div><p id="filmStatus" role="status" hidden></p><button id="filmRetry" hidden>Retry video</button>
-<div id="mobileWalk" aria-label="Move through gallery"><button id="mobileAhead" aria-label="Walk forward"></button><button id="mobileBack" aria-label="Walk back"></button></div>
+<div id="mobileWalk" aria-label="Hold arrows to walk, drag the room to look"><span class="walk-label">HOLD TO WALK</span><button id="mobileAhead" aria-label="Walk forward"></button><button id="mobileBack" aria-label="Walk back"></button></div>
 <div id="mobileStudy" aria-label="Current case study presentation"><article id="mobileBoardCopy"></article></div><button id="mobileRoomToggle" aria-label="Toggle room view">View room</button>
 <div id="studyControls" aria-label="Case study presentation controls"><button id="prevStudy">Previous</button><span id="slideStatus" aria-live="polite">01 / 05</span><button id="nextStudy">Next</button><button id="leaveStudy" class="primary">Leave room</button></div>
 <aside id="detail" role="dialog" aria-label="About the creator"><button class="close" id="close" aria-label="Close about the creator"></button><div id="detailInner"></div></aside>
