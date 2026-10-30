@@ -1,6 +1,5 @@
 'use client'
 
-import AppIcon from '@/components/icons/app-icon'
 import { createContext, useContext, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useTextToSpeech } from '@/hooks/use-text-to-speech'
@@ -106,8 +105,8 @@ export function ArticleAudioProvider({ children }: { children: React.ReactNode }
             <p className="truncate text-xs font-medium text-foreground/75">{title}</p>
           </div>
           <div className="flex shrink-0 items-center gap-1">
-            <button type="button" onClick={isPaused ? resume : pause} className="size-11 rounded-full text-foreground/65 hover:bg-foreground/5 hover:text-foreground transition-colors" aria-label={isPaused ? 'Resume article' : 'Pause article'}>{isPaused ? <span className="ml-0.5 text-xs"><AppIcon name="Play" /></span> : <span className="text-xs"><AppIcon name="Pause" /></span>}</button>
-            <button type="button" onClick={stop} className="size-11 rounded-full text-foreground/65 hover:bg-foreground/5 hover:text-foreground transition-colors" aria-label="Close audio player"><AppIcon name="X" /></button>
+            <button type="button" onClick={isPaused ? resume : pause} className="size-11 rounded-full text-foreground/65 hover:bg-foreground/5 hover:text-foreground transition-colors" aria-label={isPaused ? 'Resume article' : 'Pause article'}>{isPaused ? <span className="ml-0.5 text-xs">▶</span> : <span className="text-xs">Ⅱ</span>}</button>
+            <button type="button" onClick={stop} className="size-11 rounded-full text-foreground/65 hover:bg-foreground/5 hover:text-foreground transition-colors" aria-label="Close audio player">×</button>
           </div>
           {usesGeneratedAudio && (
             <div className="flex w-full items-center gap-2 text-[11px] text-foreground/65 tabular-nums">

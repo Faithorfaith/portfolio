@@ -1,6 +1,5 @@
 'use client'
 
-import AppIcon from '@/components/icons/app-icon'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
@@ -116,7 +115,7 @@ export default function TrainFooter({ contactEmail, musicUrl, videoUrls = [], pr
       <div className="carriage-room">
         <header className="carriage-room-header">
           <span>Carriage {active.number}</span>
-          <div className="flex items-center gap-2"><button onClick={() => soundOn ? stopAmbience() : startAmbience()} aria-label={soundOn ? 'Mute carriage music' : 'Play carriage music'}>{soundOn ? 'Sound on' : 'Sound off'}</button><button ref={closeRef} className="carriage-close" onClick={() => setActive(null)} aria-label="Leave carriage"><AppIcon name="X" /></button></div>
+          <div className="flex items-center gap-2"><button onClick={() => soundOn ? stopAmbience() : startAmbience()} aria-label={soundOn ? 'Mute carriage music' : 'Play carriage music'}>{soundOn ? 'Sound on' : 'Sound off'}</button><button ref={closeRef} className="carriage-close" onClick={() => setActive(null)} aria-label="Leave carriage">×</button></div>
         </header>
           <div className="carriage-room-view">
           {!videoUrls[Number(active.number) - 1] && <div className="carriage-window-view" aria-hidden="true"><span /><span /><span /></div>}

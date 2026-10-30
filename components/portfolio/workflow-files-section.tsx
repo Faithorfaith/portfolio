@@ -1,12 +1,11 @@
 'use client'
 
-import AppIcon from '@/components/icons/app-icon'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import type { WorkflowFile } from '@/lib/workflow-files'
 
 function FileGlyph() {
-  return <AppIcon name="FileText" />
+  return <span className="workflow-file-glyph" aria-hidden="true"><i>MD</i></span>
 }
 
 export default function WorkflowFilesSection({ files = [], compact = false }: { files?: WorkflowFile[]; compact?: boolean }) {
@@ -17,7 +16,7 @@ export default function WorkflowFilesSection({ files = [], compact = false }: { 
   const visible = compact ? files.slice(0, 4) : files
   const close = () => { dialog.current?.close(); setActive(null) }
   return <section id="workflow-files" className={`portfolio-deferred w-full max-w-[1080px] mx-auto px-5 sm:px-8 ${compact ? 'pt-12 pb-4' : 'py-12'}`} aria-labelledby="workflow-files-title">
-    <div className="mb-8 flex items-baseline justify-between"><h2 id="workflow-files-title" className="editorial-section-title">Tools from my desk</h2>{compact && files.length > 4 && <Link href="/workflows" className="text-[11px] text-foreground/50 hover:text-foreground">View directory <AppIcon name="ArrowUpRight" /></Link>}</div>
+    <div className="mb-8 flex items-baseline justify-between"><h2 id="workflow-files-title" className="editorial-section-title">Tools from my desk</h2>{compact && files.length > 4 && <Link href="/workflows" className="text-[11px] text-foreground/50 hover:text-foreground">View directory ↗</Link>}</div>
     <div className="workflow-file-list">{visible.map(file => {
       const latest = file.workflow_file_versions[0]
       return <button key={file.id} onClick={() => setActive(file)} className="workflow-file-row">
@@ -25,9 +24,9 @@ export default function WorkflowFilesSection({ files = [], compact = false }: { 
       </button>
     })}</div>
     {active && <dialog ref={dialog} className="workflow-file-dialog" onCancel={close} onClick={e => e.target === e.currentTarget && close()}>
-      <div><header><FileGlyph/><button className="workflow-dialog-close" onClick={close} aria-label="Close file preview"><AppIcon name="X" /></button></header><p className="text-[11px] text-foreground/45">Workflow file</p><h2>{active.name}</h2><p>{active.description}</p>
+      <div><header><FileGlyph/><button className="workflow-dialog-close" onClick={close} aria-label="Close file preview">×</button></header><p className="text-[11px] text-foreground/45">Workflow file</p><h2>{active.name}</h2><p>{active.description}</p>
         {active.workflow_file_versions[0] && <div className="workflow-file-meta"><span>{active.workflow_file_versions[0].file_name.split('.').pop()?.toUpperCase() || 'FILE'}</span><span>Updated {new Date(active.updated_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span><b>Latest · v{active.workflow_file_versions[0].version_number}</b></div>}
-        {active.workflow_file_versions[0] && <a className="workflow-download" href={active.workflow_file_versions[0].file_url} download>Download v{active.workflow_file_versions[0].version_number} <AppIcon name="ArrowDown" /></a>}
+        {active.workflow_file_versions[0] && <a className="workflow-download" href={active.workflow_file_versions[0].file_url} download>Download v{active.workflow_file_versions[0].version_number} ↓</a>}
         <section className="workflow-version-history"><h3>Version history</h3>{active.workflow_file_versions.map(version => { const date = new Date(version.created_at); return <div key={version.id}><time>{date.getFullYear()}</time><span><small>{date.toLocaleDateString('en-US', { month: 'short' })}</small><strong>v{version.version_number} · {version.notes || version.file_name}</strong></span><a href={version.file_url} download>Download</a></div> })}</section>
       </div>
     </dialog>}

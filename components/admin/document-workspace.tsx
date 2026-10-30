@@ -1,6 +1,5 @@
 'use client'
 
-import AppIcon from '@/components/icons/app-icon'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import dynamic from 'next/dynamic'
 import { createClient } from '@/lib/supabase/client'
@@ -57,7 +56,7 @@ export default function DocumentWorkspace(props: Props) {
         {props.appearance && props.onAppearance && <section className="writing-appearance-panel" aria-labelledby="writing-appearance-title">
           <div><h3 id="writing-appearance-title">Article appearance</h3><p>Give this article its own atmosphere.</p></div>
           <fieldset><legend>Paper colour</legend><div className="writing-color-options">{writingBackgrounds.map(option => <label key={option.id} title={option.label}><input type="radio" name="writing-background" value={option.id} checked={props.appearance?.background === option.id} onChange={() => props.onAppearance?.({ ...props.appearance!, background: option.id })} /><span style={{ backgroundColor: option.color }} /><em>{option.label}</em></label>)}</div></fieldset>
-          <p className="text-[11px] leading-relaxed text-foreground/50">Select text in the editor and use the <AppIcon name="Pencil" /> toolbar button to make only that passage handwritten.</p>
+          <p className="text-[11px] leading-relaxed text-foreground/50">Select text in the editor and use the ✎ toolbar button to make only that passage handwritten.</p>
         </section>}
         <details><summary>Cover image</summary><div className="space-y-3 pt-4">
           {props.cover && <img src={props.cover.split('#')[0]} alt="Cover" className="w-full max-h-48 object-cover" />}

@@ -1,6 +1,5 @@
 'use client'
 
-import AppIcon from '@/components/icons/app-icon'
 import { useState } from 'react'
 import { v4 as uuid } from 'uuid'
 
@@ -69,28 +68,28 @@ export default function ButtonBlockBuilder({ buttons = [], onChange }: ButtonBlo
           <div key={btn.id} className="group relative p-3 border rounded-lg bg-foreground/5 space-y-2">
             {/* Move buttons */}
             <div className="absolute -left-6 top-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button aria-label="Move up"
+              <button
                 onClick={() => moveButton(btn.id, 'up')}
                 disabled={index === 0}
                 className="p-0.5 text-foreground/40 hover:text-foreground disabled:opacity-20"
               >
-                <AppIcon name="ArrowUp" />
+                ↑
               </button>
-              <button aria-label="Move down"
+              <button
                 onClick={() => moveButton(btn.id, 'down')}
                 disabled={index === buttons.length - 1}
                 className="p-0.5 text-foreground/40 hover:text-foreground disabled:opacity-20"
               >
-                <AppIcon name="ArrowDown" />
+                ↓
               </button>
             </div>
 
             {/* Delete button */}
-            <button aria-label="Close"
+            <button
               onClick={() => deleteButton(btn.id)}
               className="absolute -right-3 -top-3 p-1 bg-red-100 text-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              <AppIcon name="X" />
+              ✕
             </button>
 
             <input

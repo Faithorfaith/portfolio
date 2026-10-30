@@ -17,14 +17,14 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Faith Awokunle — Designer & Video Editor',
-  description: 'Explore Faith Awokunle’s architectural portfolio of product design, video editing, and visual storytelling.',
+  title: 'Faith Awokunle - Product Designer',
+  description: 'Product designer turning complex digital products into clear, usable experiences across strategy, UX, interface design, and prototyping.',
   icons: {
     icon: { url: '/favicon.ico', type: 'image/png' },
     shortcut: '/favicon.ico',
   },
   openGraph: {
-    title: 'Faith Awokunle — Designer & Video Editor',
+    title: 'Faith Awokunle - Product Designer',
     description: 'Selected product design work, case studies, and writing about making complex products clear and usable.',
     type: 'website',
   },
@@ -38,7 +38,6 @@ export default function RootLayout({
   return (
     <html lang="en" style={{ backgroundColor: 'oklch(1 0 0)' }}>
       <head>
-        <link rel="stylesheet" href="/gallery/fonts.css" />
         {/* Critical inline styles for above-the-fold content */}
         <style>{`
           body { margin: 0; padding: 0; }

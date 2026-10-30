@@ -1,6 +1,5 @@
 'use client'
 
-import AppIcon from '@/components/icons/app-icon'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { fetchWithCache } from '@/lib/cache-utils'
@@ -264,7 +263,7 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                 })}
                 <div className="absolute inset-0 z-10 rounded-md bg-black/35 flex flex-col items-center justify-center text-white transition-colors group-hover:bg-black/55">
                   <span className="text-sm font-medium">+{hiddenWorks.length}</span>
-                  <span className="work-action-label text-[11px] mt-1">View all <AppIcon name="ArrowUpRight" /></span>
+                  <span className="work-action-label text-[11px] mt-1">View all ↗</span>
                 </div>
               </Link>
             )}
@@ -348,7 +347,9 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-foreground/20">
-                            <AppIcon name="Image" className="w-12 h-12" />
+                            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
                           </div>
                         )}
                       </div>
@@ -401,7 +402,9 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
               aria-label="Close project"
               style={{ border: '0.5px solid rgba(0,0,0,0.1)' }}
             >
-              <AppIcon name="X" className="w-5 h-5 text-foreground/60" />
+              <svg className="w-5 h-5 text-foreground/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
 
             <div className="flex h-full">
@@ -437,7 +440,9 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
                   />
                 ) : (
                   <div className="text-foreground/20 text-center">
-                    <AppIcon name="Image" className="w-16 h-16 mx-auto mb-2" />
+                    <svg className="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                     <p className="text-sm">No media</p>
                   </div>
                 )}
@@ -446,9 +451,9 @@ export default function WorksGallery({ onSubPageChange, variant = 'full', initia
               {/* Minimal controls; Playground stays media-first. */}
               <div className="playground-viewer-controls p-4 md:p-6 flex flex-col">
                 <div className="flex items-center gap-5 mb-3">
-                  <button type="button" className="rail-control playground-nav-button" aria-label="Previous project" disabled={works[0]?.id === selectedWork!.id} onClick={() => stepWork(-1)}><AppIcon name="ArrowLeft" /></button>
+                  <button type="button" className="rail-control playground-nav-button" aria-label="Previous project" disabled={works[0]?.id === selectedWork!.id} onClick={() => stepWork(-1)}>←</button>
                   <span className="text-xs text-foreground/60 tabular-nums">{works.findIndex((work) => work.id === selectedWork!.id) + 1} / {works.length}</span>
-                  <button type="button" className="rail-control playground-nav-button" aria-label="Next project" disabled={works.at(-1)?.id === selectedWork!.id} onClick={() => stepWork(1)}><AppIcon name="ArrowRight" /></button>
+                  <button type="button" className="rail-control playground-nav-button" aria-label="Next project" disabled={works.at(-1)?.id === selectedWork!.id} onClick={() => stepWork(1)}>→</button>
                 </div>
                 <div className="flex-1" />
                 <div className="playground-viewer-thumbnails flex max-w-full items-center gap-1.5 overflow-x-auto pb-1">

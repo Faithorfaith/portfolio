@@ -1,6 +1,5 @@
 'use client'
 
-import AppIcon from '@/components/icons/app-icon'
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { fetchWithCache, batchFetch } from '@/lib/cache-utils'
@@ -216,17 +215,24 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
                 >
                   {isPlaying && audioTitle === selectedWriting.title && !isPaused ? (
                     <>
-                      <AppIcon name="Pause" className="w-4 h-4 animate-pulse" />
+                      <svg className="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                        <rect x="6" y="4" width="3" height="16" />
+                        <rect x="15" y="4" width="3" height="16" />
+                      </svg>
                       Pause
                     </>
                   ) : isPlaying && audioTitle === selectedWriting.title && isPaused ? (
                     <>
-                      <AppIcon name="Play" className="w-4 h-4" />
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
                       Resume
                     </>
                   ) : (
                     <>
-                      <AppIcon name="Play" className="w-4 h-4" />
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
                       Listen
                     </>
                   )}
@@ -250,7 +256,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
               <div className="writing-content-rail"><ArticleBody blocks={articleBlocks} typeface={appearance.typeface} /></div>
               <div className="writing-next-actions">
                 <Link href="/writing">Back to writing</Link>
-                {writings.find((writing) => writing.id !== selectedWriting.id) && <Link href={`/writing/${slugify(writings.find((writing) => writing.id !== selectedWriting.id)!.title)}`}>Next note <AppIcon name="ArrowRight" /></Link>}
+                {writings.find((writing) => writing.id !== selectedWriting.id) && <Link href={`/writing/${slugify(writings.find((writing) => writing.id !== selectedWriting.id)!.title)}`}>Next note →</Link>}
               </div>
             </div>
           </article>
@@ -282,7 +288,7 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
           })}
         </div>
         <div ref={articleCursorRef} className="fixed top-0 left-0 z-[80] pointer-events-none opacity-0 px-2.5 py-1.5 rounded-full bg-foreground text-background text-[11px] whitespace-nowrap transition-opacity duration-150 shadow-sm" aria-hidden="true">Read article</div>
-        {writings.length > 4 && <Link href="/writing" className="mt-5 inline-flex min-h-9 items-center text-xs text-foreground/50 hover:text-foreground transition-colors">View all writing <AppIcon name="ArrowRight" /></Link>}
+        {writings.length > 4 && <Link href="/writing" className="mt-5 inline-flex min-h-9 items-center text-xs text-foreground/50 hover:text-foreground transition-colors">View all writing →</Link>}
       </section>
     )
   }

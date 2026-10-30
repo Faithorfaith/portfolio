@@ -1,6 +1,5 @@
 'use client'
 
-import AppIcon from '@/components/icons/app-icon'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -81,7 +80,7 @@ export default function ToolsGallery() {
                         rel="noopener noreferrer"
                         className="inline-block mt-3 text-sm text-foreground hover:text-foreground/70 transition-colors underline"
                       >
-                        View Tool <AppIcon name="ArrowRight" />
+                        View Tool →
                       </a>
                     )}
                   </div>

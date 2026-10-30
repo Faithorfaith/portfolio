@@ -9,7 +9,6 @@ export default function MotionOrchestrator() {
   const pathname = usePathname()
 
   useLayoutEffect(() => {
-    if (pathname === '/') return
     const paper = document.createElement('div')
     paper.className = 'page-paper-transition'
     paper.setAttribute('aria-hidden', 'true')

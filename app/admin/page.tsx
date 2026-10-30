@@ -1,6 +1,5 @@
 'use client'
 
-import AppIcon from '@/components/icons/app-icon'
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import AdminOverview from '@/components/admin/admin-overview'
@@ -14,15 +13,16 @@ import WorkflowFilesManager from '@/components/admin/workflow-files-manager'
 type Tab = 'overview' | 'profile' | 'case-studies' | 'projects' | 'works' | 'beyond' | 'writing' | 'workflow-files'
 type NavItem = { id: Tab; label: string; eyebrow: string; icon: ReactNode }
 
+const icon = (path: string) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d={path} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
 const NAV_ITEMS: NavItem[] = [
-  { id: 'overview', label: 'Overview', eyebrow: 'Start here', icon: <AppIcon name="LayoutGrid" /> },
-  { id: 'profile', label: 'Profile', eyebrow: 'Identity', icon: <AppIcon name="UserRound" /> },
-  { id: 'case-studies', label: 'Case studies', eyebrow: 'Featured work', icon: <AppIcon name="FileText" /> },
-  { id: 'works', label: 'Playground', eyebrow: 'Visual archive', icon: <AppIcon name="Images" /> },
-  { id: 'beyond', label: 'Beyond the frames', eyebrow: 'Video work', icon: <AppIcon name="Video" /> },
-  { id: 'projects', label: 'Archives', eyebrow: 'Built things', icon: <AppIcon name="Archive" /> },
-  { id: 'writing', label: 'Writing', eyebrow: 'Editorial', icon: <AppIcon name="SquarePen" /> },
-  { id: 'workflow-files', label: 'Workflow files', eyebrow: 'Downloads', icon: <AppIcon name="Download" /> },
+  { id: 'overview', label: 'Overview', eyebrow: 'Start here', icon: icon('M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z') },
+  { id: 'profile', label: 'Profile', eyebrow: 'Identity', icon: icon('M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0') },
+  { id: 'case-studies', label: 'Case studies', eyebrow: 'Featured work', icon: icon('M6 3h9l4 4v14H6zM15 3v5h4M9 13h7M9 17h7') },
+  { id: 'works', label: 'Playground', eyebrow: 'Visual archive', icon: icon('M4 19V5h16v14H4Zm2-3 4-4 3 3 2-2 3 3M16 9h.01') },
+  { id: 'beyond', label: 'Beyond the frames', eyebrow: 'Video work', icon: icon('M4 5h16v14H4zM9 9l6 3-6 3z') },
+  { id: 'projects', label: 'Archives', eyebrow: 'Built things', icon: icon('M4 7h16M6 4h12l2 3v13H4V7l2-3Zm2 7h8M8 15h5') },
+  { id: 'writing', label: 'Writing', eyebrow: 'Editorial', icon: icon('M5 19h4L19 9l-4-4L5 15v4Zm8-12 4 4M5 15l4 4') },
+  { id: 'workflow-files', label: 'Workflow files', eyebrow: 'Downloads', icon: icon('M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6') },
 ]
 
 export default function AdminPage() {
@@ -55,13 +55,13 @@ export default function AdminPage() {
   return <div className={`admin-surface admin-shell-v2 ${isEditorOpen ? 'has-editor' : ''}`}>
     <aside className="admin-sidebar-v2">
       <a href="/admin" className="admin-brand" onClick={event => { event.preventDefault(); setActiveTab('overview') }}><span>FA</span><div><strong>Faith’s Studio</strong><small>Portfolio editor</small></div></a>
-      <label className="admin-sidebar-search"><span><AppIcon name="Search" /></span><input aria-label="Search admin" placeholder="Search" /></label>
+      <label className="admin-sidebar-search"><span>⌕</span><input aria-label="Search admin" placeholder="Search" /></label>
       <nav aria-label="Admin navigation">
         {NAV_ITEMS.map(item => <button type="button" key={item.id} onClick={() => setActiveTab(item.id)} aria-current={activeTab === item.id ? 'page' : undefined}>
-          <span className="admin-nav-icon">{item.icon}</span><span><small>{item.eyebrow}</small><strong>{item.label}</strong></span><i><AppIcon name="ArrowUpRight" /></i>
+          <span className="admin-nav-icon">{item.icon}</span><span><small>{item.eyebrow}</small><strong>{item.label}</strong></span><i>↗</i>
         </button>)}
       </nav>
-      <div className="admin-sidebar-footer"><a href="/" target="_blank" rel="noreferrer">View portfolio <span><AppIcon name="ArrowUpRight" /></span></a><button type="button" onClick={handleLogout}>Sign out</button></div>
+      <div className="admin-sidebar-footer"><a href="/" target="_blank" rel="noreferrer">View portfolio <span>↗</span></a><button type="button" onClick={handleLogout}>Sign out</button></div>
     </aside>
 
     <section className="admin-workspace-v2">

@@ -1,6 +1,5 @@
 'use client'
 
-import AppIcon from '@/components/icons/app-icon'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -101,7 +100,7 @@ export default function CaseStudyClient({ initialCaseStudy, initialLinks = [] }:
 
   return <main className="case-story min-h-screen bg-background">
     <div className="fixed left-0 top-0 z-[60] h-px bg-foreground/70 transition-[width] duration-100" style={{ width: `${readingProgress}%` }} aria-hidden="true" />
-    <a href="/" className="case-story-back" aria-label="Back to homepage"><AppIcon name="ArrowLeft" /></a>
+    <a href="/" className="case-story-back" aria-label="Back to homepage">←</a>
     <article>
       <header className="case-story-hero" data-motion-section>
         <h1>{caseStudy.title} <span>({new Date(caseStudy.created_at).getFullYear()})</span></h1>
@@ -127,13 +126,13 @@ export default function CaseStudyClient({ initialCaseStudy, initialLinks = [] }:
         </section>)}
       </div>
 
-      {relatedArticle && <section className="case-story-related" data-motion-section><p>Related writing</p><a href={`/writing/${encodeURIComponent(slugify(relatedArticle.title))}`}><span>{relatedArticle.title}</span><span>Read note <AppIcon name="ArrowRight" /></span></a></section>}
+      {relatedArticle && <section className="case-story-related" data-motion-section><p>Related writing</p><a href={`/writing/${encodeURIComponent(slugify(relatedArticle.title))}`}><span>{relatedArticle.title}</span><span>Read note →</span></a></section>}
       <nav className="case-story-pagination" aria-label="Case study navigation">
-        {previous ? <a href={href(previous)}><AppIcon name="ArrowLeft" /> Prev</a> : <span />}
-        {next ? <a href={href(next)}>Next <AppIcon name="ArrowRight" /></a> : <a href="/">Home <AppIcon name="ArrowRight" /></a>}
+        {previous ? <a href={href(previous)}>← Prev</a> : <span />}
+        {next ? <a href={href(next)}>Next →</a> : <a href="/">Home →</a>}
       </nav>
     </article>
 
-    {expandedImage && <div className="image-lightbox fixed inset-0 z-[90] flex items-center justify-center bg-black/88 p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Expanded case study image" onClick={() => setExpandedImage(null)}><button ref={closeButton} type="button" onClick={() => setExpandedImage(null)} className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Close image"><AppIcon name="X" /></button><img src={expandedImage.src} alt={expandedImage.alt} className="image-lightbox-media max-h-full max-w-full object-contain" onClick={event => event.stopPropagation()} /></div>}
+    {expandedImage && <div className="image-lightbox fixed inset-0 z-[90] flex items-center justify-center bg-black/88 p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Expanded case study image" onClick={() => setExpandedImage(null)}><button ref={closeButton} type="button" onClick={() => setExpandedImage(null)} className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Close image">×</button><img src={expandedImage.src} alt={expandedImage.alt} className="image-lightbox-media max-h-full max-w-full object-contain" onClick={event => event.stopPropagation()} /></div>}
   </main>
 }

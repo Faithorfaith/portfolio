@@ -1,8 +1,6 @@
 'use client'
 
-import AppIcon from '@/components/icons/app-icon'
 import Link from 'next/link'
-import SocialContact from './social-contact'
 import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Profile, CaseStudy } from './profile-section'
@@ -21,11 +19,11 @@ const fallbackStudies: CaseStudy[] = Array.from({ length: 6 }, (_, index) => ({ 
 const fallbackProjects: Project[] = Array.from({ length: 4 }, (_, index) => ({ id: `placeholder-project-${index}`, title: ['Custom QR generator', 'AuditSharp', 'Billr', 'Time Traveler'][index], year: '2026', type: index ? 'Web app' : 'Figma plugin', link: null, description: 'A compact independent project built to make a useful idea tangible.', created_at: '2026-01-01' }))
 
 function WhatsAppIcon({ size = 15 }: { size?: number }) {
-  return <AppIcon name="MessageCircle"  />
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.148-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51-.173-.009-.371-.011-.57-.011-.198 0-.52.074-.792.372-.273.297-1.04 1.016-1.04 2.479s1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.693.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.981.999-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.887-9.884a9.82 9.82 0 0 1 7.021 2.91 9.83 9.83 0 0 1 2.898 7.023c-.002 5.45-4.437 9.884-9.883 9.884m8.413-18.297A11.8 11.8 0 0 0 12.055 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.9 11.9 0 0 0 5.689 1.448h.005c6.558 0 11.894-5.335 11.897-11.893a11.82 11.82 0 0 0-3.489-8.413Z" /></svg>
 }
 
 function XIcon({ size = 15 }: { size?: number }) {
-  return <AppIcon name="ArrowUpRight"  />
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.657l-5.214-6.817-5.967 6.817H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117Z" /></svg>
 }
 
 function useReveal() {
@@ -164,7 +162,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
 
   return <main id="top" className="figma-home">
     <section className="new-hero" aria-labelledby="hero-title">
-      <nav className="new-home-nav" aria-label="Homepage"><a className="nav-works" href="#featured">works</a><a className="nav-name" href="#top">{profile?.full_name || 'Faith Awokunle'}</a><SocialContact profile={profile || {}} /></nav>
+      <nav className="new-home-nav" aria-label="Homepage"><a className="nav-works" href="#featured">works</a><a className="nav-name" href="#top">{profile?.full_name || 'Faith Awokunle'}</a><div className="home-contact nav-contact"><button type="button" aria-label="Show contact links">contact</button><div className="home-contact-popover" role="menu">{profile?.contact_email && <a role="menuitem" href={`mailto:${profile.contact_email}`}><Mail size={15} />Email</a>}{profile?.whatsapp_url && <a role="menuitem" href={normalizeWhatsAppUrl(profile.whatsapp_url)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon />WhatsApp</a>}{profile?.x_url && <a role="menuitem" href={normalizeExternalUrl(profile.x_url)} target="_blank" rel="noopener noreferrer"><XIcon />X</a>}{!profile?.contact_email && !profile?.whatsapp_url && !profile?.x_url && <span className="home-contact-empty">Coming soon</span>}</div></div></nav>
       <div className="new-hero-grid">
         <h1 id="hero-title" data-home-reveal>hey,<br />I&apos;m Faith</h1>
         <div className="new-hero-media" data-home-reveal>
@@ -232,7 +230,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
     <HomepageGameTrain email={profile?.contact_email} />
 
     {viewer && <dialog ref={dialog} className="new-media-dialog" onCancel={() => setViewer(null)} onClick={event => event.target === event.currentTarget && setViewer(null)}>
-      <div><button onClick={() => setViewer(null)} aria-label="Close media"><AppIcon name="X" /></button>{isVideoUrl(viewer.media_url) ? <video src={viewer.media_url || undefined} poster={viewer.thumbnail_url || undefined} controls autoPlay playsInline /> : mediaFor(viewer) && <img src={mediaFor(viewer)!} alt={viewer.title} />}</div>
+      <div><button onClick={() => setViewer(null)} aria-label="Close media">×</button>{isVideoUrl(viewer.media_url) ? <video src={viewer.media_url || undefined} poster={viewer.thumbnail_url || undefined} controls autoPlay playsInline /> : mediaFor(viewer) && <img src={mediaFor(viewer)!} alt={viewer.title} />}</div>
     </dialog>}
   </main>
 }
