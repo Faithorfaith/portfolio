@@ -162,19 +162,19 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
 
   return <main id="top" className="figma-home">
     <section className="new-hero" aria-labelledby="hero-title">
-      <nav className="new-home-nav" aria-label="Homepage"><a className="nav-works" href="#featured">works</a><a className="nav-name" href="#top">{profile?.full_name || 'Faith Awokunle'}</a><div className="home-contact nav-contact"><button type="button" aria-label="Show contact links">contact</button><div className="home-contact-popover" role="menu">{profile?.contact_email && <a role="menuitem" href={`mailto:${profile.contact_email}`}><Mail size={15} />Email</a>}{profile?.whatsapp_url && <a role="menuitem" href={normalizeWhatsAppUrl(profile.whatsapp_url)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon />WhatsApp</a>}{profile?.x_url && <a role="menuitem" href={normalizeExternalUrl(profile.x_url)} target="_blank" rel="noopener noreferrer"><XIcon />X</a>}{!profile?.contact_email && !profile?.whatsapp_url && !profile?.x_url && <span className="home-contact-empty">Coming soon</span>}</div></div></nav>
+      <nav className="new-home-nav" aria-label="Homepage"><a className="nav-works" href="#featured">Works</a><a className="nav-name" href="#top">{profile?.full_name || 'Faith Awokunle'}</a><div className="home-contact nav-contact"><button type="button" aria-label="Show contact links">Contact</button><div className="home-contact-popover" role="menu">{profile?.contact_email && <a role="menuitem" href={`mailto:${profile.contact_email}`}><Mail size={15} />Email</a>}{profile?.whatsapp_url && <a role="menuitem" href={normalizeWhatsAppUrl(profile.whatsapp_url)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon />WhatsApp</a>}{profile?.x_url && <a role="menuitem" href={normalizeExternalUrl(profile.x_url)} target="_blank" rel="noopener noreferrer"><XIcon />X</a>}{!profile?.contact_email && !profile?.whatsapp_url && !profile?.x_url && <span className="home-contact-empty">Coming soon</span>}</div></div></nav>
       <div className="new-hero-grid">
-        <h1 id="hero-title" data-home-reveal>hey,<br />I&apos;m Faith</h1>
+        <h1 id="hero-title" data-home-reveal>Hey,<br />I&apos;m Faith</h1>
         <div className="new-hero-media" data-home-reveal>
           {heroMedia ? heroIsVideo ? <video src={heroMedia} autoPlay loop muted playsInline preload="auto" aria-label="Hero video" /> : <img src={heroMedia} alt="Faith Awokunle" /> : <span aria-hidden="true" />}
         </div>
-        <p data-home-reveal>{intro.toLowerCase()}</p>
+        <p data-home-reveal>{intro}</p>
       </div>
-      <p className="new-experience" data-home-reveal>{supporting.toLowerCase()}</p>
+      <p className="new-experience" data-home-reveal>{supporting}</p>
     </section>
 
     <section id="featured" className="new-featured">
-      <div className="new-featured-copy"><h2>featured projects</h2><p>A selection of projects where I&apos;ve tackled complex challenges, shaped ideas, and designed experiences that make a difference.</p></div>
+      <div className="new-featured-copy"><h2>Featured projects</h2><p>A selection of projects where I&apos;ve tackled complex challenges, shaped ideas, and designed experiences that make a difference.</p></div>
       <div className="new-featured-grid">
         {visibleStudies.slice(0, 6).map((study, index) => {
           const content = <>
@@ -191,14 +191,14 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
     </section>
 
     <section id="frames" className="new-white-section">
-      <div className="new-section-intro" data-home-reveal><h2>beyond the frames</h2><p>i don&apos;t just design experiences, i bring ideas to life through video editing, storytelling, and visual direction , creating compelling visuals that capture attention and communicate ideas.</p></div>
+      <div className="new-section-intro" data-home-reveal><h2>Beyond the frames</h2><p>I don&apos;t just design experiences, I bring ideas to life through video editing, storytelling, and visual direction , creating compelling visuals that capture attention and communicate ideas.</p></div>
       <div className="new-horizontal-gallery" aria-label="Video and visual work">
         {beyond.map(work => <VideoCard key={work.id} work={work} onOpen={setViewer} />)}
       </div>
     </section>
 
     <section id="archives" className="new-white-section new-archives">
-      <div className="new-section-intro" data-home-reveal><h2>my archives</h2><p>A collection of tools, experiments, and side projects I&apos;ve brought to life , turning ideas into things people can actually use.</p></div>
+      <div className="new-section-intro" data-home-reveal><h2>My archives</h2><p>A collection of tools, experiments, and side projects I&apos;ve brought to life , turning ideas into things people can actually use.</p></div>
       <div className="new-archive-scroll">
         {Object.entries(visibleProjects.slice(0, 6).reduce<Record<string, Project[]>>((groups, project) => {
           const year = project.year || String(new Date(project.created_at).getFullYear())
@@ -221,7 +221,7 @@ export default function HomepageRedesign({ profile, caseStudies, projects, works
     </section>
 
     <section id="playground" className="new-white-section new-playground">
-      <div className="new-section-intro" data-home-reveal><h2>playground</h2><p>Random ideas, creative experiments, and explorations that don&apos;t always need a reason to exist.</p></div>
+      <div className="new-section-intro" data-home-reveal><h2>Playground</h2><p>Random ideas, creative experiments, and explorations that don&apos;t always need a reason to exist.</p></div>
       <div className="new-horizontal-gallery" aria-label="Playground gallery">
         {playground.map(work => <VideoCard key={work.id} work={work} />)}
       </div>
