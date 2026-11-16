@@ -8,14 +8,13 @@ import { MovingText } from './portfolio-shelf'
 
 interface MenuPreviews {
   caseStudies: string[]
-  caseStudyPreviews?: { src: string; title: string }[]
   playground: string[]
   writing: { title: string; cover: string | null } | null
+  books?: { title: string; cover: string | null }[]
 }
 
 export default function PortfolioMenu({ photos, name }: { photos: string[]; name: string }) {
   const dialog = useRef<HTMLDialogElement>(null)
-  const destinationsRail = useRef<HTMLElement>(null)
   const transition = useRef<HTMLElement | null>(null)
   const router = useRouter()
   const pathname = usePathname()
@@ -44,22 +43,6 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
     dialog.current?.close()
     clearTransition()
   }, [pathname])
-
-  useEffect(() => {
-    const rail = destinationsRail.current
-    if (!rail) return
-    const scrollCards = (event: WheelEvent) => {
-      if (event.ctrlKey || event.shiftKey || Math.abs(event.deltaX) >= Math.abs(event.deltaY) ||
-          rail.scrollWidth <= rail.clientWidth || window.matchMedia('(max-width: 640px)').matches) return
-      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? rail.clientWidth : 1
-      const next = Math.max(0, Math.min(rail.scrollWidth - rail.clientWidth, rail.scrollLeft + event.deltaY * unit))
-      if (next === rail.scrollLeft) return
-      event.preventDefault()
-      rail.scrollLeft = next
-    }
-    rail.addEventListener('wheel', scrollCards, { passive: false })
-    return () => rail.removeEventListener('wheel', scrollCards)
-  }, [])
 
   const openMenu = () => {
     const menu = dialog.current
@@ -140,11 +123,13 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
     window.setTimeout(() => surface.remove(), 5000)
   }
   const destinations = [
-    { label: 'Case Studies', href: '/case-studies', images: previews?.caseStudyPreviews ?? previews?.caseStudies.map(src => ({ src, title: '' })) },
-    { label: 'Playground', href: '/playground', images: previews?.playground.map(src => ({ src, title: '' })) },
+    { label: 'Case Studies', href: '/case-studies', images: previews?.caseStudies },
+    { label: 'Playground', href: '/playground', images: previews?.playground },
     { label: 'My Writings', href: '/writing' },
-    { label: 'About', href: '/about', images: photos.slice(0, 1).map(src => ({ src, title: '' })) },
+    { label: 'About', href: '/about', images: photos },
   ]
+
+  const books = previews?.books ?? (previews?.writing ? [previews.writing] : [])
 
   return (
     <>
@@ -154,19 +139,14 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
           <Link href="/" onClick={() => dialog.current?.close()}>Faith Awokunle</Link>
           <button type="button" autoFocus onClick={closeMenu}>Close</button>
         </div>
-        <nav ref={destinationsRail} className="portfolio-menu-destinations" aria-label="Portfolio sections">
+        <nav className="portfolio-menu-destinations" aria-label="Portfolio sections">
           {destinations.map(item => (
             <Link key={item.href} href={item.href} onClick={event => void openDestination(event, item.href)}>
-              <span className="portfolio-menu-card-header" aria-hidden="true">
-                <span>{name}</span>
-                <span>Product designer</span>
-              </span>
               <span className="portfolio-menu-label"><MovingText>{item.label}</MovingText></span>
               {!!item.images?.length && (
                 <span className="portfolio-menu-covers" data-destination={item.href} aria-hidden="true">
-                  {item.images.map(({ src, title }) => (
+                  {item.images.map(src => (
                     <span className="portfolio-menu-cover" key={src}>
-                      {title && <span className="portfolio-menu-cover-title">{title}</span>}
                       <span className="portfolio-menu-cover-frame">
                         <Image src={src} fill quality={60} sizes="(max-width: 640px) 250px, 300px" alt="" />
                       </span>
@@ -174,14 +154,18 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
                   ))}
                 </span>
               )}
-              {item.href === '/writing' && previews?.writing && (
-                <span className="portfolio-menu-book" aria-hidden="true">
-                  <span className="portfolio-book-front">
-                    {previews.writing.cover && (
-                      <span className="portfolio-book-art"><Image src={previews.writing.cover} fill quality={60} sizes="90px" alt="" /></span>
-                    )}
-                    <span className="portfolio-book-copy"><strong>{previews.writing.title}</strong><span>{name}</span></span>
-                  </span>
+              {item.href === '/writing' && books.length > 0 && (
+                <span className="portfolio-menu-covers" aria-hidden="true">
+                  {books.map(book => (
+                    <span className="portfolio-menu-book" key={book.title}>
+                      <span className="portfolio-book-front">
+                        {book.cover && (
+                          <span className="portfolio-book-art"><Image src={book.cover} fill quality={60} sizes="90px" alt="" /></span>
+                        )}
+                        <span className="portfolio-book-copy"><strong>{book.title}</strong><span>{name}</span></span>
+                      </span>
+                    </span>
+                  ))}
                 </span>
               )}
             </Link>

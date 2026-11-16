@@ -34,7 +34,7 @@ export default function PortfolioHeader({ profile }: {
   const social = normalizeExternalUrl(profile?.x_url)
   const photos = [...new Set([
     profile?.avatar_url, profile?.hero_image_1, ...(profile?.gallery_images || []), profile?.hero_image_2,
-  ].filter((src): src is string => Boolean(src && /^https?:\/\//i.test(src))))].slice(0, 2)
+  ].filter((src): src is string => Boolean(src && /^https?:\/\//i.test(src))))].slice(0, 3)
 
   return (
     <header className="portfolio-opening-header">

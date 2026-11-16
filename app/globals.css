@@ -1087,46 +1087,50 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   font-size: 13px;
 }
 .portfolio-menu-top button { min-height: 44px; cursor: pointer; }
+.portfolio-menu-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  overflow: clip;
+}
 .portfolio-menu-destinations {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: clamp(280px, 28vw, 420px);
-  gap: clamp(24px, 4vw, 62px);
-  margin: clamp(16px, 2svh, 32px) auto 0;
-  padding: 0 clamp(28px, 12vw, 180px) 42px;
-  overflow-x: auto;
-  scrollbar-width: none;
+  flex: 1;
+  min-height: 0;
+  width: min(100%, 1600px);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-content: center;
+  grid-template-rows: minmax(0, min(64dvh, 530px));
+  gap: clamp(10px, 2vw, 32px);
+  margin-inline: auto;
+  padding: 0 clamp(16px, 4vw, 62px) clamp(12px, 4dvh, 42px);
 }
 .portfolio-menu-destinations > a {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: start;
-  aspect-ratio: 4 / 6;
-  gap: 16px;
-  padding: 12px 12px 16px;
-  font-size: clamp(22px, 3vw, 42px);
+  justify-content: space-between;
+  min-width: 0;
+  min-height: 0;
+  gap: 8px;
+  padding: clamp(10px, 1.3vw, 18px);
+  font-size: clamp(18px, 2.4vw, 38px);
   line-height: 1;
 }
-.portfolio-menu-card-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  font-family: var(--font-dm-mono), ui-monospace, monospace;
-  font-size: 10px;
-  line-height: 1.2;
-}
+.portfolio-menu-label { flex-shrink: 0; overflow-wrap: anywhere; }
 @media (max-width: 640px) {
   .portfolio-menu-destinations {
-    grid-auto-flow: row;
-    grid-auto-columns: minmax(0, 1fr);
-    gap: 14px;
-    width: min(100% - 32px, 340px);
-    margin-top: 20px;
-    padding: 0 0 42px;
-    overflow: visible;
+    width: min(100%, 450px);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    padding: 0 16px max(12px, env(safe-area-inset-bottom));
   }
-  .portfolio-menu-destinations > a { aspect-ratio: 4 / 5; }
+  .portfolio-menu-destinations > a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 53%);
+    align-items: center;
+    padding: 8px 12px;
+  }
 }
 .portfolio-opening {
   --opening-edge: clamp(16px, 1.11vw, 32px);
@@ -1414,46 +1418,39 @@ a.portfolio-opening-card:hover h2 { text-decoration: underline; text-underline-o
 .portfolio-menu-covers {
   display: flex;
   align-items: end;
-  flex: 1;
   gap: 6px;
   min-height: 0;
-  margin-inline-end: -12px;
+  height: min(48%, 240px);
 }
-.portfolio-menu-cover {
-  display: grid;
-  flex: 0 0 47%;
+.portfolio-menu-cover,
+.portfolio-menu-book {
+  position: relative;
+  flex: 1;
   min-width: 0;
-  gap: 7px;
+  height: 100%;
 }
 .portfolio-menu-cover-frame {
   position: relative;
   display: block;
-  aspect-ratio: 4 / 5;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   border-radius: 5px;
   background: #e9e9e9;
 }
 .portfolio-menu-cover-frame img { object-fit: cover; }
-.portfolio-menu-cover-title {
-  overflow: hidden;
-  font-size: 9px;
-  line-height: 1.2;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.portfolio-menu-covers[data-destination="/case-studies"] .portfolio-menu-cover { flex-basis: 74%; }
-.portfolio-menu-covers[data-destination="/about"] .portfolio-menu-cover { flex-basis: 58%; }
 .portfolio-menu-book {
   display: flex;
-  width: 42%;
-  aspect-ratio: 4 / 5.65;
-  margin-top: auto;
+  max-width: 128px;
   border-radius: 5px;
-  box-shadow: 4px 4px #ded9ce, 5px 5px #b4ada0;
+  box-shadow: 3px 3px #ded9ce, 4px 4px #b4ada0;
+}
+@media (max-width: 640px) {
+  .portfolio-menu-covers { height: 100%; max-height: 108px; }
 }
 .portfolio-menu-book .portfolio-book-art { margin: 7px 6px 0 13px; flex-basis: 40%; }
 .portfolio-menu-book .portfolio-book-copy { padding: 10px 6px 10px 14px; gap: 6px; font-size: 8px; }
-.portfolio-menu-book .portfolio-book-copy strong { font-size: clamp(12px, 1.15vw, 18px); }
+.portfolio-menu-book .portfolio-book-copy strong { font-size: clamp(8px, 1vw, 15px); }
 .portfolio-menu-book .portfolio-book-front::after { width: 7px; }
 .portfolio-menu-dialog[open] .portfolio-menu-destinations { animation: portfolio-menu-enter 420ms cubic-bezier(.22,1,.36,1) both; }
 @keyframes portfolio-menu-enter { from { opacity: 0; transform: translateY(24px) scale(1.035); } to { opacity: 1; transform: none; } }

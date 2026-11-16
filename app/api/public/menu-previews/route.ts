@@ -14,6 +14,8 @@ export async function GET() {
     study.thumbnail_url ? [{ src: study.thumbnail_url, title: study.title }] : []
   )).slice(0, 2)
 
+  const books = writings.slice(0, 2).map(({ title, cover_image }) => ({ title, cover: cover_image }))
+
   return NextResponse.json({
     caseStudies: caseStudyPreviews.map(({ src }) => src),
     caseStudyPreviews,
@@ -22,6 +24,7 @@ export async function GET() {
       const image = work.thumbnail_url || (work.media_type?.startsWith('image') ? work.media_url : null)
       return image ? [image] : []
     }).slice(0, 2),
-    writing: writings[0] ? { title: writings[0].title, cover: writings[0].cover_image } : null,
+    writing: books[0] ?? null,
+    books,
   })
 }
