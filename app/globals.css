@@ -1695,7 +1695,7 @@ body:has(:is(.portfolio-opening-header, .public-page, .case-story))::-webkit-scr
 .portfolio-writing > .portfolio-shelf-page { flex: 1; min-height: 0; }
 .portfolio-opening-work { overscroll-behavior-x: none; }
 
-:root { --portfolio-reading-size: clamp(22px, 2.65vw, 34px); }
+:root { --portfolio-reading-size: clamp(22px, 2.65vw, 24px); }
 
 .portfolio-paper-article {
   --foreground: #252525;
