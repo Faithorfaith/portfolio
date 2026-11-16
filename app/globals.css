@@ -1089,10 +1089,13 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .portfolio-menu-top button { min-height: 44px; cursor: pointer; }
 .portfolio-menu-destinations {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(10px, 1.8vw, 22px);
-  width: min(100% - 32px, clamp(300px, 28vw, 420px));
-  margin: clamp(20px, 5svh, 64px) auto 48px;
+  grid-auto-flow: column;
+  grid-auto-columns: clamp(280px, 28vw, 420px);
+  gap: clamp(24px, 4vw, 62px);
+  margin: clamp(16px, 2svh, 32px) auto 0;
+  padding: 0 clamp(28px, 12vw, 180px) 42px;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 .portfolio-menu-destinations > a {
   position: relative;
@@ -1114,6 +1117,15 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   line-height: 1.2;
 }
 @media (max-width: 640px) {
+  .portfolio-menu-destinations {
+    grid-auto-flow: row;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 14px;
+    width: min(100% - 32px, 340px);
+    margin-top: 20px;
+    padding: 0 0 42px;
+    overflow: visible;
+  }
   .portfolio-menu-destinations > a { aspect-ratio: 4 / 5; }
 }
 .portfolio-opening {
