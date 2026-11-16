@@ -1,14 +1,14 @@
 import PlaygroundMosaic from '@/components/portfolio/playground-mosaic'
 import PortfolioHeader from '@/components/portfolio/portfolio-header'
 import PortfolioShelf from '@/components/portfolio/portfolio-shelf'
-import { getHomepagePortfolioData, getPublicWorks } from '@/lib/public-portfolio-data'
+import { getPublicProfile, getPublicWorks } from '@/lib/public-portfolio-data'
 import { playgroundNames } from '@/lib/portfolio-titles'
 
 export const metadata = { title: 'Playground - Faith Awokunle' }
 export const revalidate = 300
 
 export default async function PlaygroundPage() {
-  const [{ profile }, works] = await Promise.all([getHomepagePortfolioData(), getPublicWorks()])
+  const [profile, works] = await Promise.all([getPublicProfile(), getPublicWorks()])
   const pieces = works.flatMap(work => {
     if (work.media_type?.startsWith('video')) return []
     const src = work.thumbnail_url || (work.media_type?.startsWith('image') ? work.media_url : null)

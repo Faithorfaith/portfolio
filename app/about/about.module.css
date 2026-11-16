@@ -61,15 +61,17 @@
 .label { font-size: clamp(13px, 1.25vw, 18px); font-weight: 400; }
 .story { padding-inline: var(--about-gutter); }
 .story :global(.portfolio-about-grid) {
-  margin-top: clamp(68px, 10.5vw, 151px);
+  margin-top: 0;
 }
 .story :global(.portfolio-about-grid.has-photos) {
-  grid-template-columns: minmax(0, 41%) minmax(0, 1fr);
-  gap: clamp(24px, 2.5vw, 36px);
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: clamp(42px, 6vw, 84px);
 }
 .story :global(.portfolio-about-photo-rail) {
+  position: static;
   justify-self: center;
-  width: min(100%, 259px);
+  width: min(64vw, 310px);
 }
 .story :global(.portfolio-about-portrait) {
   width: 100%;
@@ -128,6 +130,4 @@
 
 @media (max-width: 640px) {
   .name { letter-spacing: -.06em; }
-  .story :global(.portfolio-about-grid.has-photos) { grid-template-columns: minmax(0, 1fr); }
-  .story :global(.portfolio-about-photo-rail) { position: static; justify-self: start; width: min(52vw, 210px); }
 }

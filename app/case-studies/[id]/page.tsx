@@ -1,6 +1,6 @@
 import CaseStudyClient from './case-study-client'
 import { notFound } from 'next/navigation'
-import { getHomepagePortfolioData, getPublicCaseStudyLinks, getPublicCaseStudyPage } from '@/lib/public-portfolio-data'
+import { getPublicProfile, getPublicCaseStudyLinks, getPublicCaseStudyPage } from '@/lib/public-portfolio-data'
 
 export const revalidate = 300
 
@@ -11,7 +11,7 @@ export async function generateStaticParams() {
 
 export default async function CaseStudyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [{ caseStudy }, { profile }] = await Promise.all([getPublicCaseStudyPage(id), getHomepagePortfolioData()])
+  const [{ caseStudy }, profile] = await Promise.all([getPublicCaseStudyPage(id), getPublicProfile()])
   if (!caseStudy) notFound()
   return <CaseStudyClient initialCaseStudy={caseStudy} profile={profile} />
 }

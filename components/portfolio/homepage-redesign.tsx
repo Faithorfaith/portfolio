@@ -80,7 +80,8 @@ export default function HomepageRedesign({ profile, caseStudies }: Props) {
                       <Image
                         fill
                         sizes="(max-width: 640px) 78vw, 27.6vw"
-                        loading={group === 1 && index < 4 ? 'eager' : 'lazy'}
+                        quality={60}
+                        loading={group === 1 && index === 0 ? 'eager' : 'lazy'}
                         fetchPriority={group === 1 && index === 0 ? 'high' : 'auto'}
                         src={card.cover}
                         alt=""
@@ -90,7 +91,7 @@ export default function HomepageRedesign({ profile, caseStudies }: Props) {
                 </>
               )
 
-              return <CaseStudyTransitionLink key={card.key} className="portfolio-opening-card" href={card.href} tabIndex={group === 1 ? undefined : -1} prefetch={index < 3 && group === 1 ? undefined : false}>{content}</CaseStudyTransitionLink>
+              return <CaseStudyTransitionLink key={card.key} className="portfolio-opening-card" href={card.href} tabIndex={group === 1 ? undefined : -1} prefetch={false}>{content}</CaseStudyTransitionLink>
             })}
           </div>
         ))}

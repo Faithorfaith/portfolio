@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { fetchWithCache, batchFetch } from '@/lib/cache-utils'
 import { useArticleAudio } from '@/components/article-audio-provider'
@@ -150,7 +151,9 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
       <div className={`public-page writing-page-shell${initialSlug ? " portfolio-paper-article" : ""}`} style={initialSlug ? undefined : { backgroundColor: writingBackgroundColor(appearance.background) }}>
       <div id="top" className="w-full min-h-screen max-w-[1080px] mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20">
         {initialSlug
-          ? <Link className="portfolio-paper-back" href="/writing">Back to books</Link>
+          ? <Link className="case-study-back" href="/writing" aria-label="Back to My Writings" title="Back to My Writings">
+              <ArrowLeft size={20} strokeWidth={1.75} aria-hidden="true" />
+            </Link>
           : <DetailNavigation title={selectedWriting.title} backHref="/#writing" backgroundColor={writingBackgroundColor(appearance.background)} />}
 
         {/* Article Content */}

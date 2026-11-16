@@ -2,7 +2,7 @@ import Image from 'next/image'
 import AboutScrollLayout from '@/components/portfolio/about-scroll-layout'
 import PortfolioHeader from '@/components/portfolio/portfolio-header'
 import { normalizeExternalUrl, normalizeWhatsAppUrl } from '@/lib/content-utils'
-import { getHomepagePortfolioData } from '@/lib/public-portfolio-data'
+import { getPublicProfile } from '@/lib/public-portfolio-data'
 import styles from './about.module.css'
 
 export const metadata = { title: 'About - Faith Awokunle' }
@@ -17,7 +17,7 @@ const experience = [
 ]
 
 export default async function AboutPage() {
-  const { profile } = await getHomepagePortfolioData()
+  const profile = await getPublicProfile()
   const name = profile?.full_name?.trim() || 'Faith Awokunle'
   const [firstName, ...surname] = name.split(/\s+/)
   const bio = profile?.bio?.trim() || 'I’m a product designer working across digital products, visual design, and motion.'

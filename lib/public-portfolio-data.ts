@@ -82,7 +82,6 @@ export const getPublicCaseStudyPage = unstable_cache(async (identifier: string):
 }, ['public-case-study-page-v1'], { revalidate: 300 })
 
 export type HomeWriting = Pick<Writing, 'id' | 'title' | 'slug' | 'excerpt' | 'cover_image' | 'created_at'> & { readingMinutes: number }
-export type HomepagePortfolioData = Omit<PortfolioData, 'works' | 'writings'> & { works: Work[]; hiddenWorkCount: number; writings: HomeWriting[]; workflowFiles: WorkflowFile[] }
 
 export const getPublicWorkflowFiles = unstable_cache(async (): Promise<WorkflowFile[]> => {
   const supabase = publicClient()
@@ -91,33 +90,27 @@ export const getPublicWorkflowFiles = unstable_cache(async (): Promise<WorkflowF
   return ((data || []).map(file => ({ ...file, workflow_file_versions: [...(file.workflow_file_versions || [])].sort((a, b) => b.version_number - a.version_number) })) as WorkflowFile[])
 }, ['public-workflow-files-v1'], { revalidate: 60 })
 
-const wordCount = (content: unknown) => {
-  const blocks = typeof content === 'string' ? (() => { try { return JSON.parse(content) } catch { return [] } })() : content
-  return Array.isArray(blocks) ? blocks.reduce((total, block) => total + String(block?.content || '').replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length, 0) : 0
-}
+export const getPublicProfile = unstable_cache(async (): Promise<Profile | null> => {
+  const supabase = publicClient()
+  if (!supabase) return null
+  const { data, error } = await supabase.from('profiles').select('*').limit(1).maybeSingle()
+  if (error) throw new Error(`Unable to load public profile: ${error.message}`)
+  return data as Profile | null
+}, ['portfolio-profile'], { revalidate: 300 })
 
-export const getHomepagePortfolioData = unstable_cache(async (): Promise<HomepagePortfolioData> => {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !key) return { profile: null, caseStudies: [], projects: [], works: [], hiddenWorkCount: 0, writings: [], workflowFiles: [] }
-  const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
-  const [profileResult, caseStudiesResult, projectsResult, worksResult] = await Promise.all([
-    supabase.from('profiles').select('*').limit(1).maybeSingle(),
-    supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, order_index, created_at').order('order_index', { ascending: true }).order('created_at', { ascending: false }).limit(50),
-    supabase.from('projects').select('id, title, year, type, link, description, cover_image, created_at').order('created_at', { ascending: false }).limit(30),
-    supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type', { count: 'exact' }).order('created_at', { ascending: false }).limit(50),
-  ])
-  const works = (worksResult.data as Work[] | null) ?? []
-  return {
-    profile: (profileResult.data as Profile | null) ?? null,
-    caseStudies: (caseStudiesResult.data as CaseStudy[] | null) ?? [],
-    projects: (projectsResult.data as Project[] | null) ?? [],
-    works,
-    hiddenWorkCount: Math.max(0, (worksResult.count || works.length) - works.length),
-    writings: [],
-    workflowFiles: [],
-  }
-}, ['homepage-portfolio-data-v6'], { revalidate: 60 })
+export const getPublicCaseStudyCards = unstable_cache(async (): Promise<CaseStudy[]> => {
+  const supabase = publicClient()
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('case_studies')
+    .select('id, slug, title, excerpt, thumbnail_url, published, order_index, created_at')
+    .eq('published', true)
+    .order('order_index', { ascending: true })
+    .order('created_at', { ascending: false })
+    .limit(50)
+  if (error) throw new Error(`Unable to load case study cards: ${error.message}`)
+  return data as CaseStudy[]
+}, ['portfolio-case-study-cards'], { revalidate: 300 })
 
 export const getPublicPortfolioData = unstable_cache(async (): Promise<PortfolioData> => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
