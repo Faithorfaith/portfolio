@@ -9,10 +9,30 @@ export default function MotionOrchestrator() {
   const pathname = usePathname()
 
   useLayoutEffect(() => {
+    const expansion = document.querySelector<HTMLElement>('[data-menu-destination]')
+    if (expansion?.dataset.menuDestination === pathname) {
+      const content = document.querySelector<HTMLElement>('main')
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        expansion.remove()
+      } else {
+        const reveal = expansion.animate([
+          { opacity: 1 },
+          { opacity: 0 },
+        ], { duration: 320, easing: 'ease-out', fill: 'forwards' })
+        content?.animate([
+          { opacity: .5, translate: '0 14px' },
+          { opacity: 1, translate: 'none' },
+        ], { duration: 380, easing: 'cubic-bezier(.22,1,.36,1)' })
+        void reveal.finished.then(() => expansion.remove(), () => expansion.remove())
+      }
+    } else if (expansion) {
+      expansion.remove()
+    }
+
     const paper = document.createElement('div')
     paper.className = 'page-paper-transition'
     paper.setAttribute('aria-hidden', 'true')
-    document.body.appendChild(paper)
+    if (!/^\/(?:$|about$|archive$|playground$|case-studies(?:\/|$)|writing(?:\/|$))/.test(pathname)) document.body.appendChild(paper)
     requestAnimationFrame(() => paper.classList.add('is-active'))
     const paperTimer = window.setTimeout(() => paper.remove(), 420)
     if (pathname === '/' && sessionStorage.getItem('portfolio-returning') === 'true') {
@@ -40,7 +60,7 @@ export default function MotionOrchestrator() {
     }
 
     const main = document.querySelector<HTMLElement>('main')
-    if (!('startViewTransition' in document)) {
+    if (!expansion && !('startViewTransition' in document) && !/^\/case-studies(?:\/|$)/.test(pathname)) {
       main?.animate(
         [
           { opacity: 0.86, transform: 'translateY(8px)' },

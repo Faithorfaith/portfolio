@@ -5,10 +5,10 @@ import './globals.css'
 import SoundControl from '@/components/portfolio/sound-control'
 import { ArticleAudioProvider } from '@/components/article-audio-provider'
 import MotionOrchestrator from '@/components/portfolio/motion-orchestrator'
-import { DM_Sans, Inter } from 'next/font/google'
+import { DM_Mono, Inter } from 'next/font/google'
 import PostHogProvider from '@/components/posthog-provider'
 
-const dmSans = DM_Sans({ subsets: ['latin'], display: 'swap', variable: '--font-dm-sans' })
+const dmMono = DM_Mono({ subsets: ['latin'], weight: '400', display: 'swap', variable: '--font-dm-mono' })
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
 
 export const viewport: Viewport = {
@@ -50,7 +50,7 @@ export default function RootLayout({
         {/* Preconnect to critical domains , reduces TLS handshake time */}
         <link rel="preconnect" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" crossOrigin="anonymous" />
       </head>
-      <body className={`${dmSans.variable} ${inter.variable}`}>
+      <body className={`${inter.variable} ${dmMono.variable}`}>
         <ArticleAudioProvider>
           <MotionOrchestrator />
           {children}

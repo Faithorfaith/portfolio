@@ -40,19 +40,12 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
   const [isLoading, setIsLoading] = useState(!initialWritings)
   const [selectedWriting, setSelectedWriting] = useState<Writing | null>(() => initialSlug ? initialWritings?.find((writing) => writing.slug === initialSlug || slugify(writing.title) === initialSlug) || null : null)
   const [userProfile, setUserProfile] = useState<{ full_name: string | null; avatar_url: string | null }>({ full_name: null, avatar_url: null })
-  const [readingProgress, setReadingProgress] = useState(0)
   
   const articleCursorRef = useRef<HTMLDivElement>(null)
   const [search, setSearch] = useState('')
   const [year, setYear] = useState('all')
   const filteredWritings = writings.filter((item) => (year === 'all' || String(new Date(item.created_at).getFullYear()) === year) && `${item.title} ${item.excerpt || ''}`.toLowerCase().includes(search.toLowerCase()))
   const { isPlaying, isPaused, title: audioTitle, playArticle, pause, resume } = useArticleAudio()
-  useEffect(() => {
-    if (!selectedWriting) return
-    const update = () => { const max = document.documentElement.scrollHeight - window.innerHeight; setReadingProgress(max > 0 ? Math.min(100, window.scrollY / max * 100) : 0) }
-    update(); window.addEventListener('scroll', update, { passive: true }); return () => window.removeEventListener('scroll', update)
-  }, [selectedWriting])
-
   const openWriting = (w: Writing) => { playFeedback('tap'); setSelectedWriting(w); onSubPageChange?.(true) }
   const closeWriting = () => { setSelectedWriting(null); onSubPageChange?.(false) }
   const showArticleCursor = (event: React.MouseEvent) => {
@@ -154,10 +147,11 @@ export default function WritingSection({ onSubPageChange, variant = 'full', init
     const appearance = getWritingAppearance(selectedWriting.content)
     const articleBlocks = selectedWriting.content.filter(block => block.type !== 'appearance')
     return (
-      <div className="public-page writing-page-shell" style={{ backgroundColor: writingBackgroundColor(appearance.background) }}>
-      <div className="writing-reading-progress" style={{ width: `${readingProgress}%` }} aria-hidden="true" />
+      <div className={`public-page writing-page-shell${initialSlug ? " portfolio-paper-article" : ""}`} style={initialSlug ? undefined : { backgroundColor: writingBackgroundColor(appearance.background) }}>
       <div id="top" className="w-full min-h-screen max-w-[1080px] mx-auto px-5 sm:px-8 pt-[84px] pb-12 md:pb-20">
-        <DetailNavigation title={selectedWriting.title} backHref={initialSlug ? '/writing' : '/#writing'} backgroundColor={writingBackgroundColor(appearance.background)} />
+        {initialSlug
+          ? <Link className="portfolio-paper-back" href="/writing">Back to books</Link>
+          : <DetailNavigation title={selectedWriting.title} backHref="/#writing" backgroundColor={writingBackgroundColor(appearance.background)} />}
 
         {/* Article Content */}
         <article>

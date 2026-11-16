@@ -57,22 +57,17 @@ export const getPublicCaseStudyLinks = unstable_cache(async (): Promise<CaseStud
 
 export const getPublicCaseStudyPage = unstable_cache(async (identifier: string): Promise<{
   caseStudy: CaseStudyPageData | null
-  links: CaseStudyLink[]
 }> => {
   const supabase = publicClient()
-  if (!supabase) return { caseStudy: null, links: [] }
+  if (!supabase) return { caseStudy: null }
 
   const isId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(identifier)
   const detailRequest = isId
     ? supabase.from('case_studies').select('*').eq('id', identifier).eq('published', true).maybeSingle()
     : supabase.from('case_studies').select('*').eq('slug', identifier).eq('published', true).maybeSingle()
 
-  const [detailResult, linksResult] = await Promise.all([
-    detailRequest,
-    supabase.from('case_studies').select('id, title, slug, order_index, created_at').eq('published', true).order('order_index', { ascending: true }),
-  ])
+  const detailResult = await detailRequest
   if (detailResult.error) throw new Error(`Unable to load case study: ${detailResult.error.message}`)
-  if (linksResult.error) throw new Error(`Unable to load case study links: ${linksResult.error.message}`)
 
   let caseStudy = detailResult.data as CaseStudyPageData | null
   // Older entries may predate the slug column. Keep that compatibility path cached
@@ -83,10 +78,7 @@ export const getPublicCaseStudyPage = unstable_cache(async (identifier: string):
     caseStudy = ((data || []).find(study => slugify(study.title) === identifier) as CaseStudyPageData | undefined) ?? null
   }
 
-  return {
-    caseStudy,
-    links: (linksResult.data as CaseStudyLink[] | null) ?? [],
-  }
+  return { caseStudy }
 }, ['public-case-study-page-v1'], { revalidate: 300 })
 
 export type HomeWriting = Pick<Writing, 'id' | 'title' | 'slug' | 'excerpt' | 'cover_image' | 'created_at'> & { readingMinutes: number }

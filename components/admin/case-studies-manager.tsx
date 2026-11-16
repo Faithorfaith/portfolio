@@ -38,6 +38,9 @@ interface Section {
   video_url?: string | null
   embed_url?: string | null
   media_width?: 'reading' | 'wide' | 'full'
+  layout?: 'media-first' | 'text-first' | 'media-left' | 'media-right'
+  placement?: 'left' | 'center' | 'right'
+  blockType?: 'text' | 'media' | 'mixed'
   image_layout?: 'single' | 'feature-split' | 'grid-2' | 'grid-3'
   gallery_images?: string[]
   blocks?: ContentBlock[]
@@ -150,10 +153,11 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
     setIsCreating(true)
   }
 
-  const addSection = () => {
+  const addSection = (blockType: NonNullable<Section['blockType']>) => {
     if (!editing) return
     const newSection: Section = {
       id: crypto.randomUUID(),
+      blockType,
       label: '',
       title: null,
       body: '',
@@ -170,6 +174,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
       sections: [...editing.sections, newSection]
     })
     setSelectedSectionId(newSection.id)
+    setHasUnsavedChanges(true)
   }
 
   const updateSection = (sectionId: string, updates: Partial<Section>) => {
@@ -504,12 +509,32 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
 
           <div className="case-admin-chapters">
             {editing.sections.map((section, index) => <section className="case-admin-chapter" key={section.id}>
-              <header><div><span>{String(index + 1).padStart(2, '0')}</span><strong>Story chapter</strong></div><div><button type="button" disabled={index === 0} onClick={() => moveSection(section.id, 'up')}>↑</button><button type="button" disabled={index === editing.sections.length - 1} onClick={() => moveSection(section.id, 'down')}>↓</button><button type="button" onClick={() => deleteSection(section.id)}>Remove</button></div></header>
+              <header><div><span>{String(index + 1).padStart(2, '0')}</span><strong>{section.blockType === 'text' ? 'Text block' : section.blockType === 'media' ? 'Media block' : 'Text and media'}</strong></div><div><button type="button" disabled={index === 0} onClick={() => moveSection(section.id, 'up')}>↑</button><button type="button" disabled={index === editing.sections.length - 1} onClick={() => moveSection(section.id, 'down')}>↓</button><button type="button" onClick={() => deleteSection(section.id)}>Remove</button></div></header>
               <div className="case-admin-chapter-fields">
                 <input value={section.label} onChange={e => updateSection(section.id, { label: e.target.value })} placeholder="Small label (optional)" />
                 <input value={section.title || ''} onChange={e => updateSection(section.id, { title: e.target.value || null })} placeholder="Chapter title" />
               </div>
-              <div className="case-admin-media-stage">
+              <div className="case-builder-layout">
+                <label>Order and layout
+                  <select value={section.layout || 'media-first'} onChange={e => updateSection(section.id, { layout: e.target.value as Section['layout'] })}>
+                    <option value="media-first">Media above text</option>
+                    <option value="text-first">Text above media</option>
+                    <option value="media-left">Media left, text right</option>
+                    <option value="media-right">Text left, media right</option>
+                  </select>
+                </label>
+                <label>Media width
+                  <select value={section.media_width || 'wide'} onChange={e => updateSection(section.id, { media_width: e.target.value as Section['media_width'] })}>
+                    <option value="reading">Reading width</option><option value="wide">Wide</option><option value="full">Full bleed</option>
+                  </select>
+                </label>
+                <label>Alignment
+                  <select value={section.placement || 'center'} onChange={e => updateSection(section.id, { placement: e.target.value as Section['placement'] })}>
+                    <option value="left">Left</option><option value="center">Center</option><option value="right">Right</option>
+                  </select>
+                </label>
+              </div>
+              {section.blockType !== 'text' && <div className="case-admin-media-stage">
                 <div className="case-layout-options" role="group" aria-label="Media layout">{(['single', 'feature-split', 'grid-2', 'grid-3'] as const).map(layout => <button type="button" key={layout} aria-pressed={(section.image_layout || 'single') === layout} onClick={() => updateSection(section.id, { image_layout: layout })}><span className={`case-layout-diagram layout-${layout}`}>{Array.from({ length: layout === 'single' ? 1 : layout === 'grid-2' ? 2 : 3 }, (_, i) => <i key={i} />)}</span>{({ single: 'Single', 'feature-split': 'Feature + two', 'grid-2': 'Two columns', 'grid-3': 'Three columns' })[layout]}</button>)}</div>
                 <label>Add media<input type="file" multiple onChange={e => e.target.files && handleSectionGalleryUpload(section.id, e.target.files)} /></label>
                 {(section.image_layout || 'single') === 'single' && !!section.gallery_images?.length && <div className="case-admin-gallery-preview">{section.gallery_images.map((src, i) => <div key={src}><CaseMedia src={src} /><button type="button" onClick={() => updateSection(section.id, { gallery_images: section.gallery_images?.filter((_, n) => n !== i) })}>Remove</button></div>)}</div>}
@@ -522,10 +547,14 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
                   </div>
                   <small>Media fills these spaces in upload order.</small>
                 </> : section.image ? <><img src={section.image} alt="" /><button type="button" onClick={() => updateSection(section.id, { image: null })}>Remove image</button></> : section.video_url ? <><video src={section.video_url} controls /><button type="button" onClick={() => updateSection(section.id, { video_url: null })}>Remove video</button></> : <div><p>Full-width visual stage</p><span>Upload the image or video shown before this chapter’s text.</span><label>Image<input type="file" accept="image/*" onChange={e => e.target.files?.[0] && handleSectionImageUpload(section.id, e.target.files[0])} /></label><label>Video<input type="file" accept="video/*" onChange={e => e.target.files?.[0] && handleSectionVideoUpload(section.id, e.target.files[0])} /></label></div>}
-              </div>
-              <div className="case-admin-richtext"><RTFEditor value={section.body} onChange={body => updateSection(section.id, { body })} userId={userId} /></div>
+              </div>}
+              {section.blockType !== 'media' && <div className="case-admin-richtext"><RTFEditor value={section.body} onChange={body => updateSection(section.id, { body })} userId={userId} /></div>}
             </section>)}
-            <button type="button" className="case-admin-add" onClick={addSection}>＋ Add another visual chapter</button>
+            <div className="case-builder-add" aria-label="Add a section">
+              <button type="button" className="case-admin-add" onClick={() => addSection('text')}>Add text</button>
+              <button type="button" className="case-admin-add" onClick={() => addSection('media')}>Add media</button>
+              <button type="button" className="case-admin-add" onClick={() => addSection('mixed')}>Add text and media</button>
+            </div>
           </div>
         </div>
 

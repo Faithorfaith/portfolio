@@ -9,7 +9,7 @@ export default function SoundControl() {
   const [enabled, setEnabled] = useState(false)
 
   useEffect(() => setEnabled(isSoundEnabled()), [])
-  if (pathname.startsWith('/admin') || pathname.startsWith('/auth')) return null
+  if (pathname === '/' || pathname.startsWith('/admin') || pathname.startsWith('/auth')) return null
 
   const toggle = () => {
     const next = !enabled
