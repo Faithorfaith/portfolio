@@ -8,6 +8,7 @@ import { MovingText } from './portfolio-shelf'
 
 interface MenuPreviews {
   caseStudies: string[]
+  caseStudyPreviews?: { src: string; title: string }[]
   playground: string[]
   writing: { title: string; cover: string | null } | null
 }
@@ -122,10 +123,10 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
     window.setTimeout(() => surface.remove(), 5000)
   }
   const destinations = [
-    { label: 'Case Studies', href: '/case-studies', images: previews?.caseStudies, preview: 'Product design projects, from the problem to the finished experience.' },
-    { label: 'Playground', href: '/playground', images: previews?.playground, preview: 'Screens, components, and design explorations.' },
-    { label: 'My Writings', href: '/writing', preview: 'Notes on design, technology, and making complex things clear.' },
-    { label: 'About', href: '/about', images: photos, preview: 'Faith Awokunle · Product designer' },
+    { label: 'Case Studies', href: '/case-studies', images: previews?.caseStudyPreviews ?? previews?.caseStudies.map(src => ({ src, title: '' })) },
+    { label: 'Playground', href: '/playground', images: previews?.playground.map(src => ({ src, title: '' })) },
+    { label: 'My Writings', href: '/writing' },
+    { label: 'About', href: '/about', images: photos.slice(0, 1).map(src => ({ src, title: '' })) },
   ]
 
   return (
@@ -139,13 +140,19 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
         <nav className="portfolio-menu-destinations" aria-label="Portfolio sections">
           {destinations.map(item => (
             <Link key={item.href} href={item.href} onClick={event => void openDestination(event, item.href)}>
-              <small aria-hidden="true">Faith<br />Awokunle</small>
+              <span className="portfolio-menu-card-header" aria-hidden="true">
+                <span>{name}</span>
+                <span>Product designer</span>
+              </span>
               <span className="portfolio-menu-label"><MovingText>{item.label}</MovingText></span>
               {!!item.images?.length && (
                 <span className="portfolio-menu-covers" data-destination={item.href} aria-hidden="true">
-                  {item.images.map(src => (
+                  {item.images.map(({ src, title }) => (
                     <span className="portfolio-menu-cover" key={src}>
-                      <Image src={src} fill quality={60} sizes="140px" alt="" />
+                      {title && <span className="portfolio-menu-cover-title">{title}</span>}
+                      <span className="portfolio-menu-cover-frame">
+                        <Image src={src} fill quality={60} sizes="(max-width: 640px) 250px, 300px" alt="" />
+                      </span>
                     </span>
                   ))}
                 </span>
@@ -160,7 +167,6 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
                   </span>
                 </span>
               )}
-              <span className="portfolio-menu-preview" aria-hidden="true">{item.preview}</span>
             </Link>
           ))}
         </nav>

@@ -1091,7 +1091,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: clamp(10px, 1.8vw, 22px);
-  width: min(100% - 32px, 300px);
+  width: min(100% - 32px, clamp(300px, 28vw, 420px));
   margin: clamp(20px, 5svh, 64px) auto 48px;
 }
 .portfolio-menu-destinations > a {
@@ -1105,15 +1105,16 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   font-size: clamp(22px, 3vw, 42px);
   line-height: 1;
 }
-.portfolio-menu-destinations small { font-size: 9px; line-height: 1.15; }
-.portfolio-menu-destinations .portfolio-menu-preview {
-  max-width: 20ch;
-  margin-top: auto;
-  font-size: .6em;
-  line-height: 1.15;
+.portfolio-menu-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--font-dm-mono), ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1.2;
 }
 @media (max-width: 640px) {
-  .portfolio-menu-destinations > a { aspect-ratio: auto; min-height: 210px; }
+  .portfolio-menu-destinations > a { aspect-ratio: 4 / 5; }
 }
 .portfolio-opening {
   --opening-edge: clamp(16px, 1.11vw, 32px);
@@ -1400,33 +1401,48 @@ a.portfolio-opening-card:hover h2 { text-decoration: underline; text-underline-o
 .portfolio-menu-label { letter-spacing: -.045em; }
 .portfolio-menu-covers {
   display: flex;
+  align-items: end;
+  flex: 1;
   gap: 6px;
-  margin-top: auto;
+  min-height: 0;
+  margin-inline-end: -12px;
 }
 .portfolio-menu-cover {
-  position: relative;
-  flex: 1;
+  display: grid;
+  flex: 0 0 47%;
   min-width: 0;
-  max-width: 140px;
-  height: clamp(100px, 20svh, 165px);
+  gap: 7px;
+}
+.portfolio-menu-cover-frame {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 5px;
   background: #e9e9e9;
 }
-.portfolio-menu-cover img { object-fit: cover; }
+.portfolio-menu-cover-frame img { object-fit: cover; }
+.portfolio-menu-cover-title {
+  overflow: hidden;
+  font-size: 9px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.portfolio-menu-covers[data-destination="/case-studies"] .portfolio-menu-cover { flex-basis: 74%; }
+.portfolio-menu-covers[data-destination="/about"] .portfolio-menu-cover { flex-basis: 58%; }
 .portfolio-menu-book {
   display: flex;
-  width: 94px;
-  min-height: 122px;
+  width: 42%;
+  aspect-ratio: 4 / 5.65;
   margin-top: auto;
   border-radius: 5px;
   box-shadow: 4px 4px #ded9ce, 5px 5px #b4ada0;
 }
 .portfolio-menu-book .portfolio-book-art { margin: 7px 6px 0 13px; flex-basis: 40%; }
-.portfolio-menu-book .portfolio-book-copy { padding: 10px 6px 10px 14px; gap: 6px; font-size: 6px; }
-.portfolio-menu-book .portfolio-book-copy strong { font-size: 11px; }
+.portfolio-menu-book .portfolio-book-copy { padding: 10px 6px 10px 14px; gap: 6px; font-size: 8px; }
+.portfolio-menu-book .portfolio-book-copy strong { font-size: clamp(12px, 1.15vw, 18px); }
 .portfolio-menu-book .portfolio-book-front::after { width: 7px; }
-.portfolio-menu-destinations > a:has(:is(.portfolio-menu-covers, .portfolio-menu-book)) .portfolio-menu-preview { margin-top: 0; }
 .portfolio-menu-dialog[open] .portfolio-menu-destinations { animation: portfolio-menu-enter 420ms cubic-bezier(.22,1,.36,1) both; }
 @keyframes portfolio-menu-enter { from { opacity: 0; transform: translateY(24px) scale(1.035); } to { opacity: 1; transform: none; } }
 
@@ -1898,7 +1914,6 @@ body:has(:is(.portfolio-opening-header, .public-page, .case-story))::-webkit-scr
 .portfolio-menu-destinations > a:is(:hover, :focus-visible) {
   box-shadow: 0 12px 30px #00000013, inset 0 1px 0 #fff;
 }
-.portfolio-menu-preview { color: #575757; }
 
 :root {
   --portfolio-glass: #ffffffd9;

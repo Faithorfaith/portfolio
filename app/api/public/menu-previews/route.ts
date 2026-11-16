@@ -10,8 +10,13 @@ export async function GET() {
     getPublicWritings(),
   ])
 
+  const caseStudyPreviews = caseStudies.flatMap(study => (
+    study.thumbnail_url ? [{ src: study.thumbnail_url, title: study.title }] : []
+  )).slice(0, 2)
+
   return NextResponse.json({
-    caseStudies: caseStudies.flatMap(study => study.thumbnail_url ? [study.thumbnail_url] : []).slice(0, 2),
+    caseStudies: caseStudyPreviews.map(({ src }) => src),
+    caseStudyPreviews,
     playground: works.flatMap(work => {
       if (work.media_type?.startsWith('video')) return []
       const image = work.thumbnail_url || (work.media_type?.startsWith('image') ? work.media_url : null)
