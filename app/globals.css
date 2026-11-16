@@ -1391,7 +1391,6 @@ a.portfolio-opening-card:hover h2 { text-decoration: underline; text-underline-o
 /* Portfolio page previews and project entrances */
 .portfolio-opening-cover,
 .portfolio-menu-destinations > a,
-.portfolio-menu-covers img,
 .case-story .case-story-cover,
 .case-story .case-story-image,
 .case-story .case-story-video,
@@ -1399,9 +1398,35 @@ a.portfolio-opening-card:hover h2 { text-decoration: underline; text-underline-o
 .portfolio-about-portrait { border-radius: 8px; overflow: hidden; }
 
 .portfolio-menu-label { letter-spacing: -.045em; }
-.portfolio-menu-covers { display: flex; gap: 6px; margin-top: auto; padding-bottom: 12px; }
-.portfolio-menu-covers img { flex: 0 0 78%; width: 78%; height: auto; aspect-ratio: 4 / 5; }
-.portfolio-menu-covers[data-destination="/about"] img { flex-basis: 60%; width: 60%; }
+.portfolio-menu-covers {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+.portfolio-menu-cover {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  max-width: 140px;
+  height: clamp(100px, 20svh, 165px);
+  overflow: hidden;
+  border-radius: 8px;
+  background: #e9e9e9;
+}
+.portfolio-menu-cover img { object-fit: cover; }
+.portfolio-menu-book {
+  display: flex;
+  width: 94px;
+  min-height: 122px;
+  margin-top: auto;
+  border-radius: 5px;
+  box-shadow: 4px 4px #ded9ce, 5px 5px #b4ada0;
+}
+.portfolio-menu-book .portfolio-book-art { margin: 7px 6px 0 13px; flex-basis: 40%; }
+.portfolio-menu-book .portfolio-book-copy { padding: 10px 6px 10px 14px; gap: 6px; font-size: 6px; }
+.portfolio-menu-book .portfolio-book-copy strong { font-size: 11px; }
+.portfolio-menu-book .portfolio-book-front::after { width: 7px; }
+.portfolio-menu-destinations > a:has(:is(.portfolio-menu-covers, .portfolio-menu-book)) .portfolio-menu-preview { margin-top: 0; }
 .portfolio-menu-dialog[open] .portfolio-menu-destinations { animation: portfolio-menu-enter 420ms cubic-bezier(.22,1,.36,1) both; }
 @keyframes portfolio-menu-enter { from { opacity: 0; transform: translateY(24px) scale(1.035); } to { opacity: 1; transform: none; } }
 
@@ -1453,7 +1478,6 @@ a.portfolio-opening-card:hover h2 { text-decoration: underline; text-underline-o
 .portfolio-about-copy h2 { margin-bottom: 1.3em; font: inherit; }
 .portfolio-about-copy p + p { margin-top: 1em; }
 @media (max-width: 640px) {
-  .portfolio-menu-covers img { height: 144px; aspect-ratio: auto; }
   .case-story .case-story-opening,
   .case-story .case-story-opening:has(.case-story-cover),
   .portfolio-about-grid { grid-template-columns: 1fr; }
@@ -1656,7 +1680,6 @@ a.portfolio-opening-card:hover h2 { text-decoration: underline; text-underline-o
 }
 @keyframes portfolio-scroll-type { from { opacity: .6; translate: 0 28px; } to { opacity: 1; translate: none; } }
 @media (max-width: 640px) {
-  .portfolio-menu-covers img { height: 105px; }
   .portfolio-shelf-intro, .case-story-summary { grid-template-columns: 1fr; }
   .case-story-summary > * { grid-column: 1; }
   .portfolio-archive-piece { flex-basis: 54vw; }

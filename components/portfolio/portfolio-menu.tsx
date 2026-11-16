@@ -1,15 +1,37 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useRef, type MouseEvent } from 'react'
+import { useEffect, useRef, useState, type MouseEvent } from 'react'
 import { MovingText } from './portfolio-shelf'
 
-export default function PortfolioMenu() {
+interface MenuPreviews {
+  caseStudies: string[]
+  playground: string[]
+  writing: { title: string; cover: string | null } | null
+}
+
+export default function PortfolioMenu({ photos, name }: { photos: string[]; name: string }) {
   const dialog = useRef<HTMLDialogElement>(null)
   const transition = useRef<HTMLElement | null>(null)
   const router = useRouter()
   const pathname = usePathname()
+  const [previews, setPreviews] = useState<MenuPreviews | null>(null)
+  const loadingPreviews = useRef(false)
+
+  const loadPreviews = async () => {
+    if (previews || loadingPreviews.current) return
+    loadingPreviews.current = true
+    try {
+      const response = await fetch('/api/public/menu-previews')
+      if (response.ok) setPreviews(await response.json())
+    } catch {
+      // Menu links are available while previews load or if the request fails.
+    } finally {
+      loadingPreviews.current = false
+    }
+  }
 
   const clearTransition = () => {
     transition.current?.remove()
@@ -25,6 +47,7 @@ export default function PortfolioMenu() {
     const menu = dialog.current
     if (!menu || menu.open) return
     menu.showModal()
+    void loadPreviews()
     menu.scrollTop = 0
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
@@ -99,10 +122,10 @@ export default function PortfolioMenu() {
     window.setTimeout(() => surface.remove(), 5000)
   }
   const destinations = [
-    { label: 'Case Studies', href: '/case-studies', preview: 'Product design projects, from the problem to the finished experience.' },
-    { label: 'Playground', href: '/playground', preview: 'Screens, components, and design explorations.' },
+    { label: 'Case Studies', href: '/case-studies', images: previews?.caseStudies, preview: 'Product design projects, from the problem to the finished experience.' },
+    { label: 'Playground', href: '/playground', images: previews?.playground, preview: 'Screens, components, and design explorations.' },
     { label: 'My Writings', href: '/writing', preview: 'Notes on design, technology, and making complex things clear.' },
-    { label: 'About', href: '/about', preview: 'Faith Awokunle · Product designer' },
+    { label: 'About', href: '/about', images: photos, preview: 'Faith Awokunle · Product designer' },
   ]
 
   return (
@@ -118,6 +141,25 @@ export default function PortfolioMenu() {
             <Link key={item.href} href={item.href} onClick={event => void openDestination(event, item.href)}>
               <small aria-hidden="true">Faith<br />Awokunle</small>
               <span className="portfolio-menu-label"><MovingText>{item.label}</MovingText></span>
+              {!!item.images?.length && (
+                <span className="portfolio-menu-covers" data-destination={item.href} aria-hidden="true">
+                  {item.images.map(src => (
+                    <span className="portfolio-menu-cover" key={src}>
+                      <Image src={src} fill quality={60} sizes="140px" alt="" />
+                    </span>
+                  ))}
+                </span>
+              )}
+              {item.href === '/writing' && previews?.writing && (
+                <span className="portfolio-menu-book" aria-hidden="true">
+                  <span className="portfolio-book-front">
+                    {previews.writing.cover && (
+                      <span className="portfolio-book-art"><Image src={previews.writing.cover} fill quality={60} sizes="90px" alt="" /></span>
+                    )}
+                    <span className="portfolio-book-copy"><strong>{previews.writing.title}</strong><span>{name}</span></span>
+                  </span>
+                </span>
+              )}
               <span className="portfolio-menu-preview" aria-hidden="true">{item.preview}</span>
             </Link>
           ))}

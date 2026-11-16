@@ -32,13 +32,16 @@ export default function PortfolioHeader({ profile }: {
   const [firstName, ...lastName] = name.split(/\s+/)
   const whatsapp = normalizeWhatsAppUrl(profile?.whatsapp_url)
   const social = normalizeExternalUrl(profile?.x_url)
+  const photos = [...new Set([
+    profile?.avatar_url, profile?.hero_image_1, ...(profile?.gallery_images || []), profile?.hero_image_2,
+  ].filter((src): src is string => Boolean(src && /^https?:\/\//i.test(src))))].slice(0, 2)
 
   return (
     <header className="portfolio-opening-header">
       <Link href="/" className="portfolio-header-name">{firstName}{lastName.length > 0 && <><br />{lastName.join(' ')}</>}</Link>
       <span className="portfolio-opening-role">Product designer</span>
       <nav className="portfolio-opening-nav" aria-label="Portfolio">
-        <PortfolioMenu />
+        <PortfolioMenu photos={photos} name={name} />
         {(profile?.contact_email || whatsapp || social) && (
           <details>
             <summary><MovingText>Contact</MovingText></summary>
