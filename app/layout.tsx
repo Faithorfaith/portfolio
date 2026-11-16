@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
-import SoundControl from '@/components/portfolio/sound-control'
 import { ArticleAudioProvider } from '@/components/article-audio-provider'
 import MotionOrchestrator from '@/components/portfolio/motion-orchestrator'
 import { DM_Mono, Inter } from 'next/font/google'
@@ -54,7 +53,6 @@ export default function RootLayout({
         <ArticleAudioProvider>
           <MotionOrchestrator />
           {children}
-          <SoundControl />
           <PostHogProvider />
         </ArticleAudioProvider>
         <Analytics />
