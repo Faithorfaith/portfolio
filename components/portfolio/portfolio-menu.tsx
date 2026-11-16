@@ -116,6 +116,7 @@ export default function PortfolioMenu() {
         <nav className="portfolio-menu-destinations" aria-label="Portfolio sections">
           {destinations.map(item => (
             <Link key={item.href} href={item.href} onClick={event => void openDestination(event, item.href)}>
+              <small aria-hidden="true">Faith<br />Awokunle</small>
               <span className="portfolio-menu-label"><MovingText>{item.label}</MovingText></span>
               <span className="portfolio-menu-preview" aria-hidden="true">{item.preview}</span>
             </Link>

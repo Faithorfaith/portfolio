@@ -1090,24 +1090,30 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 .portfolio-menu-destinations {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(10px, 1.2vw, 16px);
-  width: min(100% - 32px, 680px);
-  margin: clamp(20px, 5svh, 64px) auto 24px;
+  gap: clamp(10px, 1.8vw, 22px);
+  width: min(100% - 32px, 300px);
+  margin: clamp(20px, 5svh, 64px) auto 48px;
 }
 .portfolio-menu-destinations > a {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  min-height: 98px;
-  gap: 8px;
-  padding: 16px clamp(16px, 3vw, 32px);
-  font-size: clamp(24px, 3vw, 42px);
+  justify-content: start;
+  aspect-ratio: 4 / 6;
+  gap: 16px;
+  padding: 12px 12px 16px;
+  font-size: clamp(22px, 3vw, 42px);
   line-height: 1;
 }
+.portfolio-menu-destinations small { font-size: 9px; line-height: 1.15; }
 .portfolio-menu-destinations .portfolio-menu-preview {
-  font-size: clamp(13px, 1.25vw, 16px);
-  line-height: 1.3;
+  max-width: 20ch;
+  margin-top: auto;
+  font-size: .6em;
+  line-height: 1.15;
+}
+@media (max-width: 640px) {
+  .portfolio-menu-destinations > a { aspect-ratio: auto; min-height: 210px; }
 }
 .portfolio-opening {
   --opening-edge: clamp(16px, 1.11vw, 32px);
