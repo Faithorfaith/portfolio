@@ -144,6 +144,15 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
           {destinations.map(item => (
             <Link key={item.href} href={item.href} onClick={event => void openDestination(event, item.href)}>
               <span className="portfolio-menu-label"><MovingText>{item.label}</MovingText></span>
+              {!previews && item.href !== '/about' && (
+                <span className="portfolio-menu-covers" aria-hidden="true">
+                  {[0, 1].map(slot => (
+                    <span className="portfolio-menu-cover" key={slot}>
+                      <span className="portfolio-menu-cover-frame" />
+                    </span>
+                  ))}
+                </span>
+              )}
               {!!item.images?.length && (
                 <span className="portfolio-menu-covers" data-destination={item.href} aria-hidden="true">
                   {item.images.map(src => (

@@ -1474,18 +1474,21 @@ a.portfolio-opening-card:hover h2 { text-decoration: underline; text-underline-o
 }
 .portfolio-menu-cover-frame img { object-fit: cover; }
 @media (max-width: 640px) {
-  .portfolio-menu-destinations > a[href="/case-studies"] {
+  .portfolio-menu-destinations {
+    grid-auto-rows: max-content;
+  }
+  .portfolio-menu-destinations > a {
     height: auto;
     padding: 18px;
     gap: 16px;
+    justify-content: start;
   }
-  .portfolio-menu-covers[data-destination="/case-studies"] {
+  .portfolio-menu-covers {
+    width: 100%;
     height: auto;
+    aspect-ratio: 8 / 5;
+    flex: none;
     gap: 8px;
-  }
-  .portfolio-menu-covers[data-destination="/case-studies"] .portfolio-menu-cover {
-    height: auto;
-    aspect-ratio: 4 / 5;
   }
 }
 
