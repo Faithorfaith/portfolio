@@ -74,7 +74,7 @@ export default function CaseStudyClient({ initialCaseStudy, profile }: { initial
 
   return <main className="case-story min-h-screen bg-background">
     <PortfolioHeader profile={profile} />
-    <CaseStudyTransitionLink href="/case-studies" className="case-study-back" aria-label="Back to case studies" title="Back to case studies">
+    <CaseStudyTransitionLink href="/case-studies" className="case-study-back" aria-label="Back to case studies">
       <ArrowLeft size={20} strokeWidth={1.75} aria-hidden="true" />
     </CaseStudyTransitionLink>
     <article className="case-study-content">
