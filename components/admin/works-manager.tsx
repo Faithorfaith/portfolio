@@ -146,40 +146,33 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this work?')) return
-
+  const deleteWorks = async (ids: string[]) => {
     try {
-      const supabase = createClient()
-      const { error: deleteError } = await supabase
-        .from('portfolio_works')
-        .delete()
-        .eq('id', id)
-
-      if (deleteError) throw deleteError
-      setWorks((prev) => prev.filter((work) => work.id !== id))
-      setSelectedIds((prev) => prev.filter((selected) => selected !== id))
-      setSuccess(true)
-      setTimeout(() => setSuccess(false), 3000)
-    } catch (err) {
-      console.error('Error deleting work:', err)
-      setError('Failed to delete work')
-    }
-  }
-
-  const handleBulkDelete = async () => {
-    if (!selectedIds.length || !confirm(`Delete ${selectedIds.length} selected item${selectedIds.length === 1 ? '' : 's'}?`)) return
-    try {
-      const supabase = createClient()
-      const { error: deleteError } = await supabase.from('portfolio_works').delete().in('id', selectedIds).eq('user_id', userId)
-      if (deleteError) throw deleteError
-      setWorks((prev) => prev.filter((work) => !selectedIds.includes(work.id)))
-      setSelectedIds([])
+      const response = await fetch('/api/works', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      })
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}))
+        throw new Error(result.error || 'Failed to delete selected media')
+      }
+      setWorks(previous => previous.filter(work => !ids.includes(work.id)))
+      setSelectedIds(previous => previous.filter(id => !ids.includes(id)))
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete selected media')
     }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (confirm('Are you sure you want to delete this work?')) await deleteWorks([id])
+  }
+
+  const handleBulkDelete = async () => {
+    if (!selectedIds.length || !confirm(`Delete ${selectedIds.length} selected item${selectedIds.length === 1 ? '' : 's'}?`)) return
+    await deleteWorks(selectedIds)
   }
 
   const startEdit = (work: Work) => {

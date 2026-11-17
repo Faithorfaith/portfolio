@@ -4,6 +4,13 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 
 const ITEMS_PER_PAGE = 12
 
+function refreshPublicWorks() {
+  revalidateTag('public-works', { expire: 0 })
+  revalidatePath('/')
+  revalidatePath('/playground')
+  revalidatePath('/api/public/menu-previews')
+}
+
 export async function GET(request: NextRequest) {
   const supabase = await createClient()
   
@@ -71,9 +78,24 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  revalidateTag('public-works', { expire: 0 })
-  revalidatePath('/')
-  revalidatePath('/playground')
-  revalidatePath('/api/public/menu-previews')
+  refreshPublicWorks()
   return NextResponse.json(data)
+}
+
+export async function DELETE(request: NextRequest) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await request.json().catch(() => null)
+  const ids: unknown = body?.ids
+  if (!Array.isArray(ids) || !ids.length || !ids.every(id => typeof id === 'string' && id.length > 0)) {
+    return NextResponse.json({ error: 'Select at least one media item' }, { status: 400 })
+  }
+
+  const { error } = await supabase.from('portfolio_works').delete().in('id', ids).eq('user_id', user.id)
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+
+  refreshPublicWorks()
+  return NextResponse.json({ success: true })
 }
