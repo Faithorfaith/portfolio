@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireUser } from '@/lib/auth'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { slugify } from '@/lib/slugify'
+
+function refreshPublicCaseStudies() {
+  revalidateTag('public-case-studies', { expire: 0 })
+  revalidatePath('/')
+  revalidatePath('/case-studies')
+  revalidatePath('/case-studies/[id]', 'page')
+  revalidatePath('/api/public/menu-previews')
+}
 
 export async function GET() {
   try {
@@ -44,7 +52,7 @@ export async function POST(request: Request) {
         .single()
 
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-      revalidatePath('/')
+      refreshPublicCaseStudies()
       return NextResponse.json({ data })
     } else {
       const { data: lastCaseStudy } = await supabase
@@ -62,7 +70,7 @@ export async function POST(request: Request) {
         .single()
 
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-      revalidatePath('/')
+      refreshPublicCaseStudies()
       return NextResponse.json({ data })
     }
   } catch (error) {
@@ -96,7 +104,7 @@ export async function PATCH(request: Request) {
     const failedUpdate = updates.find(({ error }) => error)
     if (failedUpdate?.error) return NextResponse.json({ error: failedUpdate.error.message }, { status: 400 })
 
-    revalidatePath('/')
+    refreshPublicCaseStudies()
     return NextResponse.json({ success: true })
   } catch {
     return NextResponse.json({ error: 'Failed to reorder case studies' }, { status: 500 })
@@ -117,7 +125,7 @@ export async function DELETE(request: Request) {
     const { error } = await supabase.from('case_studies').delete().eq('id', id).eq('user_id', user.id)
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
-    revalidatePath('/')
+    refreshPublicCaseStudies()
     return NextResponse.json({ success: true })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to delete case study' }, { status: 500 })

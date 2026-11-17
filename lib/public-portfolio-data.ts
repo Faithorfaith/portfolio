@@ -53,7 +53,7 @@ export const getPublicCaseStudyLinks = unstable_cache(async (): Promise<CaseStud
     .order('order_index', { ascending: true })
   if (error) throw new Error(`Unable to load case study links: ${error.message}`)
   return (data as CaseStudyLink[] | null) ?? []
-}, ['public-case-study-links-v1'], { revalidate: 300 })
+}, ['public-case-study-links-v2'], { revalidate: 300, tags: ['public-case-studies'] })
 
 export const getPublicCaseStudyPage = unstable_cache(async (identifier: string): Promise<{
   caseStudy: CaseStudyPageData | null
@@ -79,7 +79,7 @@ export const getPublicCaseStudyPage = unstable_cache(async (identifier: string):
   }
 
   return { caseStudy }
-}, ['public-case-study-page-v1'], { revalidate: 300 })
+}, ['public-case-study-page-v2'], { revalidate: 300, tags: ['public-case-studies'] })
 
 export type HomeWriting = Pick<Writing, 'id' | 'title' | 'slug' | 'excerpt' | 'cover_image' | 'created_at'> & { readingMinutes: number }
 
@@ -110,7 +110,7 @@ export const getPublicCaseStudyCards = unstable_cache(async (): Promise<CaseStud
     .limit(50)
   if (error) throw new Error(`Unable to load case study cards: ${error.message}`)
   return data as CaseStudy[]
-}, ['portfolio-case-study-cards'], { revalidate: 300 })
+}, ['portfolio-case-study-cards-v2'], { revalidate: 300, tags: ['public-case-studies'] })
 
 export const getPublicPortfolioData = unstable_cache(async (): Promise<PortfolioData> => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
