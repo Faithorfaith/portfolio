@@ -1239,29 +1239,6 @@ a.portfolio-opening-card:hover h2 { text-decoration: underline; text-underline-o
 .portfolio-opening-cover { position: relative; height: min(61.2svh, 34.5vw); background: #f0f0f0; }
 .portfolio-opening-cover img { object-fit: cover; }
 .portfolio-opening-cover { overflow: hidden; }
-@media (prefers-reduced-motion: no-preference) {
-  .portfolio-opening-cover.is-in-view img,
-  .portfolio-opening-card:focus-visible .portfolio-opening-cover img {
-    animation: portfolio-cover-drift 2.4s ease-in-out 2;
-  }
-  .case-story-opening .case-story-cover img {
-    animation: portfolio-cover-detail-drift 2.4s ease-in-out 2;
-  }
-}
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .portfolio-opening-card:hover .portfolio-opening-cover img {
-    animation: portfolio-cover-drift 4s ease-in-out infinite;
-  }
-}
-@keyframes portfolio-cover-drift {
-  0%, 100% { transform: scale(1); }
-  45% { transform: scale(1.09) translateX(-1%); }
-  70% { transform: scale(1.065) translateX(1%); }
-}
-@keyframes portfolio-cover-detail-drift {
-  0%, 100% { transform: none; }
-  50% { transform: translateY(-1%) scale(.94); }
-}
 .portfolio-opening-cover svg { position: absolute; top: 12px; right: 12px; }
 @media (max-width: 640px) {
   .portfolio-opening-header { grid-template-columns: 1fr auto auto; gap: 22px; }
