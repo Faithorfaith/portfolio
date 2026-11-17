@@ -4,11 +4,12 @@ import { requireUser } from '@/lib/auth'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { slugify } from '@/lib/slugify'
 
-function refreshPublicCaseStudies() {
+function refreshPublicCaseStudies(identifier?: string) {
   revalidateTag('public-case-studies', { expire: 0 })
   revalidatePath('/')
   revalidatePath('/case-studies')
-  revalidatePath('/case-studies/[id]', 'page')
+  if (identifier) revalidatePath(`/case-studies/${encodeURIComponent(identifier)}`)
+  else revalidatePath('/case-studies/[id]', 'page')
   revalidatePath('/api/public/menu-previews')
 }
 
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
         .single()
 
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-      refreshPublicCaseStudies()
+      refreshPublicCaseStudies(slug)
       return NextResponse.json({ data })
     } else {
       const { data: lastCaseStudy } = await supabase
@@ -70,7 +71,7 @@ export async function POST(request: Request) {
         .single()
 
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-      refreshPublicCaseStudies()
+      refreshPublicCaseStudies(slug)
       return NextResponse.json({ data })
     }
   } catch (error) {
