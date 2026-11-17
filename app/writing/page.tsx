@@ -3,6 +3,7 @@ import Link from 'next/link'
 import PortfolioShelf from '@/components/portfolio/portfolio-shelf'
 import { getPublicWritings } from '@/lib/public-portfolio-data'
 import { slugify } from '@/lib/slugify'
+import { replaceEmDashes } from '@/lib/content-utils'
 
 export const metadata = {
   title: 'My Writings - Faith Awokunle',
@@ -24,7 +25,7 @@ export default async function WritingPage() {
                 </span>
               )}
               <span className="portfolio-book-copy">
-                <strong>{writing.title}</strong>
+                <strong>{replaceEmDashes(writing.title)}</strong>
                 <span>Faith Awokunle</span>
               </span>
             </span>

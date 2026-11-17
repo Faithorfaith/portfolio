@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import AboutScrollLayout from '@/components/portfolio/about-scroll-layout'
 import PortfolioHeader from '@/components/portfolio/portfolio-header'
-import { normalizeExternalUrl, normalizeWhatsAppUrl } from '@/lib/content-utils'
+import { normalizeExternalUrl, normalizeWhatsAppUrl, replaceEmDashes } from '@/lib/content-utils'
 import { getPublicProfile } from '@/lib/public-portfolio-data'
 import styles from './about.module.css'
 
@@ -22,6 +22,15 @@ export default async function AboutPage() {
   const [firstName, ...surname] = name.split(/\s+/)
   const bio = profile?.bio?.trim() || 'I’m a product designer working across digital products, visual design, and motion.'
   const headline = profile?.positioning_headline?.trim() || 'I design digital products that make complex ideas feel clear.'
+  const paragraphs = bio.split(/\n\s*\n/).map((paragraph, index) => {
+    const text = index === 1
+      ? paragraph.replace(
+          /I design digital products, mobile experiences, dashboards, and complex user flows, while also creating the visual systems, graphics, and video content that help products communicate better\./i,
+          'I design mobile apps and dashboards for tasks like setting up an air monitor or planning a drone mission. I also create visual systems, graphics, and videos that make these products easier to understand.',
+        )
+      : paragraph
+    return replaceEmDashes(text)
+  })
   const video = profile?.train_video_1?.trim()
   const photos = [...new Set([
     profile?.avatar_url,
@@ -52,13 +61,13 @@ export default async function AboutPage() {
           )}
           {surname.length > 0 && <span>{surname.join(' ')}</span>}
         </h1>
-        <p className={styles.headline}>{headline}</p>
+        <p className={styles.headline}>{replaceEmDashes(headline)}</p>
       </section>
 
       <div className={styles.story}>
         <AboutScrollLayout photos={photos} video={video} name={name}>
           <section className={styles.bio} aria-label="About me">
-            {bio.split(/\n\s*\n/).map((paragraph, index) => <p key={index} data-about-panel>{paragraph}</p>)}
+            {paragraphs.map((paragraph, index) => <p key={index} data-about-panel>{paragraph}</p>)}
           </section>
           <section className={styles.experience} aria-labelledby="experience-title">
             <h2 id="experience-title">Experience</h2>

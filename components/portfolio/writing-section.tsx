@@ -14,6 +14,7 @@ import ArticleRowContent from '@/components/article-row-content'
 import { playFeedback } from '@/lib/interaction-feedback'
 import Link from 'next/link'
 import { slugify } from '@/lib/slugify'
+import { replaceEmDashes } from '@/lib/content-utils'
 import { getWritingAppearance, writingBackgroundColor } from '@/lib/writing-appearance'
 
 interface ContentBlock {

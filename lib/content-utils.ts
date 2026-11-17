@@ -1,3 +1,7 @@
+export function replaceEmDashes(value: string) {
+  return value.replace(/[ \t]*(?:—|&mdash;|&#0*8212;|&#x0*2014;)[ \t]*/gi, ', ')
+}
+
 export function cleanInlineText(value: string | null | undefined) {
   return (value || '')
     .replace(/&#x20;|&#32;|&nbsp;/gi, ' ')

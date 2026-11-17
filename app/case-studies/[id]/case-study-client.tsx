@@ -10,6 +10,7 @@ import CaseSectionBody from '@/components/case-section-body'
 import SafeEmbed from '@/components/safe-embed'
 import ViewportVideo from '@/components/viewport-video'
 import { slugify } from '@/lib/slugify'
+import { replaceEmDashes } from '@/lib/content-utils'
 import CaseMedia from '@/components/case-media'
 import PortfolioHeader from '@/components/portfolio/portfolio-header'
 import { MovingText } from '@/components/portfolio/portfolio-shelf'
@@ -81,14 +82,14 @@ export default function CaseStudyClient({ initialCaseStudy, profile }: { initial
       <header className="case-story-opening">
         <div className="case-story-introduction">
           <div className="case-story-heading">
-            <h1>{caseStudy.title}</h1>
+            <h1>{replaceEmDashes(caseStudy.title)}</h1>
           </div>
           {(caseStudy.excerpt || (caseStudy.cta_text && caseStudy.cta_link)) && (
             <div className="case-story-summary">
-              {caseStudy.excerpt && <p>{caseStudy.excerpt}</p>}
+              {caseStudy.excerpt && <p>{replaceEmDashes(caseStudy.excerpt)}</p>}
               {caseStudy.cta_text && caseStudy.cta_link && (
                 <a className="case-story-detail-link" href={caseStudy.cta_link} target="_blank" rel="noopener noreferrer">
-                  <MovingText>{caseStudy.cta_text}</MovingText>
+                  <MovingText>{replaceEmDashes(caseStudy.cta_text)}</MovingText>
                 </a>
               )}
             </div>
@@ -116,14 +117,14 @@ export default function CaseStudyClient({ initialCaseStudy, profile }: { initial
             {section.embed_url && <div className="case-story-embed"><SafeEmbed url={section.embed_url} title={section.title || section.label || 'Embedded content'} /></div>}
           </div></div>}
           {(section.label || section.title || section.body?.replace(/<[^>]*>|&nbsp;/g, '').trim() || section.body?.includes('data-embed=') || section.body?.includes('<img')) && <div className="case-story-copy">
-            {section.label && <p className="case-story-label">{section.label}</p>}
-            {section.title && <h2>{section.title}</h2>}
+            {section.label && <p className="case-story-label">{replaceEmDashes(section.label)}</p>}
+            {section.title && <h2>{replaceEmDashes(section.title)}</h2>}
             <CaseSectionBody html={section.body || ''} />
           </div>}
         </section>)}
       </div>
 
-      {relatedArticle && <section className="case-story-related" data-motion-section><p>Related writing</p><a href={`/writing/${encodeURIComponent(slugify(relatedArticle.title))}`}><span>{relatedArticle.title}</span><span>Read note →</span></a></section>}
+      {relatedArticle && <section className="case-story-related" data-motion-section><p>Related writing</p><a href={`/writing/${encodeURIComponent(slugify(relatedArticle.title))}`}><span>{replaceEmDashes(relatedArticle.title)}</span><span>Read note →</span></a></section>}
     </article>
   </main>
 }

@@ -3,6 +3,7 @@
 import DOMPurify from 'isomorphic-dompurify'
 import { createElement } from 'react'
 import SafeEmbed from './safe-embed'
+import { replaceEmDashes } from '@/lib/content-utils'
 
 type SafeHtmlProps = {
   html: string
@@ -16,7 +17,9 @@ export default function SafeHtml({ html, as = 'div', ...props }: SafeHtmlProps) 
     USE_PROFILES: { html: true },
     FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed', 'form'],
     FORBID_ATTR: ['style'],
-  })
+  }).split(/(<(?:[^"'<>]|"[^"]*"|'[^']*')*>)/g)
+    .map((part, index) => index % 2 ? part : replaceEmDashes(part))
+    .join('')
 
   // Embedded providers go through the same allowlisted renderer as legacy media.
   if (clean.includes('data-embed=') && typeof DOMParser !== 'undefined') {

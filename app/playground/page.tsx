@@ -3,6 +3,7 @@ import PortfolioHeader from '@/components/portfolio/portfolio-header'
 import PortfolioShelf from '@/components/portfolio/portfolio-shelf'
 import { getPublicProfile, getPublicWorks } from '@/lib/public-portfolio-data'
 import { playgroundNames } from '@/lib/portfolio-titles'
+import { replaceEmDashes } from '@/lib/content-utils'
 
 export const metadata = { title: 'Playground - Faith Awokunle' }
 export const revalidate = 300
@@ -12,7 +13,7 @@ export default async function PlaygroundPage() {
   const pieces = works.flatMap(work => {
     if (work.media_type?.startsWith('video')) return []
     const src = work.thumbnail_url || (work.media_type?.startsWith('image') ? work.media_url : null)
-    return src ? [{ src, id: work.id, title: playgroundNames[work.id] || work.title || 'Visual study' }] : []
+    return src ? [{ src, id: work.id, title: replaceEmDashes(playgroundNames[work.id] || work.title || 'Visual study') }] : []
   })
 
   return (

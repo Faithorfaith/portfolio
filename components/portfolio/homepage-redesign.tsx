@@ -5,6 +5,7 @@ import CaseStudyTransitionLink from '@/components/portfolio/case-study-transitio
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import type { CaseStudy, Profile } from './profile-section'
 import { caseNames } from '@/lib/portfolio-titles'
+import { replaceEmDashes } from '@/lib/content-utils'
 import PortfolioHeader from './portfolio-header'
 import { MovingText } from './portfolio-shelf'
 
@@ -14,7 +15,7 @@ export default function HomepageRedesign({ profile, caseStudies }: Props) {
   const rail = useRef<HTMLElement>(null)
   const cards = caseStudies.filter(study => study.published).map(study => ({
     key: study.id,
-    title: caseNames[study.slug || ''] || study.title,
+    title: replaceEmDashes(caseNames[study.slug || ''] || study.title),
     cover: study.thumbnail_url,
     href: `/case-studies/${encodeURIComponent(study.slug || study.id)}`,
   }))

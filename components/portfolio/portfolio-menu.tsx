@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState, type MouseEvent } from 'react'
 import { MovingText } from './portfolio-shelf'
+import { replaceEmDashes } from '@/lib/content-utils'
 
 interface MenuPreviews {
   caseStudies: string[]
@@ -162,7 +163,7 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
                         {book.cover && (
                           <span className="portfolio-book-art"><Image src={book.cover} fill quality={60} sizes="90px" alt="" /></span>
                         )}
-                        <span className="portfolio-book-copy"><strong>{book.title}</strong><span>{name}</span></span>
+                        <span className="portfolio-book-copy"><strong>{replaceEmDashes(book.title)}</strong><span>{name}</span></span>
                       </span>
                     </span>
                   ))}
