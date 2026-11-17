@@ -8,7 +8,7 @@ import styles from './about.module.css'
 export const metadata = { title: 'About - Faith Awokunle' }
 
 const experience = [
-  { company: 'Ape Born', role: 'Product Designer · Graphic Design & Video Editing', period: 'Aug 2025 – Present' },
+  { company: 'Ape Born', role: 'Multidisciplinary Product Designer', period: 'Aug 2025 – Present' },
   { company: 'Techminte', role: 'UI Designer', period: 'Feb 2025 – Jul 2026' },
   { company: 'Lucy’s Circle', role: 'Product Designer', period: 'Apr – Jul 2025' },
   { company: 'Synergy Developers', role: 'Product Designer', period: 'Jul – Oct 2024' },

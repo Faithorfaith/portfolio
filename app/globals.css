@@ -1092,6 +1092,13 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   flex-direction: column;
   overflow: clip;
 }
+.portfolio-menu-footer {
+  flex: none;
+  padding: 10px clamp(16px, 3vw, 40px) max(12px, env(safe-area-inset-bottom));
+  font-family: var(--font-dm-mono), ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.25;
+}
 .portfolio-menu-destinations {
   display: grid;
   flex: 1;
@@ -1118,18 +1125,17 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 }
 .portfolio-menu-label { flex-shrink: 0; overflow-wrap: anywhere; }
 @media (max-width: 640px) {
-  .portfolio-menu-dialog[open] {
+  .portfolio-menu-destinations {
+    align-content: start;
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
-  }
-  .portfolio-menu-destinations {
-    flex: none;
+    scrollbar-width: none;
     width: min(100%, 450px);
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: none;
     gap: 12px;
-    padding: 0 16px max(16px, env(safe-area-inset-bottom));
+    padding: 0 16px 12px;
   }
   .portfolio-menu-destinations > a {
     height: clamp(230px, 64dvh, 530px);

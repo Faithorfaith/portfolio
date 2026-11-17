@@ -49,7 +49,7 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
     if (!menu || menu.open) return
     menu.showModal()
     void loadPreviews()
-    menu.scrollTop = 0
+    menu.querySelector('.portfolio-menu-destinations')?.scrollTo(0, 0)
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     const page = menu.closest('main') || document.querySelector('main')
@@ -136,7 +136,7 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
       <button type="button" className="portfolio-menu-trigger" aria-haspopup="dialog" onClick={openMenu}><MovingText>Menu</MovingText></button>
       <dialog ref={dialog} className="portfolio-menu-dialog" aria-label="Portfolio menu" onClose={clearTransition} onCancel={event => { event.preventDefault(); closeMenu() }}>
         <div className="portfolio-menu-top">
-          <Link href="/" onClick={() => dialog.current?.close()}>Faith Awokunle</Link>
+          <Link href="/" onClick={() => dialog.current?.close()}>{name}</Link>
           <button type="button" autoFocus onClick={closeMenu}>Close</button>
         </div>
         <nav className="portfolio-menu-destinations" aria-label="Portfolio sections">
@@ -171,6 +171,7 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
             </Link>
           ))}
         </nav>
+        <footer className="portfolio-menu-footer">{name}</footer>
       </dialog>
     </>
   )
