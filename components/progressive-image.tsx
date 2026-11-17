@@ -14,6 +14,7 @@ interface ProgressiveImageProps {
   width?: number
   height?: number
   sizes?: string
+  quality?: number
 }
 
 export default function ProgressiveImage({
@@ -26,6 +27,7 @@ export default function ProgressiveImage({
   width,
   height,
   sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px',
+  quality = 75,
 }: ProgressiveImageProps) {
   const [isLoaded, setIsLoaded] = useState(false)
   const focus = imageFocus(src)
@@ -49,7 +51,7 @@ export default function ProgressiveImage({
           className={`object-cover ${className}`}
           onLoad={() => setIsLoaded(true)}
           priority={priority}
-          quality={75}
+          quality={quality}
         />
       ) : (
         <Image
@@ -65,7 +67,7 @@ export default function ProgressiveImage({
           className={className}
           onLoad={() => setIsLoaded(true)}
           priority={priority}
-          quality={75}
+          quality={quality}
         />
       )}
     </div>

@@ -28,7 +28,6 @@ export default function PortfolioShelf({ title, introduction, children, loopCopi
     const rail = track.current
     if (!section || !rail) return
 
-    const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
     const group = rail.children[2] as HTMLElement | undefined
     const following = rail.children[3] as HTMLElement | undefined
     const span = () => loops && group && following ? following.offsetLeft - group.offsetLeft : 0
@@ -41,8 +40,6 @@ export default function PortfolioShelf({ title, introduction, children, loopCopi
         const position = ((rail.scrollLeft - start()) % width + width) % width
         rail.scrollLeft = start() + position
       }
-      const distance = motion.matches ? 0 : Math.min(30, Math.abs(rail.scrollLeft - start()) / 24)
-      section.style.setProperty('--shelf-title-shift', `${distance}px`)
     }
     const scrollAcross = (event: WheelEvent) => {
       if (event.ctrlKey || event.shiftKey || Math.abs(event.deltaX) >= Math.abs(event.deltaY) || rail.scrollWidth <= rail.clientWidth) return
@@ -54,12 +51,10 @@ export default function PortfolioShelf({ title, introduction, children, loopCopi
 
     rail.addEventListener('scroll', trackScroll, { passive: true })
     section.addEventListener('wheel', scrollAcross, { passive: false })
-    motion.addEventListener('change', trackScroll)
     trackScroll()
     return () => {
       rail.removeEventListener('scroll', trackScroll)
       section.removeEventListener('wheel', scrollAcross)
-      motion.removeEventListener('change', trackScroll)
     }
   }, [loops])
 

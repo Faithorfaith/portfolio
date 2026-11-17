@@ -298,8 +298,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
     setError(null)
     
     try {
-      // Compress image first
-      const compressedFile = await compressImage(file, 1920, 1080, 0.8)
+      const image = file.type === 'image/webp' ? file : await compressImage(file, 2880, 2160, 0.92)
       
       const supabase = createClient()
       const fileName = `case-studies/sections/${Date.now()}-${file.name}`
@@ -308,7 +307,7 @@ export default function CaseStudiesManager({ userId, onEditorOpenChange }: CaseS
         supabase,
         'portfolio-uploads',
         fileName,
-        compressedFile,
+        image,
         (progress) => setUploadProgress(progress)
       )
       
