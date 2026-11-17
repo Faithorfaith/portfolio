@@ -16,7 +16,7 @@ interface MenuPreviews {
 
 export default function PortfolioMenu({ photos, name }: { photos: string[]; name: string }) {
   const dialog = useRef<HTMLDialogElement>(null)
-  const transition = useRef<HTMLElement | null>(null)
+  const transition = useRef<Animation | null>(null)
   const router = useRouter()
   const pathname = usePathname()
   const [previews, setPreviews] = useState<MenuPreviews | null>(null)
@@ -36,7 +36,7 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
   }
 
   const clearTransition = () => {
-    transition.current?.remove()
+    transition.current?.cancel()
     transition.current = null
   }
 
@@ -91,37 +91,29 @@ export default function PortfolioMenu({ photos, name }: { photos: string[]; name
 
     const tile = event.currentTarget
     const bounds = tile.getBoundingClientRect()
-    const label = tile.querySelector<HTMLElement>('.portfolio-menu-label')
-    const labelBounds = label?.getBoundingClientRect() || bounds
-    const surface = document.createElement('div')
-    surface.className = 'portfolio-menu-expansion'
-    surface.setAttribute('aria-hidden', 'true')
-    transition.current = surface
-    const preview = document.createElement('div')
-    preview.className = 'portfolio-menu-expansion-copy'
-    preview.textContent = label?.querySelector('.portfolio-moving-text > span')?.textContent || ''
-    surface.append(preview)
-    menu.append(surface)
-    const timing: KeyframeAnimationOptions = { duration: 520, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'both' }
-    preview.animate([
-      { left: `${labelBounds.left - bounds.left}px`, top: `${labelBounds.top - bounds.top}px`, fontSize: getComputedStyle(tile).fontSize },
-      { left: 'clamp(24px, 4vw, 64px)', top: 'clamp(110px, 19vh, 250px)', fontSize: 'clamp(40px, 7vw, 90px)' },
-    ], timing)
+    const availableWidth = tile.parentElement?.clientWidth || window.innerWidth
+    const scale = Math.max(1, Math.min(1.5, availableWidth / bounds.width))
 
-    const animation = surface.animate([
-      { inset: `${bounds.top}px ${window.innerWidth - bounds.right}px ${window.innerHeight - bounds.bottom}px ${bounds.left}px`, backgroundColor: '#ffffff', borderRadius: '18px' },
-      { inset: '0', backgroundColor: '#f5f5f5', borderRadius: '0' },
-    ], timing)
-    await animation.finished.catch(() => undefined)
-    if (!menu.open || transition.current !== surface) return
+    tile.setAttribute('data-expanding', '')
+    const animation = tile.animate(
+      [{ scale: '1' }, { scale: String(scale) }],
+      { duration: 320, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards' },
+    )
+    transition.current = animation
 
-    // Keep the expanded tile visible while Next replaces the outgoing page.
-    surface.dataset.menuDestination = href
-    document.body.append(surface)
-    transition.current = null
-    menu.close()
-    router.push(href)
-    window.setTimeout(() => surface.remove(), 5000)
+    try {
+      await animation.finished
+      if (menu.open && transition.current === animation) {
+        menu.close()
+        router.push(href)
+      }
+    } catch {
+      // Closing the menu cancels the tile animation.
+    } finally {
+      if (transition.current === animation) transition.current = null
+      animation.cancel()
+      tile.removeAttribute('data-expanding')
+    }
   }
   const destinations = [
     { label: 'Case Studies', href: '/case-studies', images: previews?.caseStudies },

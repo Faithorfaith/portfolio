@@ -1809,12 +1809,6 @@ body:has(:is(.portfolio-opening-header, .public-page, .case-story))::-webkit-scr
 .portfolio-paper-article .writing-content-rail { width: min(100%, 800px); }
 .portfolio-paper-article .writing-content-rail :is(h2, h3) { font-size: clamp(30px, 3vw, 46px); line-height: 1.16; }
 
-.portfolio-menu-expansion {
-  position: fixed;
-  z-index: 2;
-  overflow: hidden;
-  pointer-events: none;
-}
 .portfolio-archive-piece {
   transition: flex-basis 350ms cubic-bezier(.22, 1, .36, 1), height 350ms cubic-bezier(.22, 1, .36, 1);
 }
@@ -1913,15 +1907,7 @@ body:has(:is(.portfolio-opening-header, .public-page, .case-story))::-webkit-scr
 .portfolio-menu-dialog[open] .portfolio-menu-destinations > a:nth-child(2),
 .portfolio-menu-dialog[open] .portfolio-menu-destinations > a:nth-child(3) { animation-delay: 45ms; }
 .portfolio-menu-dialog[open] .portfolio-menu-destinations > a:nth-child(n+3) { --menu-entry-x: 44px; --menu-entry-rotation: 11deg; }
-.portfolio-menu-expansion-copy {
-  position: absolute;
-  width: max-content;
-  color: #252525;
-  font-family: var(--font-sans);
-  line-height: 1;
-  letter-spacing: -.045em;
-}
-.portfolio-menu-expansion[data-menu-destination] { z-index: 100; pointer-events: auto; }
+.portfolio-menu-destinations > a[data-expanding] { z-index: 2; }
 @keyframes portfolio-menu-background { from { background-color: #f5f5f51a; } to { background-color: #f5f5f5; } }
 @keyframes portfolio-menu-card-enter {
   from { opacity: 0; transform: perspective(800px) translateX(var(--menu-entry-x)) rotateY(var(--menu-entry-rotation)) scale(.94); }
