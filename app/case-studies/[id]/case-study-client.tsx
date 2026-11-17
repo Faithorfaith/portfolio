@@ -32,7 +32,6 @@ export interface CaseStudy {
   slug: string | null; published: boolean; created_at: string; order_index?: number | null
   cta_text: string | null; cta_link: string | null; related_article_id: string | null
 }
-export type CaseStudyLink = Pick<CaseStudy, 'id' | 'title' | 'slug' | 'order_index' | 'created_at'>
 interface RelatedArticle { id: string; title: string; slug: string; excerpt: string | null; cover_image: string | null; content: unknown; created_at: string }
 
 export default function CaseStudyClient({ initialCaseStudy, profile }: { initialCaseStudy?: CaseStudy | null; profile?: Profile | null }) {

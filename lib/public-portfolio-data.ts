@@ -8,7 +8,7 @@ import type { Work } from '@/components/portfolio/works-gallery'
 import type { Writing } from '@/components/portfolio/writing-section'
 import type { WorkflowFile } from '@/lib/workflow-files'
 import { slugify } from '@/lib/slugify'
-import type { CaseStudy as CaseStudyPageData, CaseStudyLink } from '@/app/case-studies/[id]/case-study-client'
+import type { CaseStudy as CaseStudyPageData } from '@/app/case-studies/[id]/case-study-client'
 
 type PortfolioData = { profile: Profile | null; caseStudies: CaseStudy[]; projects: Project[]; works: Work[]; writings: Writing[] }
 
@@ -43,22 +43,9 @@ export const getPublicWorks = unstable_cache(async (): Promise<Work[]> => {
   return (data as Work[] | null) ?? []
 }, ['public-works-v2'], { revalidate: 300 })
 
-export const getPublicCaseStudyLinks = unstable_cache(async (): Promise<CaseStudyLink[]> => {
-  const supabase = publicClient()
-  if (!supabase) return []
-  const { data, error } = await supabase
-    .from('case_studies')
-    .select('id, title, slug, order_index, created_at')
-    .eq('published', true)
-    .order('updated_at', { ascending: false, nullsFirst: false })
-    .order('created_at', { ascending: false })
-  if (error) throw new Error(`Unable to load case study links: ${error.message}`)
-  return (data as CaseStudyLink[] | null) ?? []
-}, ['public-case-study-links-v3'], { revalidate: 300, tags: ['public-case-studies'] })
-
-export const getPublicCaseStudyPage = unstable_cache(async (identifier: string): Promise<{
+export async function getPublicCaseStudyPage(identifier: string): Promise<{
   caseStudy: CaseStudyPageData | null
-}> => {
+}> {
   const supabase = publicClient()
   if (!supabase) return { caseStudy: null }
 
@@ -71,8 +58,7 @@ export const getPublicCaseStudyPage = unstable_cache(async (identifier: string):
   if (detailResult.error) throw new Error(`Unable to load case study: ${detailResult.error.message}`)
 
   let caseStudy = detailResult.data as CaseStudyPageData | null
-  // Older entries may predate the slug column. Keep that compatibility path cached
-  // and only pay for the wider query when the direct lookup misses.
+  // Older entries may predate the slug column. Use the wider query only when the direct lookup misses.
   if (!caseStudy && !isId) {
     const { data, error } = await supabase.from('case_studies').select('*').eq('published', true)
     if (error) throw new Error(`Unable to load legacy case study: ${error.message}`)
@@ -80,7 +66,7 @@ export const getPublicCaseStudyPage = unstable_cache(async (identifier: string):
   }
 
   return { caseStudy }
-}, ['public-case-study-page-v2'], { revalidate: 300, tags: ['public-case-studies'] })
+}
 
 export type HomeWriting = Pick<Writing, 'id' | 'title' | 'slug' | 'excerpt' | 'cover_image' | 'created_at'> & { readingMinutes: number }
 
