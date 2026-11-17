@@ -19,7 +19,7 @@ export default async function PlaygroundPage() {
   return (
     <main className="portfolio-shelf-page portfolio-playground-page">
       <PortfolioHeader profile={profile} />
-      <PortfolioShelf title="Playground" introduction="Visual experiments, design explorations, and side projects.">
+      <PortfolioShelf loopCopies={pieces.length > 1 ? <PlaygroundMosaic pieces={pieces} duplicate /> : undefined} title="Playground" introduction="Visual experiments, design explorations, and side projects.">
         <PlaygroundMosaic pieces={pieces} />
         {!pieces.length && <p>No Playground pieces are available yet.</p>}
       </PortfolioShelf>

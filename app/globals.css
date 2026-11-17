@@ -1623,6 +1623,12 @@ a.portfolio-opening-card:hover h2 { text-decoration: underline; text-underline-o
   scrollbar-width: none;
   padding: 4px var(--shelf-margin) 12px;
 }
+.portfolio-shelf-sequence {
+  display: flex;
+  flex: none;
+  align-items: end;
+  gap: inherit;
+}
 .portfolio-archive-piece {
   position: relative;
   flex: 0 0 clamp(190px, 20vw, 290px);

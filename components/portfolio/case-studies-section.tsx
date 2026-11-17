@@ -25,13 +25,13 @@ export default function CaseStudiesSection() {
     const fetchCaseStudies = async () => {
       try {
         const data = await fetchWithCache(
-          'case_studies',
+          'case-studies-by-update',
           async () => {
             const supabase = createClient()
             const { data, error } = await supabase
               .from('case_studies')
               .select('*')
-              .order('order_index', { ascending: true })
+              .order('updated_at', { ascending: false, nullsFirst: false })
               .order('created_at', { ascending: false })
             
             if (error) throw error

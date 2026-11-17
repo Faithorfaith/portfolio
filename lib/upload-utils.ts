@@ -58,11 +58,14 @@ export async function compressImage(
   maxHeight: number = 1080,
   quality: number = 0.8
 ): Promise<File> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader()
-    
+    reader.onerror = () => reject(new Error('Could not read the selected image'))
+    reader.onabort = () => reject(new Error('Image reading was cancelled'))
+
     reader.onload = (e) => {
       const img = new Image()
+      img.onerror = () => reject(new Error('Could not open the selected image'))
       img.onload = () => {
         const canvas = document.createElement('canvas')
         let { width, height } = img
@@ -88,7 +91,11 @@ export async function compressImage(
         
         canvas.toBlob(
           (blob) => {
-            const compressedFile = new File([blob!], file.name, {
+            if (!blob) {
+              reject(new Error('Could not prepare the selected image'))
+              return
+            }
+            const compressedFile = new File([blob], file.name, {
               type: 'image/jpeg',
               lastModified: Date.now(),
             })

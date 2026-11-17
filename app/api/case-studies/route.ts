@@ -18,7 +18,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from('case_studies')
       .select('*')
-      .order('order_index', { ascending: true })
+      .order('updated_at', { ascending: false, nullsFirst: false })
       .order('created_at', { ascending: false })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })

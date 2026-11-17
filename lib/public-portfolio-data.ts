@@ -50,10 +50,11 @@ export const getPublicCaseStudyLinks = unstable_cache(async (): Promise<CaseStud
     .from('case_studies')
     .select('id, title, slug, order_index, created_at')
     .eq('published', true)
-    .order('order_index', { ascending: true })
+    .order('updated_at', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false })
   if (error) throw new Error(`Unable to load case study links: ${error.message}`)
   return (data as CaseStudyLink[] | null) ?? []
-}, ['public-case-study-links-v2'], { revalidate: 300, tags: ['public-case-studies'] })
+}, ['public-case-study-links-v3'], { revalidate: 300, tags: ['public-case-studies'] })
 
 export const getPublicCaseStudyPage = unstable_cache(async (identifier: string): Promise<{
   caseStudy: CaseStudyPageData | null
@@ -105,12 +106,12 @@ export const getPublicCaseStudyCards = unstable_cache(async (): Promise<CaseStud
     .from('case_studies')
     .select('id, slug, title, excerpt, thumbnail_url, published, order_index, created_at')
     .eq('published', true)
-    .order('order_index', { ascending: true })
+    .order('updated_at', { ascending: false, nullsFirst: false })
     .order('created_at', { ascending: false })
     .limit(50)
   if (error) throw new Error(`Unable to load case study cards: ${error.message}`)
   return data as CaseStudy[]
-}, ['portfolio-case-study-cards-v2'], { revalidate: 300, tags: ['public-case-studies'] })
+}, ['portfolio-case-study-cards-v3'], { revalidate: 300, tags: ['public-case-studies'] })
 
 export const getPublicPortfolioData = unstable_cache(async (): Promise<PortfolioData> => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -120,7 +121,7 @@ export const getPublicPortfolioData = unstable_cache(async (): Promise<Portfolio
   const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
   const [profileResult, caseStudiesResult, projectsResult, worksResult, writingsResult] = await Promise.all([
     supabase.from('profiles').select('*').limit(1).maybeSingle(),
-    supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, order_index, created_at').eq('published', true).order('order_index', { ascending: true }).order('created_at', { ascending: false }),
+    supabase.from('case_studies').select('id, slug, title, excerpt, thumbnail_url, published, order_index, created_at').eq('published', true).order('updated_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false }),
     supabase.from('projects').select('id, title, year, type, link, description, cover_image, created_at').order('created_at', { ascending: false }),
     supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type').order('created_at', { ascending: false }),
     supabase.from('writings').select('*').order('created_at', { ascending: false }),
@@ -133,4 +134,4 @@ export const getPublicPortfolioData = unstable_cache(async (): Promise<Portfolio
     works: (worksResult.data as Work[] | null) ?? [],
     writings: ((writingsResult.data || []).map((writing) => ({ ...writing, content: typeof writing.content === 'string' ? JSON.parse(writing.content) : (writing.content || []) })) as Writing[]),
   }
-}, ['public-portfolio-data'], { revalidate: 300 })
+}, ['public-portfolio-data-v2'], { revalidate: 300, tags: ['public-case-studies'] })
