@@ -294,6 +294,14 @@ export default function WorksManager({ userId, mode = 'playground' }: WorksManag
           </div>
 
           <div className="space-y-4">
+            <label className="block">
+              <span className="mb-2 block text-xs font-medium text-foreground/70">Title</span>
+              <input
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                value={formData.title}
+                onChange={event => setFormData(previous => ({ ...previous, title: event.target.value }))}
+              />
+            </label>
             {/* Media Type */}
             <div>
               <label className="mb-2 block text-xs font-medium text-foreground/70">

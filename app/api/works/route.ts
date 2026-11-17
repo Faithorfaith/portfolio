@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 const ITEMS_PER_PAGE = 12
 
@@ -71,6 +71,9 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  revalidateTag('public-works', { expire: 0 })
   revalidatePath('/')
+  revalidatePath('/playground')
+  revalidatePath('/api/public/menu-previews')
   return NextResponse.json(data)
 }

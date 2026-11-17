@@ -41,7 +41,7 @@ export const getPublicWorks = unstable_cache(async (): Promise<Work[]> => {
   if (!supabase) return []
   const { data } = await supabase.from('portfolio_works').select('id, title, description, media_url, media_type, thumbnail_url, order_index, created_at, type').order('created_at', { ascending: false })
   return (data as Work[] | null) ?? []
-}, ['public-works-v2'], { revalidate: 300 })
+}, ['public-works-v3'], { revalidate: 300, tags: ['public-works'] })
 
 export async function getPublicCaseStudyPage(identifier: string): Promise<{
   caseStudy: CaseStudyPageData | null
