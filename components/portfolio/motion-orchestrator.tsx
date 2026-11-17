@@ -78,6 +78,11 @@ export default function MotionOrchestrator() {
       })
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 })
 
+    const coverObserver = new IntersectionObserver((entries) => {
+      entries.forEach(({ target, isIntersecting }) => target.classList.toggle('is-in-view', isIntersecting))
+    }, { threshold: 0.25 })
+    document.querySelectorAll('.portfolio-opening-cover').forEach(cover => coverObserver.observe(cover))
+
     sections.forEach((section, index) => {
       section.classList.add('motion-managed')
       section.style.setProperty('--reveal-delay', `${Math.min(index * 36, 144)}ms`)
@@ -98,6 +103,7 @@ export default function MotionOrchestrator() {
       window.clearTimeout(paperTimer)
       paper.remove()
       observer.disconnect()
+      coverObserver.disconnect()
       document.removeEventListener('pointerdown', press)
       document.removeEventListener('click', rememberHomePosition)
     }
