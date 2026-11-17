@@ -1092,6 +1092,30 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
   flex-direction: column;
   overflow: clip;
 }
+.portfolio-contact-trigger {
+  cursor: pointer;
+  font: inherit;
+}
+.portfolio-contact-trigger:hover { color: #646464; }
+.portfolio-contact-links {
+  display: grid;
+  flex: 1;
+  min-height: 0;
+  align-content: center;
+  justify-items: start;
+  gap: clamp(8px, 2dvh, 24px);
+  overflow-y: auto;
+  padding: 16px clamp(24px, 12vw, 180px);
+  font-family: var(--font-sans);
+  font-size: clamp(42px, min(9vw, 17dvh), 140px);
+  line-height: 1.04;
+  letter-spacing: -.055em;
+}
+.portfolio-contact-links a { min-height: 44px; }
+.portfolio-contact-links a:hover { color: #575757; }
+@media (max-width: 640px) {
+  .portfolio-contact-trigger { padding-block: 5px; }
+}
 .portfolio-menu-footer {
   flex: none;
   padding: 10px clamp(16px, 3vw, 40px) max(12px, env(safe-area-inset-bottom));
