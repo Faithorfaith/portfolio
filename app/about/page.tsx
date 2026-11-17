@@ -22,15 +22,8 @@ export default async function AboutPage() {
   const [firstName, ...surname] = name.split(/\s+/)
   const bio = profile?.bio?.trim() || 'I’m a product designer working across digital products, visual design, and motion.'
   const headline = profile?.positioning_headline?.trim() || 'I design digital products that make complex ideas feel clear.'
-  const paragraphs = bio.split(/\n\s*\n/).map((paragraph, index) => {
-    const text = index === 1
-      ? paragraph.replace(
-          /I design digital products, mobile experiences, dashboards, and complex user flows, while also creating the visual systems, graphics, and video content that help products communicate better\./i,
-          'I design mobile apps and dashboards for tasks like setting up an air monitor or planning a drone mission. I also create visual systems, graphics, and videos that make these products easier to understand.',
-        )
-      : paragraph
-    return replaceEmDashes(text)
-  })
+  const paragraphs = bio.split(/\n\s*\n/).map(replaceEmDashes)
+  paragraphs.splice(1, 1, 'Outside work, I love playing video games, watching documentaries, and listening to music. I also like getting outdoors and making time for the gym.')
   const video = profile?.train_video_1?.trim()
   const photos = [...new Set([
     profile?.avatar_url,
