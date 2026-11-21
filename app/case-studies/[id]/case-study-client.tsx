@@ -112,7 +112,12 @@ export default function CaseStudyClient({ initialCaseStudy, profile }: { initial
         <nav className="case-story-contents" aria-label="On this page">
           <span>On this page</span>
           {sections.filter(section => section.label && section.title).map(section => (
-            <a key={section.id} href={`#${section.id}`}>{replaceEmDashes(section.label)}</a>
+            <a key={section.id} href={`#${section.id}`} onClick={event => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+              event.preventDefault()
+              document.getElementById(section.id)?.scrollIntoView({ block: 'start', behavior: 'instant' })
+              window.history.replaceState(null, '', `#${section.id}`)
+            }}>{replaceEmDashes(section.label)}</a>
           ))}
         </nav>
       )}
