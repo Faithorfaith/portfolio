@@ -2071,3 +2071,21 @@ body:has(:is(.portfolio-opening-header, .public-page, .case-story))::-webkit-scr
   .portfolio-about-grid.has-hero-video { grid-template-columns: minmax(0, 1fr); }
   .portfolio-about-grid.has-hero-video .portfolio-about-photo-rail { position: static; }
 }
+
+.case-story-contents {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  margin: 0 clamp(16px, 3vw, 40px) 48px;
+  padding-block: 20px;
+  border-block: 1px solid #00000016;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.case-story-contents > span { color: #737373; }
+.case-story-contents a { display: inline-flex; align-items: center; min-height: 44px; }
+.case-story-contents a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.case-story-contents a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.case-story-section { scroll-margin-top: 32px; }
+.case-story-copy .article-prose p + p { margin-top: 1em; }
