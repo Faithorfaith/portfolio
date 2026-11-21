@@ -108,19 +108,6 @@ export default function CaseStudyClient({ initialCaseStudy, profile }: { initial
       )}
 
 
-      {sections.filter(section => section.label && section.title).length > 2 && (
-        <nav className="case-story-contents" aria-label="On this page">
-          <span>On this page</span>
-          {sections.filter(section => section.label && section.title).map(section => (
-            <a key={section.id} href={`#${section.id}`} onClick={event => {
-              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-              event.preventDefault()
-              document.getElementById(section.id)?.scrollIntoView({ block: 'start', behavior: 'instant' })
-              window.history.replaceState(null, '', `#${section.id}`)
-            }}>{replaceEmDashes(section.label)}</a>
-          ))}
-        </nav>
-      )}
       <div className="case-story-sections">
         {sections.map((section, index) => <section key={section.id} id={section.id} className="case-story-section reading-section" data-layout={section.layout || 'media-first'} data-width={section.media_width || 'wide'} data-placement={section.placement || 'center'}>
           {(section.image || section.gallery_images?.length || section.video_url || section.embed_url) && <div data-motion-section className={`case-story-media motion-media ${index % 2 ? 'is-soft' : ''}`}><div className="case-story-media-inner">
